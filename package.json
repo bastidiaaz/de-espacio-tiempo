@@ -1,8 +1,8 @@
 {
-  "name": "lumen-vale",
+  "name": "de-espacio-tiempo",
   "private": true,
   "version": "0.1.0",
-  "description": "Lumen Vale — Remember. A cozy low-poly narrative exploration game built with React and Three.js.",
+  "description": "De Espacio-Tiempo. Adaptación jugable del álbum despacio-tiempo: juego narrativo de exploración low-poly con React y Three.js.",
   "type": "module",
   "engines": {
     "node": ">=20"

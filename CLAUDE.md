@@ -1,4 +1,25 @@
-# CLAUDE.md — guía para trabajar en Lumen Vale
+# CLAUDE.md — guía para trabajar en De Espacio-Tiempo
+
+## Qué es este proyecto
+
+- **Adaptación jugable del álbum _despacio-tiempo_**: un acto del juego por canción, en el mismo orden del tracklist.
+- El juego se llama **"De Espacio-Tiempo"** (juego de palabras: "despacio" + "espacio-tiempo"). Antes se llamaba "Lumen Vale — Remember": ese es el MVP del que viene todo el código actual.
+- Protagonista: **Isi**. Idioma in-game: **español**.
+- **Dispositivo narrativo: no es amnesia.** Isi recuerda perfectamente lo que pasó; lo que no puede es mirarlo de frente. En el Acto I, sostener la mirada es "atreverse a admitir una verdad que ya conoce"; cada acto puede redefinir qué significa el gesto sin tocar la mecánica. El radio que crece es miedo, no memoria.
+- **Fuente de verdad narrativa:** los briefs en `docs/superpowers/specs/*-de-espacio-tiempo-acto*-design.md`, leídos en orden de acto. El código **no** es fuente de verdad narrativa.
+- Para redactar el brief de un acto nuevo: skill `generating-act-briefs` (`.claude/skills/generating-act-briefs/SKILL.md`). Exige la letra completa de la canción y diálogo con el autor; nunca se redacta unilateralmente desde un resumen temático.
+- **Hilos reservados** (no resolverlos antes de su acto): "¿volverá a volar?" → Acto 6 ("el regreso"); a quién le habla Isi cuando transmite → acto futuro, sin asignar.
+
+## Estado actual vs. canon
+
+- **Implementado:** el motor completo + el contenido del MVP viejo: textos en inglés, premisa de amnesia/rescate, nave estrellada, personajes `Mara Ilves`/`Nell`, 10 ítems en 5 capítulos.
+- **Canon aprobado, sin implementar:** Acto I ("Astronauta"). Sus decisiones están acordadas con el autor.
+- **Sin brief todavía:** del Acto II en adelante. El brief del Acto I ya adelanta de qué trata la canción #2 ("Despacio": contemplación, refugio, saberse rebelde), pero eso es contexto, no un brief — hay que generarlo con la skill, la letra completa y el diálogo con el autor.
+- **Regla práctica:** si un texto de `src/content/` contradice un brief, **manda el brief**. No leas `story.ts`/`copy.ts` como descripción de lo que el juego es hoy.
+- **Pendientes conocidos:**
+  - Reescribir `src/content/story.ts` y `src/content/copy.ts` en español según el brief del Acto I (incluye `COPY.title`, `COPY.canvasLabel`, `WAKE_LINES`, `EDGE_LINES`, `STILLNESS_LINE`) y, si algún objeto cambia de forma, los props de `src/game/story/storyWorld.ts`.
+  - En la misma sesión que reescriba `copy.ts`, cambiar `<html lang="en">` → `lang="es"` en `index.html` (hoy sigue en `en` porque la UI renderizada todavía está en inglés).
+  - **Decisión técnica no tomada:** hoy el código modela un solo acto. Antes de implementar un segundo hay que decidir cómo coexisten — extender `CHAPTERS`/`MEMORIES` con más capítulos y radio continuo, o escena/ruta separada con su propio set de contenido — y qué pasa con `lvr-mem-<seed>` en cada caso. No es una decisión narrativa.
 
 ## Comandos
 

@@ -1,8 +1,10 @@
-# Lumen Vale — Remember
+# De Espacio-Tiempo
 
-Juego narrativo de exploración low-poly. Una astronauta despierta junto a una fogata sin recordar quién es; para avanzar debe **recordar a través de la atención**: quedarse quieta y sostener la mirada sobre las cosas.
+Juego narrativo de exploración low-poly: la adaptación jugable del álbum _despacio-tiempo_, un acto por canción, en el orden del tracklist. Isi aterrizó en un valle alienígena por decisión propia y no logró volver a despegar; para avanzar debe **atreverse a mirar**: quedarse quieta y sostener la mirada sobre las cosas que ha estado evitando.
 
 Construido con **React 18 + Three.js 0.160 + TypeScript + Vite**. Mundo procedural determinista por semilla, compatible con móvil.
+
+> El contenido in-game todavía es el del MVP anterior ("Lumen Vale — Remember", textos en inglés, premisa de amnesia). El canon narrativo vigente vive en [`docs/superpowers/specs/`](./docs/superpowers/specs) y está resumido en [`CLAUDE.md`](./CLAUDE.md).
 
 ## Empezar
 
@@ -55,6 +57,7 @@ src/
     systems/                 attention, narrative, progress, player, input, audio
   ui/components/             un componente + CSS por pieza de UI
   styles/                    tokens y estilos base
+docs/superpowers/specs/      briefs narrativos por acto (fuente de verdad de la historia)
 reference/                   versión original de un solo archivo (solo referencia, no editar)
 ```
 
