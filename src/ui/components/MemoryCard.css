@@ -1,0 +1,64 @@
+#mcard {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 12px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+  width: min(92vw, 34rem);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px 22px 22px 6px;
+  padding: 1rem 1.25rem 1.1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#mcard.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+@media (pointer: coarse) {
+  #mcard {
+    bottom: auto;
+    top: calc(env(safe-area-inset-top, 0px) + 64px);
+  }
+}
+#mtitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--memory);
+  margin: 0 0 0.35rem;
+}
+#mtitle:empty {
+  display: none;
+}
+#mtext {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 1.18rem;
+  line-height: 1.5;
+  margin: 0;
+  min-height: 1.5em;
+}
+#mcard[data-kind='thought'] #mtext {
+  color: var(--ink-soft);
+}
+#mnext {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#mcard.done #mnext {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  #mcard {
+    transition: none;
+  }
+}

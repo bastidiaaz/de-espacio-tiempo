@@ -1,0 +1,32 @@
+#reticle {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  pointer-events: none;
+}
+#reticle .dot {
+  fill: rgba(255, 244, 230, 0.55);
+}
+#reticle .track {
+  fill: none;
+  stroke: rgba(207, 232, 255, 0.25);
+  stroke-width: 2.5;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#reticle .arc {
+  fill: none;
+  stroke: var(--memory);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 32px 32px;
+  stroke-dasharray: 132;
+  stroke-dashoffset: 132;
+}
+#reticle.near .track {
+  opacity: 1;
+}

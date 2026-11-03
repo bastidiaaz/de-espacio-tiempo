@@ -1,0 +1,48 @@
+#journal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 24, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#journal[hidden] {
+  display: none;
+}
+#journal .card {
+  max-width: 32rem;
+  max-height: 80vh;
+  overflow: auto;
+}
+#journal h2 {
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin: 0 0 1rem;
+  color: var(--accent);
+}
+#jlist {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+#jlist li {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+}
+#jlist b {
+  display: block;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--memory);
+  margin-bottom: 0.2rem;
+}
+#jlist p {
+  margin: 0;
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  line-height: 1.45;
+}
+#jlist .lost p {
+  color: var(--ink-soft);
+}

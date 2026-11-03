@@ -1,0 +1,21 @@
+#stick {
+  position: fixed;
+  width: 112px;
+  height: 112px;
+  margin: -56px 0 0 -56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 244, 230, 0.4);
+  background: rgba(30, 28, 70, 0.25);
+  display: none;
+  pointer-events: none;
+}
+#knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: rgba(255, 244, 230, 0.75);
+}

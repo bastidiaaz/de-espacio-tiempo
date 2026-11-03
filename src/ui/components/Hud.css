@@ -1,0 +1,33 @@
+#hud[hidden] {
+  display: none;
+}
+#count {
+  position: fixed;
+  left: calc(env(safe-area-inset-left, 0px) + 14px);
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+.tools {
+  position: fixed;
+  right: calc(env(safe-area-inset-right, 0px) + 14px);
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  display: flex;
+  gap: 0.45rem;
+}
+.tools button {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.82rem;
+}
+.tools button[aria-pressed='false'] {
+  color: var(--ink-soft);
+  text-decoration: line-through;
+}

@@ -1,0 +1,122 @@
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--page);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family:
+    'Fredoka',
+    ui-rounded,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--ink);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+#world {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+  touch-action: none;
+  image-rendering: pixelated;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 2px solid var(--memory);
+  outline-offset: 3px;
+}
+
+/* Full-screen dialogs (intro, ending) */
+.veil {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: linear-gradient(to top, rgba(10, 10, 30, 0.7), transparent 75%);
+  transition: opacity 1.2s ease;
+}
+.veil.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+.card {
+  max-width: 26rem;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 28px 28px 28px 8px;
+  padding: 1.7rem 1.6rem 1.4rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+h1 {
+  font-weight: 600;
+  font-size: clamp(2.4rem, 10vw, 3.3rem);
+  line-height: 0.95;
+  margin: 0 0 1rem;
+  color: var(--accent);
+}
+.lede {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+.how {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  margin: 0 0 1.4rem;
+  color: var(--ink-soft);
+}
+.primary {
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.85rem 1.6rem;
+  width: 100%;
+}
+.quiet {
+  margin-top: 0.7rem;
+  width: 100%;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .veil {
+    transition: none;
+  }
+}

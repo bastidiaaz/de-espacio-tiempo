@@ -1,0 +1,35 @@
+#blink {
+  position: fixed;
+  inset: 0;
+  background: #05050f;
+  pointer-events: none;
+  opacity: 0;
+}
+#blink.on {
+  animation: blink 3.2s ease forwards;
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.25;
+  }
+  35% {
+    opacity: 0.9;
+  }
+  60% {
+    opacity: 0.1;
+  }
+  70% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #blink.on {
+    animation-duration: 0.6s;
+  }
+}
