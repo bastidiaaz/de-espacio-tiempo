@@ -12,6 +12,17 @@ export function Journal({ open, onClose }: { open: boolean; onClose: () => void 
   useEffect(() => {
     if (open) backRef.current?.focus();
   }, [open]);
+  // Capture phase: runs before the shell's Escape handler, which skips handled (defaultPrevented) events.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      onClose();
+    };
+    addEventListener('keydown', onKey, true);
+    return () => removeEventListener('keydown', onKey, true);
+  }, [open, onClose]);
   return (
     <div id="journal" hidden={!open}>
       <div className="card">
