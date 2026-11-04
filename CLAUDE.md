@@ -36,7 +36,7 @@
    - La carcasa solo llega al código de un acto a través de `src/acts/registry.ts` (`import()` dinámico: cada acto es su propio chunk y el menú no carga `three`). `src/App.tsx`, `src/ActHost.tsx` y `src/acts/**` son la única capa que junta motor y UI.
    - Cada motor de acto implementa `ActEngine` (`src/game/engine.ts`): `setPaused`, `setSound`, `setRetro` y `dispose`. `dispose()` corre cada vez que se vuelve al menú: no puede dejar loops, listeners, recursos GPU, `AudioContext` ni canvas.
 3. **`Game.ts` orquesta, no implementa.** La lógica vive en `world/`, `story/` y `systems/`. Cada sistema recibe sus dependencias por constructor (sin singletons globales). Los sistemas sin Three.js (`progress`, `narrative`) deben seguir siendo testeables en Node.
-4. **Contenido como datos.** La historia y los textos están en `src/content/`. Para añadir una memoria: agrega una entrada a `MEMORIES`, crea su objeto en `story/storyWorld.ts` y regístralo en `objects`.
+4. **Contenido como datos.** Los textos del Acto I viven en `src/content/acto1.json` (un `.json` por acto; guía para el autor en `docs/editar-textos.md`). `story.ts` y `copy.ts` solo guardan lo estructural (ids, capítulos, geometría, radios) y ensamblan `MEMORIES`, `CHAPTERS` y `COPY` con el loader validado `acto1Texts.ts`; los importadores no cambian. Para añadir una memoria: agrega su estructura a `MEMORY_STRUCT` en `story.ts`, su `titulo`/`texto` bajo `memorias` en `acto1.json`, crea su objeto en `story/storyWorld.ts` y regístralo en `objects`. `src/content/acto1.test.ts` falla si falta o sobra un id. `shellCopy.ts` (carcasa) sigue en TS hasta UI-02.
 5. El orden del loop en `Game.frame` importa (cámara → atención → narrativa). No lo reordenes sin motivo.
 
 ## Invariantes (no romper)

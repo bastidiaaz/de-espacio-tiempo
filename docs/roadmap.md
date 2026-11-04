@@ -39,7 +39,7 @@
 | # | Decisión | Quién | Bloquea |
 |---|---|---|---|
 | ~~D1~~ | ~~Arquitectura multi-acto y progreso guardado~~ — **resuelta:** `docs/adr/0001-multi-acto.md` | Claude (ADR) → aprobado por el autor | — |
-| D2 | Formato del archivo de textos (recomendado: un `.json` por acto, validado por test) | Claude propone → autor | ENG-02, DIS-02 |
+| ~~D2~~ | ~~Formato del archivo de textos~~ — **resuelta: un `.json` por acto**, validado por test (`src/content/acto1.json`, guía en `docs/editar-textos.md`) | Claude propone → autor | — |
 | D3 | Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami) | Autor | ENG-05 |
 | D4 | GitHub Pages o Vercel | Autor (recomendado: GitHub Pages, sin cuentas extra) | ENG-04 |
 | D5 | Conexión del MCP polyfork y licencias de sus assets | Autor conecta → Claude verifica | ENG-10, ART-05, ART-07 |
@@ -65,7 +65,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - cómo se lee `lvr-mem-<seed>` sin perder partidas.
 - **Hecho cuando:** el autor lo aprueba. Las claves existentes siguen leyéndose, y el determinismo por semilla queda intacto.
 
-**ENG-02 · Textos a un archivo editable** · M · P0 · depende de D2
+**ENG-02 · Textos a un archivo editable** · M · P0 · ✅ hecho (2026-11-04): textos del Acto I en `src/content/acto1.json` (interfaz, voz de Isi, memorias, capítulos); loader tipado `acto1Texts.ts`; `acto1.test.ts` falla con mensajes legibles si falta o sobra un id; guía en `docs/editar-textos.md`
 - **Inputs:** `src/content/story.ts`, `src/content/copy.ts`.
 - **Output:**
   - un archivo de textos del Acto I, separado del código;

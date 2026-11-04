@@ -1,11 +1,13 @@
 /**
- * Narrative content. Pure data: writers can edit this file without touching the engine.
- * Order matters: MEMORIES order is the journal order.
+ * Estructura narrativa del Acto I ("Astronauta"). Los TEXTOS viven en `acto1.json`
+ * (ahí se editan); aquí solo queda lo que no es prosa: ids, capítulo de cada memoria,
+ * geometría de la mirada y radios. El orden de MEMORY_STRUCT es el orden del diario.
  *
- * Act I ("Astronauta"). Isi remembers everything; what she cannot do is look at it
- * head-on. Holding your gaze on something is daring to admit a truth she already knows,
- * and the radius that grows is fear receding, not memory returning.
+ * Isi recuerda todo; lo que no puede es mirarlo de frente. Sostener la mirada es
+ * atreverse a admitir una verdad que ya conoce, y el radio que crece es el miedo que
+ * cede, no la memoria que vuelve.
  */
+import { loadActo1 } from './acto1Texts';
 
 export type ItemId =
   'fire' | 'helmet' | 'thermos' | 'patch' | 'photo' | 'seeds' | 'recorder' | 'beacon' | 'ship' | 'star';
@@ -35,122 +37,51 @@ export interface ChapterDef {
   done: readonly string[];
 }
 
-export const MEMORIES: readonly MemoryDef[] = [
-  {
-    id: 'fire',
-    chapter: 0,
-    title: 'El fuego',
-    text: 'Tres piedras, ramas secas, una chispa contra el guante. Esto sí lo hice yo. Por una vez, no dudé.',
-    attention: { offsetY: 0.6, range: 8, cone: 0.26 },
-  },
-  {
-    id: 'helmet',
-    chapter: 0,
-    title: 'El casco rayado',
-    text: 'El rayón ya estaba aquí antes de caer. Este casco vivió años guardado en una caja, listo para un viaje que yo seguía posponiendo.',
-    attention: { offsetY: 0.3, range: 6.5, cone: 0.24 },
-  },
-  {
-    id: 'thermos',
-    chapter: 0,
-    title: 'El termo abollado',
-    text: 'Cardamomo, para las noches frías. Me lo preparo yo misma, cada vez, como si alguien más fuera a tomarlo conmigo.',
-    attention: { offsetY: 0.15, range: 6.5, cone: 0.24 },
-  },
-  {
-    id: 'patch',
-    chapter: 1,
-    title: 'La insignia',
-    text: 'SURVEY ONE. La cosí yo misma, para una misión que me inventé, para tener por fin una excusa con la que partir.',
-    attention: { offsetY: 0.4, range: 6.5, cone: 0.24 },
-  },
-  {
-    id: 'photo',
-    chapter: 1,
-    title: 'La fotografía',
-    text: 'Yo, mucho más joven, mirando la cámara sin miedo. Antes de empezar a temerle al cielo que todavía no me atrevo a cruzar.',
-    attention: { offsetY: 0.25, range: 6.5, cone: 0.24 },
-  },
-  {
-    id: 'seeds',
-    chapter: 1,
-    title: 'El transmisor',
-    text: 'Grabé cien mensajes dirigidos a quien fuera que estuviera escuchando. Ninguno volvió con respuesta. Seguí grabando igual.',
-    attention: { offsetY: 0.15, range: 6.5, cone: 0.24 },
-  },
-  {
-    id: 'recorder',
-    chapter: 2,
-    title: 'Registro de vuelo',
-    text: 'Mi propia voz en la última entrada: «Perdiendo altitud. Puedo corregir, puedo—». Y después, silencio. No terminé la frase. Tampoco terminé la maniobra.',
-    attention: { offsetY: 0.3, range: 7, cone: 0.24 },
-  },
-  {
-    id: 'beacon',
-    chapter: 2,
-    title: 'Pieza del motor',
-    text: 'El polvo se acumuló justo aquí, en el encendido que debía responder a tiempo. Dudé medio segundo. Fue suficiente.',
-    attention: { offsetY: 1.0, range: 8, cone: 0.26 },
-  },
-  {
-    id: 'ship',
-    chapter: 3,
-    title: 'Mi nave',
-    text: 'Bajo el cristal de la cabina, estampado a mano: ISI. Aquí fue. Un pie todavía en la Tierra, cuando ya estaba en el aire.',
-    attention: { offsetY: 2.0, range: 24, cone: 0.42 },
-  },
-  {
-    id: 'star',
-    chapter: 4,
-    title: 'Una estrella lenta',
-    text: 'No hay más que decir, y lo sé desde el primer día. Dudé. Eso fue todo. Eso fue suficiente para caer.',
-    attention: { offsetY: 0, range: Infinity, cone: 0.14 },
-  },
+type MemoryStruct = Omit<MemoryDef, 'title' | 'text'>;
+
+const MEMORY_STRUCT: readonly MemoryStruct[] = [
+  { id: 'fire', chapter: 0, attention: { offsetY: 0.6, range: 8, cone: 0.26 } },
+  { id: 'helmet', chapter: 0, attention: { offsetY: 0.3, range: 6.5, cone: 0.24 } },
+  { id: 'thermos', chapter: 0, attention: { offsetY: 0.15, range: 6.5, cone: 0.24 } },
+  { id: 'patch', chapter: 1, attention: { offsetY: 0.4, range: 6.5, cone: 0.24 } },
+  { id: 'photo', chapter: 1, attention: { offsetY: 0.25, range: 6.5, cone: 0.24 } },
+  { id: 'seeds', chapter: 1, attention: { offsetY: 0.15, range: 6.5, cone: 0.24 } },
+  { id: 'recorder', chapter: 2, attention: { offsetY: 0.3, range: 7, cone: 0.24 } },
+  { id: 'beacon', chapter: 2, attention: { offsetY: 1.0, range: 8, cone: 0.26 } },
+  { id: 'ship', chapter: 3, attention: { offsetY: 2.0, range: 24, cone: 0.42 } },
+  { id: 'star', chapter: 4, attention: { offsetY: 0, range: Infinity, cone: 0.14 } },
 ];
 
-export const CHAPTERS: readonly ChapterDef[] = [
-  {
-    radius: 14,
-    hint: 'Algo junto al fuego espera que lo mires.',
-    done: ['La oscuridad cede un poco. Un surco de tierra abierta se aleja del campamento.'],
-  },
-  {
-    radius: 48,
-    hint: 'El surco se aleja del campamento. Lo que dejé por el camino todavía está ahí.',
-    done: ['Todo esto lo preparé durante años. Nada de esto explica todavía por qué estoy en el suelo.'],
-  },
-  {
-    radius: 90,
-    hint: 'El surco quemado continúa. Lo que pasó en el descenso empieza a tener sonido.',
-    done: ['Ya sé dónde buscar el resto. La nave tiene que estar justo delante.'],
-  },
-  {
-    radius: 150,
-    hint: 'El surco termina en la nave.',
-    done: ['Aquí fue. Y todavía no me atrevo a decirlo completo. Algo allá arriba se mueve despacio.'],
-  },
-  {
-    radius: 150,
-    hint: 'Mira al cielo, aunque duela.',
-    done: [
-      'Nadie puede ser astronauta con los pies en la Tierra.',
-      'Lo sé ahora. No sé todavía qué hacer con eso.',
-      'Por ahora vuelvo al fuego y me quedo quieta.',
-    ],
-  },
-];
+/** Radios de cada capítulo (m). Su id en el JSON es `capitulo<N>` (N desde 1). */
+const CHAPTER_RADII: readonly number[] = [14, 48, 90, 150, 150];
+
+/** Id de un capítulo en `acto1.json`. */
+export const chapterKey = (index: number): string => `capitulo${index + 1}`;
+
+/** Ids que el código espera encontrar en `acto1.json` (los usa el test de validación). */
+export const EXPECTED_IDS = {
+  memorias: MEMORY_STRUCT.map((m) => m.id),
+  capitulos: CHAPTER_RADII.map((_, i) => chapterKey(i)),
+};
+
+/** Textos validados (lanza un error legible si al JSON le falta o le sobra algo). */
+export const ACTO1_TEXTS = loadActo1(EXPECTED_IDS);
+
+export const MEMORIES: readonly MemoryDef[] = MEMORY_STRUCT.map((m) => ({
+  ...m,
+  title: ACTO1_TEXTS.memorias[m.id as keyof typeof ACTO1_TEXTS.memorias].titulo,
+  text: ACTO1_TEXTS.memorias[m.id as keyof typeof ACTO1_TEXTS.memorias].texto,
+}));
+
+export const CHAPTERS: readonly ChapterDef[] = CHAPTER_RADII.map((radius, i) => {
+  const c = ACTO1_TEXTS.capitulos[chapterKey(i) as keyof typeof ACTO1_TEXTS.capitulos];
+  return { radius, hint: c.pista, done: c.al_terminar };
+});
 
 /** First thoughts on waking by the fire, before she dares to look at anything. */
-export const WAKE_LINES: readonly string[] = [
-  'Otra vez aquí. El fuego, y la misma pregunta de siempre.',
-  'Si me quedo quieta, tal vez por fin pueda mirarlo de frente.',
-];
+export const WAKE_LINES: readonly string[] = ACTO1_TEXTS.voz_de_isi.al_despertar;
 
 /** Whispered when the player walks into the edge of what she dares to look at. */
-export const EDGE_LINES: readonly string[] = [
-  'Todavía no. Eso no.',
-  'El miedo pesa más que la curiosidad, por ahora.',
-  'Hay algo más cerca que sí puedo mirar.',
-];
+export const EDGE_LINES: readonly string[] = ACTO1_TEXTS.voz_de_isi.al_llegar_al_borde;
 
-export const STILLNESS_LINE = 'Quédate quieta un momento.';
+export const STILLNESS_LINE: string = ACTO1_TEXTS.voz_de_isi.quedarse_quieta;

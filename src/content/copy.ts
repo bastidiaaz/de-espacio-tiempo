@@ -1,38 +1,43 @@
-/** Interface copy (not story). Speaks to the player in second person; Isi's own voice lives in story.ts. */
+/**
+ * Interface copy (not story). Speaks to the player in second person; Isi's own voice lives in story.ts.
+ * Los textos viven en `acto1.json` (sección "interfaz"); aquí solo se ensamblan.
+ */
+import { ACTO1_TEXTS } from './story';
+
+const ui = ACTO1_TEXTS.interfaz;
+
 export const COPY = {
-  title: 'De Espacio-Tiempo',
-  act: 'Acto I — Astronauta',
+  title: ui.titulo,
+  act: ui.acto,
   intro: {
-    fresh: 'Despiertas junto a un fuego pequeño. Lo encendiste tú, y lo recuerdas todo.',
-    resumed: 'Te quedas dormida junto al fuego. Al despertar, te atreves a mirar un poco más.',
-    complete: 'Ya lo miraste todo de frente. El fuego sigue encendido.',
+    fresh: ui.intro.primera_vez,
+    resumed: ui.intro.retomando,
+    complete: ui.intro.completo,
     how: (coarse: boolean) =>
-      (coarse
-        ? 'Arrastra a la izquierda para caminar y a la derecha para mirar.'
-        : 'Camina con WASD, arrastra para mirar alrededor.') +
-      ' Para mirar algo de frente, quédate quieta y sostén la mirada en eso.',
-    start: 'Despertar',
+      `${coarse ? ui.intro.como_jugar_tactil : ui.intro.como_jugar_teclado} ${ui.intro.como_jugar_final}`,
+    start: ui.intro.boton_empezar,
   },
   hud: {
-    countNone: 'Nada mirado de frente todavía',
-    count: (n: number, total: number) => `${n} de ${total} mirados de frente`,
-    journal: 'Diario',
+    countNone: ui.hud.nada_mirado,
+    count: (n: number, total: number) =>
+      ui.hud.contador.replace('{n}', String(n)).replace('{total}', String(total)),
+    journal: ui.hud.diario,
   },
   card: {
-    next: (coarse: boolean) => (coarse ? 'Toca para continuar' : 'Clic o E para continuar'),
-    label: 'Continuar',
+    next: (coarse: boolean) => (coarse ? ui.tarjeta.continuar_tactil : ui.tarjeta.continuar_teclado),
+    label: ui.tarjeta.etiqueta_boton,
   },
   journal: {
-    title: 'Lo que ya puedo mirar',
-    unknown: 'Algo que todavía no me atrevo a mirar.',
-    back: 'Volver al valle',
-    restart: 'Borrar todo y empezar de nuevo',
+    title: ui.diario.titulo,
+    unknown: ui.diario.desconocido,
+    back: ui.diario.volver,
+    restart: ui.diario.reiniciar,
   },
   ending: {
-    title: 'Por ahora',
-    body: 'Isi se queda quieta junto al fuego. Ya mira de frente el medio segundo que la trajo al suelo, y eso no arregla nada. Nadie puede ser astronauta con los pies en la Tierra. El cielo sigue ahí arriba. La pregunta también.',
-    wander: 'Seguir caminando',
-    restart: 'Empezar de nuevo',
+    title: ui.final.titulo,
+    body: ui.final.cuerpo,
+    wander: ui.final.seguir_caminando,
+    restart: ui.final.reiniciar,
   },
-  canvasLabel: 'Un valle alienígena en calma, de noche, iluminado por una hoguera',
-} as const;
+  canvasLabel: ui.etiqueta_del_lienzo,
+};
