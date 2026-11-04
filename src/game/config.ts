@@ -22,4 +22,6 @@ export const STORAGE_KEYS = {
   retro: 'lvr-retro',
   sound: 'lvr-sound',
   memory: (seed: number) => `lvr-mem-${seed}`,
+  /** JSON array of finished act numbers, e.g. `[1]`. Owned by the shell. */
+  actsDone: 'lvr-acts-done',
 } as const;

@@ -27,3 +27,5 @@ export const storage = {
     }
   },
 };
+
+export type KeyValueStorage = typeof storage;
