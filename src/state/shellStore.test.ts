@@ -113,16 +113,25 @@ describe('shell store', () => {
     expect(s.actNumber).toBe(1);
   });
 
-  it('recovers from a failed load', () => {
-    const store = createShellStore(memoryStorage());
+  it('returns to select after a failed load', () => {
+    const store = createShellStore(memoryStorage(), () => {});
     store.getState().startAct(1);
     store.getState().loadFailed();
-    let s = store.getState();
+    const s = store.getState();
     expect(s.screen).toBe('select');
     expect(s.actNumber).toBeNull();
     expect(s.loadError).toBe(true);
+  });
+
+  it('reloads the page instead of retrying in place after a failed load', () => {
+    // A failed chunk stays failed in this page (cached import / preload); only a reload really retries.
+    let reloads = 0;
+    const store = createShellStore(memoryStorage(), () => reloads++);
     store.getState().startAct(1);
-    s = store.getState();
-    expect(s.loadError).toBe(false);
+    expect(reloads).toBe(0);
+    store.getState().loadFailed();
+    store.getState().startAct(1);
+    expect(reloads).toBe(1);
+    expect(store.getState().screen).toBe('select');
   });
 });

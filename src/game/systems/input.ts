@@ -99,7 +99,8 @@ export class Input {
       const l = this.looks.get(e.pointerId);
       if (!l) return;
       const k = e.pointerType === 'mouse' ? 0.004 : 0.006;
-      this.o.onLook(e.clientX - l.x, e.clientY - l.y, k);
+      // While disabled (e.g. paused mid-drag) keep tracking the pointer but don't turn: no jump on resume.
+      if (this.o.enabled()) this.o.onLook(e.clientX - l.x, e.clientY - l.y, k);
       l.x = e.clientX;
       l.y = e.clientY;
     }

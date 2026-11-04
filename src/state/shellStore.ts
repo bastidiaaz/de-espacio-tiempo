@@ -46,7 +46,13 @@ function parseActsDone(raw: string | null): number[] {
   }
 }
 
-export function createShellStore(storage: KeyValueStorage = defaultStorage): ShellStore {
+const reloadPage = (): void => location.reload();
+
+/**
+ * @param reload Called instead of retrying in place once an act failed to load: a failed chunk stays
+ *   failed in this page (cached dynamic import, Vite's preload bookkeeping, or a stale hash after a deploy).
+ */
+export function createShellStore(storage: KeyValueStorage = defaultStorage, reload = reloadPage): ShellStore {
   return createStore<ShellState>()((set, get) => ({
     screen: 'menu',
     actNumber: null,
@@ -59,7 +65,13 @@ export function createShellStore(storage: KeyValueStorage = defaultStorage): She
 
     openSelect: () => set({ screen: 'select' }),
     backToMenu: () => set({ screen: 'menu' }),
-    startAct: (n) => set({ screen: 'act', actNumber: n, optionsOpen: false, loadError: false }),
+    startAct: (n) => {
+      if (get().loadError) {
+        reload();
+        return;
+      }
+      set({ screen: 'act', actNumber: n, optionsOpen: false });
+    },
     loadFailed: () => set({ screen: 'select', actNumber: null, optionsOpen: false, loadError: true }),
     escape: () => {
       const { screen, optionsOpen } = get();
