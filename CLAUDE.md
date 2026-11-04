@@ -18,7 +18,7 @@
 - **Roadmap:** `docs/roadmap.md` (tareas con inputs/outputs, decisiones abiertas y lo que no se toca). Los textos in-game los escribe el autor; Claude orienta y revisa. Para auditar y rehacer el roadmap: skill `running-roadmap-audits` (`.claude/skills/running-roadmap-audits/SKILL.md`).
 - **Regla práctica:** si un texto de `src/content/` contradice un brief, **manda el brief** — el código se corrige, no el canon.
 - **Pendientes conocidos:**
-  - **Decisión técnica no tomada:** hoy el código modela un solo acto. Antes de implementar un segundo hay que decidir cómo coexisten — extender `CHAPTERS`/`MEMORIES` con más capítulos y radio continuo, o escena/ruta separada con su propio set de contenido — y qué pasa con `lvr-mem-<seed>` en cada caso. No es una decisión narrativa.
+  - **Arquitectura multi-acto decidida, sin implementar:** `docs/adr/0001-multi-acto.md`. Una carcasa común (menú, tracklist, opciones) monta y desmonta cada acto como módulo independiente; el Acto I conserva sus claves (`lvr-mem-<seed>`, `lvr-seed`) sin migración. Al implementarlo, actualizar la regla "Único puente" de Arquitectura, como indica el ADR.
 
 ## Comandos
 

@@ -38,7 +38,7 @@
 
 | # | Decisión | Quién | Bloquea |
 |---|---|---|---|
-| D1 | Arquitectura multi-acto y progreso guardado | Claude (ADR) → aprueba el autor | ENG-12, DIS-04, Release 2 |
+| ~~D1~~ | ~~Arquitectura multi-acto y progreso guardado~~ — **resuelta:** `docs/adr/0001-multi-acto.md` | Claude (ADR) → aprobado por el autor | — |
 | D2 | Formato del archivo de textos (recomendado: un `.json` por acto, validado por test) | Claude propone → autor | ENG-02, DIS-02 |
 | D3 | Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami) | Autor | ENG-05 |
 | D4 | GitHub Pages o Vercel | Autor (recomendado: GitHub Pages, sin cuentas extra) | ENG-04 |
@@ -53,7 +53,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 ### Fase 0 — Desbloquear (antes de producir)
 
-**ENG-01 · ADR multi-acto** · M · P0
+**ENG-01 · ADR multi-acto** · M · P0 · ✅ hecho (2026-11-04): ADR aprobado; falta implementarlo
 - **Inputs:**
   - Respuestas de la auditoría (tracklist con desbloqueo en orden, mecánicas libres por acto, cambio visual fuerte).
   - `Game.ts`, `src/content/`, `progress.ts`.
