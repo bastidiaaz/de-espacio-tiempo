@@ -15,7 +15,8 @@
 .tools {
   position: fixed;
   right: calc(env(safe-area-inset-right, 0px) + 14px);
-  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  /* Below the shell's options button. */
+  top: calc(env(safe-area-inset-top, 0px) + 14px + 2.7rem);
   display: flex;
   gap: 0.45rem;
 }

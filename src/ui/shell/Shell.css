@@ -1,0 +1,54 @@
+/* Minimal shell styling; the real art direction is ART-01 / UI-02. */
+.shell-screen {
+  background: rgba(10, 10, 30, 0.72);
+}
+.shell-screen h2 {
+  margin: 0 0 1rem;
+}
+.act-list {
+  list-style: none;
+  margin: 0 0 0.4rem;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.act-item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.7rem 1rem;
+}
+.act-item:disabled {
+  cursor: default;
+  color: var(--ink-soft);
+  opacity: 0.5;
+}
+.shell-error {
+  margin: 0 0 0.8rem;
+  color: var(--accent);
+}
+.options-toggles {
+  display: flex;
+  gap: 0.5rem;
+}
+.options-toggles button[aria-pressed='false'] {
+  color: var(--ink-soft);
+  text-decoration: line-through;
+}
+.options-button {
+  position: fixed;
+  right: calc(env(safe-area-inset-right, 0px) + 14px);
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.82rem;
+}
+.options-button[hidden] {
+  display: none;
+}
