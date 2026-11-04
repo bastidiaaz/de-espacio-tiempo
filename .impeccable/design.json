@@ -1,0 +1,870 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T18:15:33.376Z",
+  "title": "Design System: De Espacio-Tiempo",
+  "extensions": {
+    "colorMeta": {
+      "noche-horizonte": {
+        "role": "neutral",
+        "displayName": "Noche Horizonte",
+        "canonical": "oklch(38.5% 0.103 282.6)",
+        "tonalRamp": [
+          "#09081d",
+          "#201d47",
+          "#393673",
+          "#565595",
+          "#7778bc",
+          "#9d9ed7",
+          "#c5c7e9",
+          "#ededf8"
+        ]
+      },
+      "noche-medio": {
+        "role": "neutral",
+        "displayName": "Noche Medio",
+        "canonical": "oklch(32.7% 0.100 278.6)",
+        "tonalRamp": [
+          "#08081d",
+          "#1d1e47",
+          "#353873",
+          "#525695",
+          "#737abb",
+          "#99a0d7",
+          "#c3c8e9",
+          "#eceef8"
+        ]
+      },
+      "noche-cenit": {
+        "role": "neutral",
+        "displayName": "Noche Cenit",
+        "canonical": "oklch(20.2% 0.064 275.1)",
+        "tonalRamp": [
+          "#080a17",
+          "#1d223b",
+          "#363d62",
+          "#535b82",
+          "#757da7",
+          "#9ba3c6",
+          "#c5c9de",
+          "#eceef5"
+        ]
+      },
+      "noche-resplandor": {
+        "role": "neutral",
+        "displayName": "Noche Resplandor",
+        "canonical": "oklch(58.9% 0.150 287.7)",
+        "tonalRamp": [
+          "#0b0424",
+          "#241356",
+          "#402988",
+          "#5c4aac",
+          "#7d6ed4",
+          "#a198ec",
+          "#c7c4f6",
+          "#ededfd"
+        ]
+      },
+      "luz-cielo": {
+        "role": "neutral",
+        "displayName": "Luz Cielo",
+        "canonical": "oklch(72.3% 0.144 275.7)",
+        "tonalRamp": [
+          "#060625",
+          "#191957",
+          "#2f318a",
+          "#4952ad",
+          "#6a76d5",
+          "#909eed",
+          "#bec8f7",
+          "#eaeefd"
+        ]
+      },
+      "luz-suelo": {
+        "role": "neutral",
+        "displayName": "Luz Suelo",
+        "canonical": "oklch(29.0% 0.079 287.5)",
+        "tonalRamp": [
+          "#0b0819",
+          "#231f3f",
+          "#3e3867",
+          "#5b5688",
+          "#7d79ad",
+          "#a29fcb",
+          "#c8c7e2",
+          "#eeedf6"
+        ]
+      },
+      "luz-luna": {
+        "role": "neutral",
+        "displayName": "Luz Luna",
+        "canonical": "oklch(77.5% 0.115 274.1)",
+        "tonalRamp": [
+          "#060820",
+          "#191e4d",
+          "#2f377b",
+          "#4a569e",
+          "#6b7ac4",
+          "#92a0df",
+          "#bfc9ee",
+          "#ebeefa"
+        ]
+      },
+      "alba-horizonte": {
+        "role": "neutral",
+        "displayName": "Alba Horizonte",
+        "canonical": "oklch(82.2% 0.076 31.9)",
+        "tonalRamp": [
+          "#170604",
+          "#3b1812",
+          "#622f25",
+          "#834d42",
+          "#a96f63",
+          "#c8978d",
+          "#e1c3bc",
+          "#f6ecea"
+        ]
+      },
+      "alba-medio": {
+        "role": "neutral",
+        "displayName": "Alba Medio",
+        "canonical": "oklch(73.4% 0.098 351.5)",
+        "tonalRamp": [
+          "#18040d",
+          "#3d1228",
+          "#652646",
+          "#874464",
+          "#ad6787",
+          "#cc90aa",
+          "#e3bfce",
+          "#f7ebef"
+        ]
+      },
+      "alba-cenit": {
+        "role": "neutral",
+        "displayName": "Alba Cenit",
+        "canonical": "oklch(50.5% 0.119 281.9)",
+        "tonalRamp": [
+          "#090720",
+          "#1f1b4d",
+          "#38337b",
+          "#54539e",
+          "#7576c5",
+          "#9b9ddf",
+          "#c4c7ee",
+          "#ecedfa"
+        ]
+      },
+      "alba-resplandor": {
+        "role": "neutral",
+        "displayName": "Alba Resplandor",
+        "canonical": "oklch(90.4% 0.084 77.5)",
+        "tonalRamp": [
+          "#130900",
+          "#351f00",
+          "#583900",
+          "#78571e",
+          "#9c7a43",
+          "#bda074",
+          "#d9c8af",
+          "#f3eee6"
+        ]
+      },
+      "agua-honda": {
+        "role": "neutral",
+        "displayName": "Agua Honda",
+        "canonical": "oklch(57.1% 0.062 228.8)",
+        "tonalRamp": [
+          "#010d14",
+          "#052836",
+          "#13465a",
+          "#35647a",
+          "#58889e",
+          "#84abbe",
+          "#b8cfda",
+          "#e9f0f3"
+        ]
+      },
+      "agua-superficie": {
+        "role": "neutral",
+        "displayName": "Agua Superficie",
+        "canonical": "oklch(82.2% 0.089 194.7)",
+        "tonalRamp": [
+          "#001010",
+          "#002d2e",
+          "#004d4e",
+          "#006d6d",
+          "#2e9190",
+          "#6cb3b2",
+          "#add3d3",
+          "#e5f1f1"
+        ]
+      },
+      "arena-rosada": {
+        "role": "neutral",
+        "displayName": "Arena Rosada",
+        "canonical": "oklch(85.1% 0.066 57.7)",
+        "tonalRamp": [
+          "#140802",
+          "#361d09",
+          "#5a3619",
+          "#7a5437",
+          "#9f7759",
+          "#bf9d84",
+          "#dbc6b8",
+          "#f4ede8"
+        ]
+      },
+      "roca-lila": {
+        "role": "neutral",
+        "displayName": "Roca Lila",
+        "canonical": "oklch(61.0% 0.081 300.5)",
+        "tonalRamp": [
+          "#0e0718",
+          "#291c3d",
+          "#473464",
+          "#655285",
+          "#8875aa",
+          "#ab9cc8",
+          "#cec5e0",
+          "#efedf5"
+        ]
+      },
+      "roca-lila-clara": {
+        "role": "neutral",
+        "displayName": "Roca Lila Clara",
+        "canonical": "oklch(67.4% 0.070 313.7)",
+        "tonalRamp": [
+          "#100714",
+          "#2d1c36",
+          "#4d345a",
+          "#6c5279",
+          "#8f749e",
+          "#b19bbe",
+          "#d2c5da",
+          "#f1edf3"
+        ]
+      },
+      "escarcha": {
+        "role": "neutral",
+        "displayName": "Escarcha",
+        "canonical": "oklch(95.4% 0.017 325.7)",
+        "tonalRamp": [
+          "#0d0a0d",
+          "#272227",
+          "#453d45",
+          "#635a63",
+          "#867d86",
+          "#a9a2a9",
+          "#cdc9cd",
+          "#efeeef"
+        ]
+      },
+      "ladera-lavanda": {
+        "role": "neutral",
+        "displayName": "Ladera Lavanda",
+        "canonical": "oklch(70.8% 0.101 298.4)",
+        "tonalRamp": [
+          "#0e061b",
+          "#291a43",
+          "#47316d",
+          "#654f8f",
+          "#8872b5",
+          "#ab9ad1",
+          "#cec5e6",
+          "#efedf7"
+        ]
+      },
+      "ladera-lavanda-clara": {
+        "role": "neutral",
+        "displayName": "Ladera Lavanda Clara",
+        "canonical": "oklch(77.1% 0.087 308.0)",
+        "tonalRamp": [
+          "#100717",
+          "#2d1a3c",
+          "#4c3163",
+          "#6b4f83",
+          "#8f72a9",
+          "#b199c7",
+          "#d2c4df",
+          "#f1ecf5"
+        ]
+      },
+      "pasto-turquesa": {
+        "role": "neutral",
+        "displayName": "Pasto Turquesa",
+        "canonical": "oklch(68.7% 0.096 179.4)",
+        "tonalRamp": [
+          "#00100c",
+          "#002e25",
+          "#004f41",
+          "#006f5f",
+          "#2c9382",
+          "#6bb5a6",
+          "#acd5cb",
+          "#e5f2ef"
+        ]
+      },
+      "pasto-menta": {
+        "role": "neutral",
+        "displayName": "Pasto Menta",
+        "canonical": "oklch(81.6% 0.100 144.2)",
+        "tonalRamp": [
+          "#010f02",
+          "#062d09",
+          "#164d19",
+          "#376c38",
+          "#599059",
+          "#86b285",
+          "#b9d3b8",
+          "#e9f1e9"
+        ]
+      },
+      "floracion-rosa": {
+        "role": "neutral",
+        "displayName": "Floracion Rosa",
+        "canonical": "oklch(80.5% 0.096 351.9)",
+        "tonalRamp": [
+          "#17040d",
+          "#3d1228",
+          "#642745",
+          "#864563",
+          "#ac6886",
+          "#cb91aa",
+          "#e3bfcd",
+          "#f6ebef"
+        ]
+      },
+      "surco-quemado": {
+        "role": "neutral",
+        "displayName": "Surco Quemado",
+        "canonical": "oklch(39.0% 0.063 299.6)",
+        "tonalRamp": [
+          "#0d0815",
+          "#271e38",
+          "#45385c",
+          "#63567c",
+          "#8678a1",
+          "#a99ec1",
+          "#cdc7db",
+          "#efedf4"
+        ]
+      },
+      "cristal-cian": {
+        "role": "tertiary",
+        "displayName": "Cristal Cian",
+        "canonical": "oklch(90.0% 0.095 208.2)",
+        "tonalRamp": [
+          "#000f14",
+          "#002c36",
+          "#004c5a",
+          "#006c79",
+          "#23909e",
+          "#67b2be",
+          "#aad3d9",
+          "#e5f1f3"
+        ]
+      },
+      "cristal-rosa": {
+        "role": "tertiary",
+        "displayName": "Cristal Rosa",
+        "canonical": "oklch(81.5% 0.135 343.8)",
+        "tonalRamp": [
+          "#1a0111",
+          "#420630",
+          "#6c1651",
+          "#8f3870",
+          "#b65c94",
+          "#d489b6",
+          "#e9bbd5",
+          "#f9eaf2"
+        ]
+      },
+      "cristal-violeta": {
+        "role": "tertiary",
+        "displayName": "Cristal Violeta",
+        "canonical": "oklch(75.5% 0.141 295.4)",
+        "tonalRamp": [
+          "#0e0421",
+          "#2a1350",
+          "#482880",
+          "#6548a3",
+          "#886cca",
+          "#aa96e4",
+          "#cdc3f1",
+          "#efecfb"
+        ]
+      },
+      "bulbo-cian": {
+        "role": "tertiary",
+        "displayName": "Bulbo Cian",
+        "canonical": "oklch(91.2% 0.096 203.8)",
+        "tonalRamp": [
+          "#001013",
+          "#002d34",
+          "#004d57",
+          "#006d76",
+          "#1c919a",
+          "#65b3bb",
+          "#aad4d8",
+          "#e4f1f3"
+        ]
+      },
+      "bulbo-rosa": {
+        "role": "tertiary",
+        "displayName": "Bulbo Rosa",
+        "canonical": "oklch(90.7% 0.067 338.0)",
+        "tonalRamp": [
+          "#13060f",
+          "#331a2c",
+          "#56314c",
+          "#764f6b",
+          "#9b718e",
+          "#bc98b0",
+          "#d9c3d2",
+          "#f3ecf1"
+        ]
+      },
+      "bulbo-limon": {
+        "role": "tertiary",
+        "displayName": "Bulbo Limon",
+        "canonical": "oklch(95.7% 0.095 100.2)",
+        "tonalRamp": [
+          "#0f0b00",
+          "#2c2400",
+          "#4c4000",
+          "#6a5e0d",
+          "#8d8138",
+          "#afa66d",
+          "#d1ccab",
+          "#f0efe5"
+        ]
+      },
+      "hongo-rosa": {
+        "role": "tertiary",
+        "displayName": "Hongo Rosa",
+        "canonical": "oklch(78.4% 0.108 0.5)",
+        "tonalRamp": [
+          "#1a030a",
+          "#410e22",
+          "#6b213d",
+          "#8d405a",
+          "#b4637d",
+          "#d38ea2",
+          "#e7bec9",
+          "#f8eaee"
+        ]
+      },
+      "hongo-coral": {
+        "role": "tertiary",
+        "displayName": "Hongo Coral",
+        "canonical": "oklch(79.0% 0.126 41.0)",
+        "tonalRamp": [
+          "#1d0200",
+          "#470b00",
+          "#731e00",
+          "#963f1c",
+          "#be6341",
+          "#db8f72",
+          "#edbfae",
+          "#faebe5"
+        ]
+      },
+      "hongo-lila": {
+        "role": "tertiary",
+        "displayName": "Hongo Lila",
+        "canonical": "oklch(77.8% 0.138 303.2)",
+        "tonalRamp": [
+          "#11041f",
+          "#2f114c",
+          "#50257a",
+          "#6e469c",
+          "#9169c3",
+          "#b393de",
+          "#d3c1ed",
+          "#f1ecfa"
+        ]
+      },
+      "hongo-miel": {
+        "role": "tertiary",
+        "displayName": "Hongo Miel",
+        "canonical": "oklch(88.5% 0.118 82.9)",
+        "tonalRamp": [
+          "#150800",
+          "#381d00",
+          "#5d3600",
+          "#7d5500",
+          "#a27813",
+          "#c29f5c",
+          "#dcc8a3",
+          "#f4eee2"
+        ]
+      },
+      "hongo-aguamarina": {
+        "role": "tertiary",
+        "displayName": "Hongo Aguamarina",
+        "canonical": "oklch(84.2% 0.095 182.1)",
+        "tonalRamp": [
+          "#00100c",
+          "#002e27",
+          "#004f44",
+          "#006f62",
+          "#2a9385",
+          "#6bb5a8",
+          "#acd4cd",
+          "#e5f2ef"
+        ]
+      },
+      "llama-nucleo": {
+        "role": "primary",
+        "displayName": "Llama Nucleo",
+        "canonical": "oklch(91.4% 0.111 90.3)",
+        "tonalRamp": [
+          "#130900",
+          "#332000",
+          "#563b00",
+          "#765900",
+          "#9a7d21",
+          "#baa261",
+          "#d7caa5",
+          "#f2eee3"
+        ]
+      },
+      "llama-media": {
+        "role": "primary",
+        "displayName": "Llama Media",
+        "canonical": "oklch(82.1% 0.149 72.1)",
+        "tonalRamp": [
+          "#1a0400",
+          "#421400",
+          "#6c2a00",
+          "#8f4a00",
+          "#b56e00",
+          "#d39747",
+          "#e7c49a",
+          "#f8eddf"
+        ]
+      },
+      "llama-borde": {
+        "role": "primary",
+        "displayName": "Llama Borde",
+        "canonical": "oklch(72.6% 0.178 43.2)",
+        "tonalRamp": [
+          "#220000",
+          "#520000",
+          "#830000",
+          "#a92800",
+          "#d25100",
+          "#ee8456",
+          "#f9baa0",
+          "#fee9e1"
+        ]
+      },
+      "luz-hoguera": {
+        "role": "primary",
+        "displayName": "Luz Hoguera",
+        "canonical": "oklch(77.8% 0.151 55.4)",
+        "tonalRamp": [
+          "#1e0200",
+          "#490800",
+          "#761a00",
+          "#9a3e00",
+          "#c26300",
+          "#df8f55",
+          "#efbf9f",
+          "#fbebe1"
+        ]
+      },
+      "brasa": {
+        "role": "primary",
+        "displayName": "Brasa",
+        "canonical": "oklch(78.8% 0.147 58.2)",
+        "tonalRamp": [
+          "#1d0200",
+          "#470c00",
+          "#741f00",
+          "#974100",
+          "#bf6500",
+          "#dc9155",
+          "#edc09f",
+          "#faebe1"
+        ]
+      },
+      "espora": {
+        "role": "secondary",
+        "displayName": "Espora",
+        "canonical": "oklch(96.3% 0.104 122.6)",
+        "tonalRamp": [
+          "#080e00",
+          "#1e2900",
+          "#364700",
+          "#536718",
+          "#758a3f",
+          "#9bad72",
+          "#c5d0ae",
+          "#ecf0e5"
+        ]
+      },
+      "destello-mirada": {
+        "role": "secondary",
+        "displayName": "Destello Mirada",
+        "canonical": "oklch(92.0% 0.041 246.0)",
+        "tonalRamp": [
+          "#060c12",
+          "#172632",
+          "#2d4254",
+          "#4b6074",
+          "#6c8398",
+          "#94a7b9",
+          "#c1ccd6",
+          "#ebeff2"
+        ]
+      },
+      "estrella": {
+        "role": "neutral",
+        "displayName": "Estrella",
+        "canonical": "oklch(97.6% 0.021 79.1)",
+        "tonalRamp": [
+          "#0d0b07",
+          "#28231c",
+          "#463f33",
+          "#645c51",
+          "#877f73",
+          "#aaa499",
+          "#cecac4",
+          "#efeeec"
+        ]
+      },
+      "estrella-lenta": {
+        "role": "neutral",
+        "displayName": "Estrella Lenta",
+        "canonical": "oklch(95.7% 0.065 94.0)",
+        "tonalRamp": [
+          "#0f0b01",
+          "#2c2304",
+          "#4b3f11",
+          "#6a5d31",
+          "#8d8053",
+          "#afa580",
+          "#d1cbb5",
+          "#f0eee8"
+        ]
+      },
+      "gigante-banda-durazno": {
+        "role": "tertiary",
+        "displayName": "Gigante Banda Durazno",
+        "canonical": "oklch(89.4% 0.068 58.8)",
+        "tonalRamp": [
+          "#140801",
+          "#361d08",
+          "#5a3617",
+          "#7a5435",
+          "#9f7657",
+          "#bf9d83",
+          "#dbc6b7",
+          "#f4ede8"
+        ]
+      },
+      "gigante-banda-coral": {
+        "role": "tertiary",
+        "displayName": "Gigante Banda Coral",
+        "canonical": "oklch(77.5% 0.106 19.8)",
+        "tonalRamp": [
+          "#1b0304",
+          "#430f13",
+          "#6d2228",
+          "#904244",
+          "#b76566",
+          "#d58f8f",
+          "#e9bfbe",
+          "#f9ebea"
+        ]
+      },
+      "gigante-banda-orquidea": {
+        "role": "tertiary",
+        "displayName": "Gigante Banda Orquidea",
+        "canonical": "oklch(71.8% 0.117 320.6)",
+        "tonalRamp": [
+          "#140418",
+          "#36113d",
+          "#5a2665",
+          "#7b4586",
+          "#9f67ab",
+          "#c091c9",
+          "#dbc0e1",
+          "#f4ebf6"
+        ]
+      },
+      "gigante-banda-crema": {
+        "role": "tertiary",
+        "displayName": "Gigante Banda Crema",
+        "canonical": "oklch(93.8% 0.047 71.3)",
+        "tonalRamp": [
+          "#110a03",
+          "#2f2110",
+          "#4f3c23",
+          "#6f5940",
+          "#927c62",
+          "#b4a18b",
+          "#d4c9bc",
+          "#f1eeea"
+        ]
+      },
+      "gigante-anillo": {
+        "role": "tertiary",
+        "displayName": "Gigante Anillo",
+        "canonical": "oklch(91.8% 0.050 56.4)",
+        "tonalRamp": [
+          "#120904",
+          "#321f11",
+          "#543925",
+          "#745642",
+          "#987963",
+          "#b99f8c",
+          "#d7c7bc",
+          "#f2edea"
+        ]
+      },
+      "luna": {
+        "role": "tertiary",
+        "displayName": "Luna",
+        "canonical": "oklch(94.7% 0.032 230.2)",
+        "tonalRamp": [
+          "#060c10",
+          "#18262d",
+          "#2e434d",
+          "#4c616c",
+          "#6d8490",
+          "#95a8b2",
+          "#c1ccd2",
+          "#ebeff1"
+        ]
+      },
+      "traje-crema": {
+        "role": "neutral",
+        "displayName": "Traje Crema",
+        "canonical": "oklch(96.2% 0.031 75.2)",
+        "tonalRamp": [
+          "#0e0a06",
+          "#2b2317",
+          "#493e2d",
+          "#685b4a",
+          "#8b7e6c",
+          "#aea394",
+          "#d0c9c1",
+          "#f0eeeb"
+        ]
+      },
+      "traje-naranja": {
+        "role": "neutral",
+        "displayName": "Traje Naranja",
+        "canonical": "oklch(77.9% 0.128 59.3)",
+        "tonalRamp": [
+          "#1b0400",
+          "#431200",
+          "#6d2700",
+          "#904700",
+          "#b76b21",
+          "#d59560",
+          "#e8c2a5",
+          "#f8ece3"
+        ]
+      },
+      "visor": {
+        "role": "neutral",
+        "displayName": "Visor",
+        "canonical": "oklch(44.7% 0.070 250.3)",
+        "tonalRamp": [
+          "#030c17",
+          "#0e253c",
+          "#204263",
+          "#3e6084",
+          "#6084a9",
+          "#8aa8c7",
+          "#bbcddf",
+          "#eaeff5"
+        ]
+      }
+    },
+    "typographyMeta": {},
+    "shadows": [],
+    "motion": [
+      {
+        "name": "veil-fade",
+        "value": "opacity 1.2s ease",
+        "purpose": "Transición de velos a pantalla completa (intro y final); se desactiva con reduced motion."
+      },
+      {
+        "name": "blink",
+        "value": "3.2s ease (reduced motion: 0.6s)",
+        "purpose": "Parpadeo al despertar: negro #05050f que se abre en pulsos."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "retro-render-height",
+        "value": "460px"
+      }
+    ]
+  },
+  "components": [],
+  "narrative": {
+    "northStar": "El fuego en el valle",
+    "overview": "Un valle alienígena de noche, hecho de facetas planas en tonos pastel, con una sola fuente de calor: la hoguera que encendió Isi. Todo lo demás es frío y suave: índigo en el cielo, lavanda en las laderas, turquesa en el pasto y cian en los cristales. El fuego es lo único naranja que arde. La luz cálida que llega desde la hoguera es el ancla emocional de cada encuadre; el resto del mundo se percibe a la distancia, filtrado por niebla.\n\nLa densidad es baja y contemplativa: mucho cielo, siluetas que se apilan en capas por la niebla y pocos objetos, cada uno con su color. La magia no viene de efectos espectaculares. Viene de lo pequeño que se mueve: las esporas verde limón que flotan alrededor de Isi, las brasas que suben, el destello frío cuando algo se mira de frente. El render pixelado a 460 px de alto es el look principal, no un filtro opcional: une las facetas y les da textura de recuerdo.\n\nEl mundo está siempre a punto de amanecer y nunca amanece. La paleta del alba existe en el código, pero se mezcla como máximo al 12 %: el amanecer está reservado para el Acto 6.",
+    "keyCharacteristics": [
+      "Low-poly con *flat shading* en todo: terreno, objetos, planeta y luna.",
+      "Noche índigo y lavanda, con la hoguera naranja como único foco cálido.",
+      "Niebla del mismo color que el horizonte, que marca hasta dónde se atreve a llegar Isi.",
+      "Brillos aditivos (esporas, brasas, destellos, estrellas) en vez de sombras.",
+      "Pixelado retro a 460 px de alto, activo por defecto.",
+      "Cielo que domina el encuadre: un gigante anillado, una luna y 700 estrellas."
+    ],
+    "rules": [
+      {
+        "name": "The One Fire Rule",
+        "body": "Solo la hoguera emite luz cálida. Ningún objeto, cristal ni efecto nuevo puede ser una segunda fuente naranja o ámbar; si algo necesita brillar, brilla frío (cian, lila o limón).",
+        "section": "colors"
+      },
+      {
+        "name": "The Never-Dawn Rule",
+        "body": "La paleta del alba (`alba-*`) se mezcla como máximo un 12 % (`PRE_DAWN` en `Game.ts`) hasta el Acto 6. Un cielo rosado se lee como sanación, y el álbum lo guarda para \"el regreso\".",
+        "section": "colors"
+      },
+      {
+        "name": "The Fog-Is-Horizon Rule",
+        "body": "La niebla siempre usa el color del horizonte del cielo en ese momento. Nunca se le asigna un gris neutro ni un color propio.",
+        "section": "colors"
+      },
+      {
+        "name": "The Campfire-Is-Origin Rule",
+        "body": "Todo lo que importa se coloca en relación con la hoguera: los capítulos se abren en anillos desde ella, y lo que hay que ver desde ahí (la estrella lenta, el gigante) tiene que verse sin moverse de su lado.",
+        "section": "layout"
+      },
+      {
+        "name": "The No-Shadow Rule",
+        "body": "Ninguna luz proyecta sombras. Si un objeto necesita asentarse en el suelo, se le da un tono más oscuro en la base o una faceta de contacto, no una sombra.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Facet-Only Rule",
+        "body": "Los assets nuevos (incluidos los modelos glTF del pipeline polyfork) se muestran con *flat shading* y colores planos de esta paleta. Si un modelo trae texturas o normales suavizadas, se aplanan antes de entrar a escena.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** usa solo colores de esta paleta para geometría nueva. Si hace falta uno nuevo, elige un pastel frío o un neón suave y agrégalo aquí.",
+      "**Do** haz que lo que brilla brille frío y con mezcla aditiva (`destello-mirada`, `espora`, `cristal-*`).",
+      "**Do** deja que la niebla haga el trabajo de profundidad y de borde. Para avisar del límite, densifica la niebla antes de poner una barrera.",
+      "**Do** compón pensando en el render a 460 px: siluetas claras y grandes masas de color se leen; el detalle fino se pierde.",
+      "**Do** respeta `prefers-reduced-motion` en cualquier movimiento de cámara nuevo (sentarse, revelación de la nave)."
+    ],
+    "donts": [
+      "**Don't** agregues otra fuente de luz cálida además de la hoguera (The One Fire Rule).",
+      "**Don't** subas la mezcla del alba por encima de 0,12 ni pintes cielos rosados antes del Acto 6.",
+      "**Don't** actives sombras en tiempo real ni uses materiales PBR (`MeshStandardMaterial`) o texturas detalladas.",
+      "**Don't** cambies el orden de las llamadas a `rng()` en `sky.ts`, `chunks.ts` ni `storyWorld.ts` para mover o recolorear algo: rompe el determinismo de todas las semillas.",
+      "**Don't** muestres el cuerpo de Isi: ni sombra, ni manos, ni reflejo.",
+      "**Don't** quites ni atenúes las esporas, que son el toque mágico del valle.",
+      "**Don't** trates `src/styles/tokens.css` (Fredoka, tarjetas redondeadas con desenfoque) como la identidad de la UI: es provisoria y va a ser reemplazada por el estilo sketch."
+    ]
+  }
+}
