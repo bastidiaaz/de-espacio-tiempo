@@ -31,8 +31,6 @@ export interface GameUiState {
   /** 0..1 progress of the attention ring. */
   focus: number;
   endingVisible: boolean;
-  sound: boolean;
-  retro: boolean;
   stick: StickState;
 }
 
@@ -51,8 +49,6 @@ export const createGameStore = (): GameStore =>
     reticleNear: false,
     focus: 0,
     endingVisible: false,
-    sound: true,
-    retro: true,
     stick: { active: false, x: 0, y: 0, dx: 0, dy: 0 },
   }));
 
@@ -60,8 +56,6 @@ export const createGameStore = (): GameStore =>
 export interface GameActions {
   wake(): void;
   advanceCard(): void;
-  toggleSound(): void;
-  toggleRetro(): void;
   keepWandering(): void;
   restart(): void;
 }

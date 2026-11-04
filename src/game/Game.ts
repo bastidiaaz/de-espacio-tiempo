@@ -3,6 +3,7 @@ import { COPY } from '../content/copy';
 import { CHAPTERS, EDGE_LINES, MEMORIES, WAKE_LINES } from '../content/story';
 import type { GameActions, GameStore, Phase } from '../state/gameStore';
 import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, viewRadiusFor } from './config';
+import type { ActEngine, ActSettings } from './engine';
 import { makeNoise } from './math/noise';
 import { createHash2 } from './math/random';
 import { easeInOut, lerp, lerpAngle } from './math/util';
@@ -35,12 +36,22 @@ const PRE_DAWN = 0.12;
 const RETRO_HEIGHT = 460;
 const CHIME_ROOTS = [440, 554.37, 659.25, 880];
 
+/** What the shell gives Act I's engine (see docs/adr/0001-multi-acto.md). */
+export interface GameOptions {
+  settings: ActSettings;
+  /** Called when every memory has been faced (also on load, for saves that were already finished). */
+  onComplete(): void;
+  /** Called after the act's progress is wiped, so the shell can mount it again. */
+  onRestart(): void;
+}
+
 /**
  * Owns the Three.js scene and the game loop, and orchestrates every system.
  * Talks to React only through the store (out) and GameActions (in).
  */
-export class Game implements GameActions {
+export class Game implements GameActions, ActEngine {
   private readonly store: GameStore;
+  private readonly options: GameOptions;
   private readonly canvas: HTMLCanvasElement;
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
@@ -75,11 +86,13 @@ export class Game implements GameActions {
   private lastProgress = 0;
   private retro: boolean;
   private sound: boolean;
+  private paused = false;
   private raf = 0;
   private readonly timers = new Set<number>();
 
-  constructor(container: HTMLElement, store: GameStore) {
+  constructor(container: HTMLElement, store: GameStore, options: GameOptions) {
     this.store = store;
+    this.options = options;
 
     // --- seed + procedural field ---
     const seed = resolveSeed();
@@ -102,8 +115,8 @@ export class Game implements GameActions {
     this.camera.rotation.order = 'YXZ';
     this.fog = new THREE.Fog(0x3d3a78, 5, 26);
     this.scene.fog = this.fog;
-    this.retro = storage.get(STORAGE_KEYS.retro) !== '0';
-    this.sound = storage.get(STORAGE_KEYS.sound) !== '0';
+    this.retro = options.settings.retro;
+    this.sound = options.settings.sound;
     this.resize();
     addEventListener('resize', this.resize);
 
@@ -194,9 +207,10 @@ export class Game implements GameActions {
       onRemember: (it) => this.remember(it),
     });
     this.input = new Input(this.canvas, {
-      enabled: () => this.phase === 'play',
+      enabled: () => this.phase === 'play' && !this.paused,
       onLook: (dx, dy, k) => this.player.look(dx, dy, k),
       onKey: (code) => {
+        if (this.paused) return;
         if ((code === 'Enter' || code === 'KeyE') && this.narrative.card) this.narrative.advance();
       },
       onStick: (stick) => this.store.setState({ stick }),
@@ -208,11 +222,10 @@ export class Game implements GameActions {
       phase: 'intro',
       total: TOTAL,
       remembered: [...p.remembered],
-      sound: this.sound,
-      retro: this.retro,
       introLede: p.freeRoam ? COPY.intro.complete : p.count ? COPY.intro.resumed : COPY.intro.fresh,
     });
 
+    if (p.isFinished) options.onComplete();
     this.raf = requestAnimationFrame(this.frame);
   }
 
@@ -227,19 +240,26 @@ export class Game implements GameActions {
 
   advanceCard = (): void => this.narrative.advance();
 
-  toggleSound = (): void => {
-    this.sound = !this.sound;
-    storage.set(STORAGE_KEYS.sound, this.sound ? '1' : '0');
-    this.audio.setEnabled(this.sound);
-    this.store.setState({ sound: this.sound });
-  };
+  // ---------------------------------------------------------------- ActEngine (from the shell)
 
-  toggleRetro = (): void => {
-    this.retro = !this.retro;
+  setPaused(paused: boolean): void {
+    if (paused === this.paused) return;
+    this.paused = paused;
+    if (paused) for (const k in this.input.keys) this.input.keys[k] = false;
+    else this.last = performance.now();
+  }
+
+  /** Persisted by the shell. */
+  setSound(on: boolean): void {
+    this.sound = on;
+    this.audio.setEnabled(on);
+  }
+
+  /** Persisted by the shell. */
+  setRetro(on: boolean): void {
+    this.retro = on;
     this.resize();
-    storage.set(STORAGE_KEYS.retro, this.retro ? '1' : '0');
-    this.store.setState({ retro: this.retro });
-  };
+  }
 
   keepWandering = (): void => {
     this.store.setState({ endingVisible: false });
@@ -249,7 +269,7 @@ export class Game implements GameActions {
 
   restart = (): void => {
     storage.remove(this.memoryKey);
-    location.reload();
+    this.options.onRestart();
   };
 
   dispose(): void {
@@ -275,6 +295,12 @@ export class Game implements GameActions {
   // ---------------------------------------------------------------- loop
 
   private frame = (now: number): void => {
+    if (this.paused) {
+      // Frozen in place behind the options panel: keep drawing, advance nothing.
+      this.renderer.render(this.scene, this.camera);
+      this.raf = requestAnimationFrame(this.frame);
+      return;
+    }
     const dt = Math.min(0.05, (now - this.last) / 1000);
     this.last = now;
     this.time += dt;
@@ -377,6 +403,7 @@ export class Game implements GameActions {
       audio.swell();
       if (progress.isFinished) {
         atmosphere.kTarget = PRE_DAWN;
+        this.options.onComplete();
         narrative.afterCards = () => this.later(() => this.store.setState({ endingVisible: true }), 3500);
         return;
       }

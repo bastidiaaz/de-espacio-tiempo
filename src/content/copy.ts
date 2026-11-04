@@ -17,8 +17,6 @@ export const COPY = {
     countNone: 'Nada mirado de frente todavía',
     count: (n: number, total: number) => `${n} de ${total} mirados de frente`,
     journal: 'Diario',
-    sound: 'Sonido',
-    pixels: 'Píxeles',
   },
   card: {
     next: (coarse: boolean) => (coarse ? 'Toca para continuar' : 'Clic o E para continuar'),

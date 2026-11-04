@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Game } from './game/Game';
+import { STORAGE_KEYS } from './game/config';
+import { storage } from './game/platform';
 import { createGameStore, type GameActions } from './state/gameStore';
 import { Blink } from './ui/components/Blink';
 import { Ending } from './ui/components/Ending';
@@ -19,7 +21,15 @@ export default function App() {
   const [journalOpen, setJournalOpen] = useState(false);
 
   useEffect(() => {
-    const game = new Game(hostRef.current!, store);
+    // Transitional: the shell (ActHost) takes over mounting in the next step.
+    const game = new Game(hostRef.current!, store, {
+      settings: {
+        sound: storage.get(STORAGE_KEYS.sound) !== '0',
+        retro: storage.get(STORAGE_KEYS.retro) !== '0',
+      },
+      onComplete: () => {},
+      onRestart: () => location.reload(),
+    });
     gameRef.current = game;
     return () => {
       game.dispose();
@@ -31,8 +41,6 @@ export default function App() {
     () => ({
       wake: () => gameRef.current?.wake(),
       advanceCard: () => gameRef.current?.advanceCard(),
-      toggleSound: () => gameRef.current?.toggleSound(),
-      toggleRetro: () => gameRef.current?.toggleRetro(),
       keepWandering: () => gameRef.current?.keepWandering(),
       restart: () => gameRef.current?.restart(),
     }),
