@@ -4,7 +4,7 @@ Juego narrativo de exploración low-poly: la adaptación jugable del álbum _des
 
 Construido con **React 18 + Three.js 0.160 + TypeScript + Vite**. Mundo procedural determinista por semilla, compatible con móvil.
 
-> El contenido in-game todavía es el del MVP anterior ("Lumen Vale — Remember", textos en inglés, premisa de amnesia). El canon narrativo vigente vive en [`docs/superpowers/specs/`](./docs/superpowers/specs) y está resumido en [`CLAUDE.md`](./CLAUDE.md).
+> El juego implementa el **Acto I ("Astronauta")**, en español. El canon narrativo vive en [`docs/superpowers/specs/`](./docs/superpowers/specs) y está resumido en [`CLAUDE.md`](./CLAUDE.md); si un texto del juego contradice un brief, manda el brief.
 
 ## Empezar
 

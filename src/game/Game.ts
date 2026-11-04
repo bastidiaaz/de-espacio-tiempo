@@ -29,7 +29,8 @@ import { createGlowTexture } from './three/helpers';
 
 const TOTAL = MEMORIES.length;
 /** Night sky "brightens" up to this much before the ending's dawn. */
-const PRE_DAWN = 0.6;
+/** Brightest the sky ever gets: the act closes in stillness, never in a full dawn. */
+const PRE_DAWN = 0.12;
 /** Pixel height the retro mode renders at before upscaling. */
 const RETRO_HEIGHT = 460;
 const CHIME_ROOTS = [440, 554.37, 659.25, 880];
@@ -157,7 +158,7 @@ export class Game implements GameActions {
         field: this.field,
         viewRadius: this.viewRadius,
       },
-      p.freeRoam ? 1 : (p.count / TOTAL) * PRE_DAWN,
+      (p.count / TOTAL) * PRE_DAWN,
       p.freeRoam ? FREE_ROAM_RADIUS : CHAPTERS[p.chapter].radius,
     );
     this.chunks.update(this.player.position.x, this.player.position.z, true);
@@ -375,7 +376,7 @@ export class Game implements GameActions {
       progress.chapter++;
       audio.swell();
       if (progress.isFinished) {
-        atmosphere.kTarget = 1;
+        atmosphere.kTarget = PRE_DAWN;
         narrative.afterCards = () => this.later(() => this.store.setState({ endingVisible: true }), 3500);
         return;
       }

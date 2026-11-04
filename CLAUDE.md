@@ -12,13 +12,11 @@
 
 ## Estado actual vs. canon
 
-- **Implementado:** el motor completo + el contenido del MVP viejo: textos en inglés, premisa de amnesia/rescate, nave estrellada, personajes `Mara Ilves`/`Nell`, 10 ítems en 5 capítulos.
-- **Canon aprobado, sin implementar:** Acto I ("Astronauta"). Sus decisiones están acordadas con el autor.
+- **Implementado:** el motor completo + el Acto I ("Astronauta") según su brief: todo el texto in-game en español, premisa de duda (no de amnesia), 10 ítems en 5 capítulos, cierre en quietud junto al fuego.
+- **Decisiones de implementación del Acto I que no están en el brief:** el cielo ya no amanece — `PRE_DAWN` (`Game.ts`) bajó de 0.6 a 0.12 y además es el tope al terminar, porque el amanecer rosado leía como sanación y el álbum guarda el amanecer para el Acto 6; `seeds` (transmisor) y `beacon` (pieza de motor) se reinterpretaron solo por texto, sin tocar su geometría; la intro muestra `COPY.act` ("Acto I — Astronauta") bajo el título; la estrella lenta de `sky.shipStar` se mantiene a la deriva, ya no como nave que llega sino como estrella a la que Isi sostiene la mirada.
 - **Sin brief todavía:** del Acto II en adelante. El brief del Acto I ya adelanta de qué trata la canción #2 ("Despacio": contemplación, refugio, saberse rebelde), pero eso es contexto, no un brief — hay que generarlo con la skill, la letra completa y el diálogo con el autor.
-- **Regla práctica:** si un texto de `src/content/` contradice un brief, **manda el brief**. No leas `story.ts`/`copy.ts` como descripción de lo que el juego es hoy.
+- **Regla práctica:** si un texto de `src/content/` contradice un brief, **manda el brief** — el código se corrige, no el canon.
 - **Pendientes conocidos:**
-  - Reescribir `src/content/story.ts` y `src/content/copy.ts` en español según el brief del Acto I (incluye `COPY.title`, `COPY.canvasLabel`, `WAKE_LINES`, `EDGE_LINES`, `STILLNESS_LINE`) y, si algún objeto cambia de forma, los props de `src/game/story/storyWorld.ts`.
-  - En la misma sesión que reescriba `copy.ts`, cambiar `<html lang="en">` → `lang="es"` en `index.html` (hoy sigue en `en` porque la UI renderizada todavía está en inglés).
   - **Decisión técnica no tomada:** hoy el código modela un solo acto. Antes de implementar un segundo hay que decidir cómo coexisten — extender `CHAPTERS`/`MEMORIES` con más capítulos y radio continuo, o escena/ruta separada con su propio set de contenido — y qué pasa con `lvr-mem-<seed>` en cada caso. No es una decisión narrativa.
 
 ## Comandos

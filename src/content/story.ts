@@ -1,6 +1,10 @@
 /**
  * Narrative content. Pure data: writers can edit this file without touching the engine.
  * Order matters: MEMORIES order is the journal order.
+ *
+ * Act I ("Astronauta"). Isi remembers everything; what she cannot do is look at it
+ * head-on. Holding your gaze on something is daring to admit a truth she already knows,
+ * and the radius that grows is fear receding, not memory returning.
  */
 
 export type ItemId =
@@ -35,71 +39,71 @@ export const MEMORIES: readonly MemoryDef[] = [
   {
     id: 'fire',
     chapter: 0,
-    title: 'The fire',
-    text: 'Three stones, dry stems, a spark struck off my glove. I built this. My hands remembered how before I did.',
+    title: 'El fuego',
+    text: 'Tres piedras, ramas secas, una chispa contra el guante. Esto sí lo hice yo. Por una vez, no dudé.',
     attention: { offsetY: 0.6, range: 8, cone: 0.26 },
   },
   {
     id: 'helmet',
     chapter: 0,
-    title: 'Cracked helmet',
-    text: 'A long scratch across the visor. Something hit me on the way down, hard enough to knock the morning out of my head.',
+    title: 'El casco rayado',
+    text: 'El rayón ya estaba aquí antes de caer. Este casco vivió años guardado en una caja, listo para un viaje que yo seguía posponiendo.',
     attention: { offsetY: 0.3, range: 6.5, cone: 0.24 },
   },
   {
     id: 'thermos',
     chapter: 0,
-    title: 'Dented thermos',
-    text: 'Cardamom tea, still faintly warm. Someone packs it for me every single time. “For the cold nights,” she says.',
+    title: 'El termo abollado',
+    text: 'Cardamomo, para las noches frías. Me lo preparo yo misma, cada vez, como si alguien más fuera a tomarlo conmigo.',
     attention: { offsetY: 0.15, range: 6.5, cone: 0.24 },
   },
   {
     id: 'patch',
     chapter: 1,
-    title: 'Mission patch',
-    text: 'SURVEY ONE. A single-seat scout, sent ahead alone to see whether this valley was gentle enough for everyone else.',
+    title: 'La insignia',
+    text: 'SURVEY ONE. La cosí yo misma, para una misión que me inventé, para tener por fin una excusa con la que partir.',
     attention: { offsetY: 0.4, range: 6.5, cone: 0.24 },
   },
   {
     id: 'photo',
     chapter: 1,
-    title: 'Photograph',
-    text: 'Nell, seven years old, missing a front tooth, holding up a drawing of a ringed planet over a valley. She drew this sky before I ever saw it.',
+    title: 'La fotografía',
+    text: 'Yo, mucho más joven, mirando la cámara sin miedo. Antes de empezar a temerle al cielo que todavía no me atrevo a cruzar.',
     attention: { offsetY: 0.25, range: 6.5, cone: 0.24 },
   },
   {
     id: 'seeds',
     chapter: 1,
-    title: 'Seed tin',
-    text: 'Tomatoes, lavender, sunflowers. I promised Nell the first garden here would be hers to name.',
+    title: 'El transmisor',
+    text: 'Grabé cien mensajes dirigidos a quien fuera que estuviera escuchando. Ninguno volvió con respuesta. Seguí grabando igual.',
     attention: { offsetY: 0.15, range: 6.5, cone: 0.24 },
   },
   {
     id: 'recorder',
     chapter: 2,
-    title: 'Flight recorder',
-    text: 'The last entry is my own voice: “Ring-light over the ridge. It’s beautiful down there. Losing altitude, setting her down gentle as I can—” Then nothing.',
+    title: 'Registro de vuelo',
+    text: 'Mi propia voz en la última entrada: «Perdiendo altitud. Puedo corregir, puedo—». Y después, silencio. No terminé la frase. Tampoco terminé la maniobra.',
     attention: { offsetY: 0.3, range: 7, cone: 0.24 },
   },
   {
     id: 'beacon',
     chapter: 2,
-    title: 'Beacon array',
-    text: 'The beacon tore loose on impact. It only sent half a message: SITE SAFE. DO NOT— They’ll think something went wrong down here.',
+    title: 'Pieza del motor',
+    text: 'El polvo se acumuló justo aquí, en el encendido que debía responder a tiempo. Dudé medio segundo. Fue suficiente.',
     attention: { offsetY: 1.0, range: 8, cone: 0.26 },
   },
   {
     id: 'ship',
     chapter: 3,
-    title: 'Lumen',
-    text: 'My ship. Stenciled under the cockpit glass: PILOT M. ILVES. Mara. My name is Mara Ilves.',
+    title: 'Mi nave',
+    text: 'Bajo el cristal de la cabina, estampado a mano: ISI. Aquí fue. Un pie todavía en la Tierra, cuando ya estaba en el aire.',
     attention: { offsetY: 2.0, range: 24, cone: 0.42 },
   },
   {
     id: 'star',
     chapter: 4,
-    title: 'A slow star',
-    text: 'It isn’t a star. It’s the Long Morning, three hundred sleepers aboard, sliding toward this valley. One of them is Nell.',
+    title: 'Una estrella lenta',
+    text: 'No hay más que decir, y lo sé desde el primer día. Dudé. Eso fue todo. Eso fue suficiente para caer.',
     attention: { offsetY: 0, range: Infinity, cone: 0.14 },
   },
 ];
@@ -107,41 +111,46 @@ export const MEMORIES: readonly MemoryDef[] = [
 export const CHAPTERS: readonly ChapterDef[] = [
   {
     radius: 14,
-    hint: 'Something near the fire catches the light.',
-    done: ['The dark pulls back a little. A trail of torn ground leads away from camp.'],
+    hint: 'Algo junto al fuego espera que lo mires.',
+    done: ['La oscuridad cede un poco. Un surco de tierra abierta se aleja del campamento.'],
   },
   {
     radius: 48,
-    hint: 'The torn ground leads away from camp.',
-    done: ['There are others coming after me. I need to know how long I’ve been out here.'],
-  },
-  { radius: 90, hint: 'The scorched trail keeps going.', done: ['The ship. It has to be just ahead.'] },
-  {
-    radius: 150,
-    hint: 'The trail ends at the ship.',
-    done: ['I can finish the message from the cockpit. But something up there keeps moving.'],
+    hint: 'El surco se aleja del campamento. Lo que dejé por el camino todavía está ahí.',
+    done: ['Todo esto lo preparé durante años. Nada de esto explica todavía por qué estoy en el suelo.'],
   },
   {
+    radius: 90,
+    hint: 'El surco quemado continúa. Lo que pasó en el descenso empieza a tener sonido.',
+    done: ['Ya sé dónde buscar el resto. La nave tiene que estar justo delante.'],
+  },
+  {
     radius: 150,
-    hint: 'Look up. One of the stars is drifting.',
+    hint: 'El surco termina en la nave.',
+    done: ['Aquí fue. Y todavía no me atrevo a decirlo completo. Algo allá arriba se mueve despacio.'],
+  },
+  {
+    radius: 150,
+    hint: 'Mira al cielo, aunque duela.',
     done: [
-      'I finish the message, letter by letter: SITE SAFE. COME HOME.',
-      'They’ll land at dawn. I’ll keep the fire going until then.',
+      'Nadie puede ser astronauta con los pies en la Tierra.',
+      'Lo sé ahora. No sé todavía qué hacer con eso.',
+      'Por ahora vuelvo al fuego y me quedo quieta.',
     ],
   },
 ];
 
-/** First thoughts after waking with no memories. */
+/** First thoughts on waking by the fire, before she dares to look at anything. */
 export const WAKE_LINES: readonly string[] = [
-  'Where… am I? My head is full of static.',
-  'The fire is warm. Maybe if I just look at things, really look, it’ll come back.',
+  'Otra vez aquí. El fuego, y la misma pregunta de siempre.',
+  'Si me quedo quieta, tal vez por fin pueda mirarlo de frente.',
 ];
 
-/** Whispered when the player walks into the edge of what they remember. */
+/** Whispered when the player walks into the edge of what she dares to look at. */
 export const EDGE_LINES: readonly string[] = [
-  'I don’t remember what’s out there yet.',
-  'Not yet. Something nearer first.',
-  'The dark feels too heavy to walk into.',
+  'Todavía no. Eso no.',
+  'El miedo pesa más que la curiosidad, por ahora.',
+  'Hay algo más cerca que sí puedo mirar.',
 ];
 
-export const STILLNESS_LINE = 'Be still for a moment.';
+export const STILLNESS_LINE = 'Quédate quieta un momento.';

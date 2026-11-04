@@ -1,37 +1,40 @@
-/** Interface copy (not story). */
+/** Interface copy (not story). Speaks to the player in second person; Isi's own voice lives in story.ts. */
 export const COPY = {
-  title: 'Lumen Vale',
+  title: 'De Espacio-Tiempo',
+  act: 'Acto I — Astronauta',
   intro: {
-    fresh: 'You wake beside a small fire. You don’t remember lighting it.',
-    resumed: 'You doze off by the fire. Some of it comes back when you wake.',
-    complete: 'You remember everything now. The others land at dawn.',
+    fresh: 'Despiertas junto a un fuego pequeño. Lo encendiste tú, y lo recuerdas todo.',
+    resumed: 'Te quedas dormida junto al fuego. Al despertar, te atreves a mirar un poco más.',
+    complete: 'Ya lo miraste todo de frente. El fuego sigue encendido.',
     how: (coarse: boolean) =>
-      (coarse ? 'Drag on the left to walk and on the right to look.' : 'Walk with WASD, drag to look around.') +
-      ' To remember something, stand still and hold your gaze on it.',
-    start: 'Wake up',
+      (coarse
+        ? 'Arrastra a la izquierda para caminar y a la derecha para mirar.'
+        : 'Camina con WASD, arrastra para mirar alrededor.') +
+      ' Para mirar algo de frente, quédate quieta y sostén la mirada en eso.',
+    start: 'Despertar',
   },
   hud: {
-    countNone: 'Nothing remembered yet',
-    count: (n: number, total: number) => `${n} of ${total} remembered`,
-    journal: 'Journal',
-    sound: 'Sound',
-    pixels: 'Pixels',
+    countNone: 'Nada mirado de frente todavía',
+    count: (n: number, total: number) => `${n} de ${total} mirados de frente`,
+    journal: 'Diario',
+    sound: 'Sonido',
+    pixels: 'Píxeles',
   },
   card: {
-    next: (coarse: boolean) => (coarse ? 'Tap to continue' : 'Click or press E to continue'),
-    label: 'Continue',
+    next: (coarse: boolean) => (coarse ? 'Toca para continuar' : 'Clic o E para continuar'),
+    label: 'Continuar',
   },
   journal: {
-    title: 'What I remember',
-    unknown: 'Something I haven’t remembered yet.',
-    back: 'Back to the valley',
-    restart: 'Forget everything and begin again',
+    title: 'Lo que ya puedo mirar',
+    unknown: 'Algo que todavía no me atrevo a mirar.',
+    back: 'Volver al valle',
+    restart: 'Borrar todo y empezar de nuevo',
   },
   ending: {
-    title: 'You remembered',
-    body: 'Mara Ilves kept the fire going until the sky turned gold. The Long Morning landed in the valley just after sunrise, and Nell named the first garden after the fire.',
-    wander: 'Keep wandering',
-    restart: 'Begin again',
+    title: 'Por ahora',
+    body: 'Isi se queda quieta junto al fuego. Ya mira de frente el medio segundo que la trajo al suelo, y eso no arregla nada. Nadie puede ser astronauta con los pies en la Tierra. El cielo sigue ahí arriba. La pregunta también.',
+    wander: 'Seguir caminando',
+    restart: 'Empezar de nuevo',
   },
-  canvasLabel: 'A quiet alien valley at night, lit by a campfire',
+  canvasLabel: 'Un valle alienígena en calma, de noche, iluminado por una hoguera',
 } as const;

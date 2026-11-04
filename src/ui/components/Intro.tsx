@@ -10,6 +10,7 @@ export function Intro() {
     <div id="intro" className={gone ? 'veil gone' : 'veil'}>
       <div className="card">
         <h1>{COPY.title}</h1>
+        <p className="act">{COPY.act}</p>
         <p className="lede">{lede}</p>
         <p className="how">{COPY.intro.how(isCoarsePointer)}</p>
         <button className="primary" onClick={wake}>
