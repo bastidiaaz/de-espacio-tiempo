@@ -53,7 +53,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 ### Fase 0 — Desbloquear (antes de producir)
 
-**ENG-01 · ADR multi-acto** · M · P0 · ✅ hecho (2026-11-04): ADR aprobado; falta implementarlo
+**ENG-01 · ADR multi-acto** · M · P0 · ✅ hecho (2026-11-04): ADR aprobado e implementado (menú, selección de actos, opciones, Acto I como módulo)
 - **Inputs:**
   - Respuestas de la auditoría (tracklist con desbloqueo en orden, mecánicas libres por acto, cambio visual fuerte).
   - `Game.ts`, `src/content/`, `progress.ts`.

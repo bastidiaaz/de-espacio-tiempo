@@ -18,7 +18,7 @@
 - **Roadmap:** `docs/roadmap.md` (tareas con inputs/outputs, decisiones abiertas y lo que no se toca). Los textos in-game los escribe el autor; Claude orienta y revisa. Para auditar y rehacer el roadmap: skill `running-roadmap-audits` (`.claude/skills/running-roadmap-audits/SKILL.md`).
 - **Regla práctica:** si un texto de `src/content/` contradice un brief, **manda el brief** — el código se corrige, no el canon.
 - **Pendientes conocidos:**
-  - **Arquitectura multi-acto decidida, sin implementar:** `docs/adr/0001-multi-acto.md`. Una carcasa común (menú, tracklist, opciones) monta y desmonta cada acto como módulo independiente; el Acto I conserva sus claves (`lvr-mem-<seed>`, `lvr-seed`) sin migración. Al implementarlo, actualizar la regla "Único puente" de Arquitectura, como indica el ADR.
+  - **Arquitectura multi-acto implementada:** `docs/adr/0001-multi-acto.md`. El juego abre en un menú (carcasa) → "Seleccionar acto" → el acto elegido; Escape o el botón Opciones pausan el acto y permiten volver al menú. Para agregar un acto: un módulo que cumpla `ActModule` (`src/acts/types.ts`) + `available: true` y `load` en `src/acts/registry.ts`. Los textos de la carcasa (`src/content/shellCopy.ts`) son provisionales hasta UI-02.
 
 ## Comandos
 
@@ -28,10 +28,12 @@
 ## Arquitectura (reglas)
 
 1. **Separación motor / UI.** `src/game/**` es TypeScript + Three.js imperativo y no importa React. `src/ui/**` es React y no importa `three`.
-2. **Único puente:** `src/state/gameStore.ts`.
+2. **Puentes motor ↔ UI:** un store por capa, todos con el mismo patrón. La carcasa usa `src/state/shellStore.ts` (`useShell(selector)`); el Acto I usa `src/state/gameStore.ts`. Cada acto nuevo trae su propio store.
    - Motor → UI: `store.setState(...)` con valores serializables. Solo publicar cuando el valor cambia (el loop corre a 60 fps).
    - UI → motor: métodos de `GameActions`, expuestos con `useGameActions()`.
    - En componentes: `useGameState(selector)`. El selector debe devolver primitivos o referencias estables (zustand v5 entra en bucle con objetos nuevos).
+   - La carcasa solo llega al código de un acto a través de `src/acts/registry.ts` (`import()` dinámico: cada acto es su propio chunk y el menú no carga `three`). `src/App.tsx`, `src/ActHost.tsx` y `src/acts/**` son la única capa que junta motor y UI.
+   - Cada motor de acto implementa `ActEngine` (`src/game/engine.ts`): `setPaused`, `setSound`, `setRetro` y `dispose`. `dispose()` corre cada vez que se vuelve al menú: no puede dejar loops, listeners, recursos GPU, `AudioContext` ni canvas.
 3. **`Game.ts` orquesta, no implementa.** La lógica vive en `world/`, `story/` y `systems/`. Cada sistema recibe sus dependencias por constructor (sin singletons globales). Los sistemas sin Three.js (`progress`, `narrative`) deben seguir siendo testeables en Node.
 4. **Contenido como datos.** La historia y los textos están en `src/content/`. Para añadir una memoria: agrega una entrada a `MEMORIES`, crea su objeto en `story/storyWorld.ts` y regístralo en `objects`.
 5. El orden del loop en `Game.frame` importa (cámara → atención → narrativa). No lo reordenes sin motivo.
@@ -39,7 +41,7 @@
 ## Invariantes (no romper)
 
 - **Determinismo del mundo.** Una misma semilla debe generar el mismo mundo. No cambies `mulberry32`, `makeNoise`, `TerrainField`, ni **el orden de las llamadas a `rng()`** en `chunks.ts` / `storyWorld.ts` / `sky.ts`. `src/game/world/terrain.test.ts` compara contra valores generados por la versión original. Si un cambio intencional lo rompe, regenera el fixture y documenta que las semillas antiguas cambian.
-- **Claves de localStorage** (`lvr-seed`, `lvr-retro`, `lvr-sound`, `lvr-mem-<seed>`): cambiarlas borra el progreso de los jugadores.
+- **Claves de localStorage** (`lvr-seed`, `lvr-retro`, `lvr-sound`, `lvr-mem-<seed>`, `lvr-acts-done`): cambiarlas borra el progreso de los jugadores. Las claves de actos nuevos usan el prefijo `lvr-a<N>-`; `src/game/config.test.ts` fija las existentes.
 - **Three.js fijado en 0.160.0** (sin `^`). Subir de versión puede alterar luces, colorimetría o el shader del cielo (`#include <colorspace_fragment>`). Hazlo en un PR aparte, con comparación visual.
 - **Móvil primero:** sin sombras en tiempo real, instancing por chunk, radio de chunks 2 en pantallas táctiles, render retro a 460 px de alto.
 - `reference/lumen-vale-remember.html` es la versión original. Solo referencia; no la edites.
@@ -52,5 +54,4 @@
 ## Ideas de evolución (no hechas)
 
 - Migrar escena a React Three Fiber de forma incremental (empezar por `Sky`/`Water`, que no tienen estado de juego).
-- Code-splitting del motor detrás de la intro.
 - Tests E2E con Playwright (WebGL vía SwiftShader).

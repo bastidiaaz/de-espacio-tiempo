@@ -1,6 +1,6 @@
 # ADR 0001 — Arquitectura multi-acto
 
-- **Estado:** aceptada (aprobada por el autor el 2026-11-04; pendiente de implementar)
+- **Estado:** aceptada e implementada (2026-11-04). Plan: `docs/superpowers/plans/2026-11-04-multi-acto.md`
 - **Fecha:** 2026-11-04
 - **Roadmap:** ENG-01 · resuelve la decisión abierta D1 · desbloquea ENG-12, DIS-04 y el Release 2
 
