@@ -94,6 +94,20 @@ export function createGlowTexture(): THREE.CanvasTexture {
   return t;
 }
 
+/** Frees the GPU resources under `root`: geometries, materials and their textures. Safe on shared materials. */
+export function disposeObject(root: THREE.Object3D): void {
+  root.traverse((o) => {
+    if (o instanceof THREE.Mesh || o instanceof THREE.Points || o instanceof THREE.Sprite || o instanceof THREE.Line) {
+      o.geometry.dispose();
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach((m: THREE.Material) => {
+        for (const v of Object.values(m)) if (v instanceof THREE.Texture) v.dispose();
+        m.dispose();
+      });
+    }
+  });
+}
+
 export const pick = <T>(rng: Rng, arr: readonly T[]): T => arr[(rng() * arr.length) | 0];
 
 export const tint = (rng: Rng, c: THREE.Color): THREE.Color =>

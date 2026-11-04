@@ -42,7 +42,7 @@
 | ~~D2~~ | ~~Formato del archivo de textos~~ — **resuelta: un `.json` por acto**, validado por test (`src/content/acto1.json`, guía en `docs/editar-textos.md`) | Claude propone → autor | — |
 | D3 | Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami) | Autor | ENG-05 |
 | D4 | GitHub Pages o Vercel | Autor (recomendado: GitHub Pages, sin cuentas extra) | ENG-04 |
-| D5 | Conexión del MCP polyfork y licencias de sus assets | Autor conecta → Claude verifica | ENG-10, ART-05, ART-07 |
+| ~~D5~~ | ~~Conexión del MCP polyfork y licencias de sus assets~~ — **resuelta (2026-11-04):** conectado (plan gratis); los modelos low-poly se pueden incluir en el juego sin atribución; las ediciones HD no. Ver `docs/assets.md` | Autor conecta → Claude verifica | — |
 | D6 | Al cierre, ¿canción completa o un fragmento? ¿Se repite en el paseo libre? | Autor | AUD-01, DIS-07 |
 | D7 | Tipografía manuscrita (licencia OFL, o letras dibujadas por el autor) | Autor | ART-01 |
 
@@ -81,7 +81,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - ver el radio.
 - **Hecho cuando:** se puede probar un texto o la secuencia final en menos de 30 s, y sin el hash nada del modo debug es visible.
 
-**ENG-10 · Pipeline de assets vía polyfork** · M · P0 · depende de D5
+**ENG-10 · Pipeline de assets vía polyfork** · M · P0 · ✅ hecho (2026-11-04): flujo en `docs/assets.md`; `loadModel` (`src/game/three/gltf.ts`) re-viste el modelo con el Lambert flat del juego; manifiesto y presupuesto en `src/game/assets/models.ts`, verificados por `models.test.ts`; `CREDITS.md`; roca de prueba visible solo en `#debug`
 - **Inputs:** el MCP polyfork conectado; el presupuesto móvil (sin sombras, instancing).
 - **Output:**
   - un flujo documentado: buscar → licencia → descargar glTF → optimizar → `public/models/`;
@@ -276,7 +276,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 - [ ] Letra completa de "Astronauta" (para DIS-01 y DIS-03).
 - [ ] Partitura de la voz principal de "Astronauta" (para AUD-01).
-- [ ] Conectar el MCP polyfork en Claude Code (D5).
+- [x] Conectar el MCP polyfork en Claude Code (D5).
 - [ ] Decisiones D2, D3, D4, D6 y D7.
 - [ ] Reescritura de textos (DIS-02).
 - [ ] Letra y partitura de "Despacio", y portada (para la Fase 2).

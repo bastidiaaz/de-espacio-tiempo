@@ -28,7 +28,9 @@ import { resolveSeed } from './world/seed';
 import { Sky } from './world/sky';
 import { TerrainField } from './world/terrain';
 import { Water } from './world/water';
-import { createGlowTexture } from './three/helpers';
+import { modelUrl } from './assets/models';
+import { loadModel } from './three/gltf';
+import { createGlowTexture, disposeObject } from './three/helpers';
 
 const TOTAL = MEMORIES.length;
 /** Night sky "brightens" up to this much before the ending's dawn. */
@@ -95,6 +97,7 @@ export class Game implements GameActions, ActEngine {
   private sound: boolean;
   private paused = false;
   private raf = 0;
+  private disposed = false;
   private readonly timers = new Set<number>();
 
   constructor(container: HTMLElement, store: GameStore, options: GameOptions) {
@@ -186,6 +189,7 @@ export class Game implements GameActions, ActEngine {
     if (this.debug) {
       this.debugRing = new DebugRing(this.field);
       this.scene.add(this.debugRing.line);
+      void this.placeTestModel();
     }
 
     // --- systems ---
@@ -325,6 +329,7 @@ export class Game implements GameActions, ActEngine {
   };
 
   dispose(): void {
+    this.disposed = true;
     cancelAnimationFrame(this.raf);
     for (const t of this.timers) clearTimeout(t);
     removeEventListener('resize', this.resize);
@@ -332,16 +337,35 @@ export class Game implements GameActions, ActEngine {
     this.input.dispose();
     this.audio.dispose();
     this.chunks.dispose();
-    this.scene.traverse((o) => {
-      if (o instanceof THREE.Mesh || o instanceof THREE.Points || o instanceof THREE.Sprite || o instanceof THREE.Line) {
-        o.geometry.dispose();
-        const mats = Array.isArray(o.material) ? o.material : [o.material];
-        mats.forEach((m: THREE.Material) => m.dispose());
-      }
-    });
+    disposeObject(this.scene);
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     this.canvas.remove();
+  }
+
+  /**
+   * ENG-10 test asset: a polyfork rock a few steps ahead of the bedroll, in `#debug` only, to check
+   * that loaded models match the flat-shaded look. Fixed position, no `rng()`.
+   */
+  private async placeTestModel(): Promise<void> {
+    let rock: THREE.Group;
+    try {
+      rock = await loadModel(modelUrl('testRock'));
+    } catch (e) {
+      console.warn('[debug] test model failed to load', e);
+      return;
+    }
+    if (this.disposed) {
+      disposeObject(rock);
+      return;
+    }
+    // Off to one side of the bedroll → fire line (the fire is at the origin), so it's in frame on waking.
+    const { x: bx, z: bz } = this.story.bedroll;
+    const a = Math.atan2(-bz, -bx) + 0.5;
+    const x = bx + Math.cos(a) * 3;
+    const z = bz + Math.sin(a) * 3;
+    rock.position.set(x, this.field.groundAt(x, z), z);
+    this.scene.add(rock);
   }
 
   // ---------------------------------------------------------------- loop
