@@ -41,7 +41,7 @@
 | ~~D1~~ | ~~Arquitectura multi-acto y progreso guardado~~ — **resuelta:** `docs/adr/0001-multi-acto.md` | Claude (ADR) → aprobado por el autor | — |
 | ~~D2~~ | ~~Formato del archivo de textos~~ — **resuelta: un `.json` por acto**, validado por test (`src/content/acto1.json`, guía en `docs/editar-textos.md`) | Claude propone → autor | — |
 | D3 | Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami) | Autor | ENG-05 |
-| D4 | GitHub Pages o Vercel | Autor (recomendado: GitHub Pages, sin cuentas extra) | ENG-04 |
+| ~~D4~~ | ~~GitHub Pages o Vercel~~ — **resuelta (2026-11-04): GitHub Pages**, publicado desde el workflow de CI | Autor | — |
 | ~~D5~~ | ~~Conexión del MCP polyfork y licencias de sus assets~~ — **resuelta (2026-11-04):** conectado (plan gratis); los modelos low-poly se pueden incluir en el juego sin atribución; las ediciones HD no. Ver `docs/assets.md` | Autor conecta → Claude verifica | — |
 | D6 | Al cierre, ¿canción completa o un fragmento? ¿Se repite en el paseo libre? | Autor | AUD-01, DIS-07 |
 | D7 | Tipografía manuscrita (licencia OFL, o letras dibujadas por el autor) | Autor | ART-01 |
@@ -90,7 +90,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - un presupuesto de polígonos por objeto.
 - **Hecho cuando:** un asset de prueba se ve en escena con flat shading coherente, sin alterar el orden de `rng()` (el test de terreno pasa).
 
-**ENG-04 · Deploy** · S · P0 · depende de D4
+**ENG-04 · Deploy** · S · P0 · ✅ workflow listo (2026-11-04): job `deploy` en `.github/workflows/ci.yml`, publica el mismo `dist/` que pasó los checks; repo público y Pages activado con Source: GitHub Actions. URL: https://bastidiaaz.github.io/de-espacio-tiempo/
 - **Inputs:** `vite.config.ts` (ya tiene `base './'`), `.github/workflows/ci.yml`.
 - **Output:** un deploy automático desde `main` y una URL pública.
 - **Hecho cuando:** cada push a `main` con CI en verde publica el juego.
@@ -277,7 +277,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - [ ] Letra completa de "Astronauta" (para DIS-01 y DIS-03).
 - [ ] Partitura de la voz principal de "Astronauta" (para AUD-01).
 - [x] Conectar el MCP polyfork en Claude Code (D5).
-- [ ] Decisiones D2, D3, D4, D6 y D7.
+- [ ] Decisiones D3, D6 y D7.
 - [ ] Reescritura de textos (DIS-02).
 - [ ] Letra y partitura de "Despacio", y portada (para la Fase 2).
 
