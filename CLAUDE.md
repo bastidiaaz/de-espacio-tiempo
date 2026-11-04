@@ -23,6 +23,7 @@
 ## Comandos
 
 - `npm run dev` · `npm test` · `npm run lint` · `npm run typecheck` · `npm run build`
+- **Modo debug (ENG-03):** abre el Acto I con `#debug` en la URL (`#w123&debug` fija además la semilla). Panel para saltar a un capítulo o quedar frente a un ítem, "marcar todo" para ver el final, y un anillo en el suelo con el borde caminable. En debug no se guarda progreso ni se marca el acto como completado. Lógica pura en `src/game/debug.ts`.
 - Antes de dar algo por terminado: `npm run lint && npm run typecheck && npm test && npm run build` (es lo que corre CI).
 
 ## Arquitectura (reglas)

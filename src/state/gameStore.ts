@@ -32,6 +32,12 @@ export interface GameUiState {
   focus: number;
   endingVisible: boolean;
   stick: StickState;
+  /** `#debug` in the URL (ENG-03). Everything below is only published while it is on. */
+  debug: boolean;
+  debugChapter: number;
+  /** Walkable radius around camp right now, and where it is heading (metres, rounded). */
+  debugRadius: number;
+  debugRadiusTarget: number;
 }
 
 export type GameStore = StoreApi<GameUiState>;
@@ -50,6 +56,10 @@ export const createGameStore = (): GameStore =>
     focus: 0,
     endingVisible: false,
     stick: { active: false, x: 0, y: 0, dx: 0, dy: 0 },
+    debug: false,
+    debugChapter: 0,
+    debugRadius: 0,
+    debugRadiusTarget: 0,
   }));
 
 /** Commands the UI can send to the engine. */
@@ -58,4 +68,10 @@ export interface GameActions {
   advanceCard(): void;
   keepWandering(): void;
   restart(): void;
+  /** Debug only: earlier chapters remembered, this one active, nothing saved. */
+  debugJumpToChapter(chapter: number): void;
+  /** Debug only: jump to the item's chapter and stand in front of it; the gaze is up to the player. */
+  debugJumpToItem(id: string): void;
+  /** Debug only: remember everything that is left, playing the closing sequence. */
+  debugCompleteAll(): void;
 }

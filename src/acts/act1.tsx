@@ -18,6 +18,9 @@ export const act1: ActModule = {
       advanceCard: game.advanceCard,
       keepWandering: game.keepWandering,
       restart: game.restart,
+      debugJumpToChapter: game.debugJumpToChapter,
+      debugJumpToItem: game.debugJumpToItem,
+      debugCompleteAll: game.debugCompleteAll,
     };
     return {
       engine: game,

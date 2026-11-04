@@ -39,6 +39,15 @@ export class Progress {
     this.remembered.add(id);
   }
 
+  /** Debug: remember exactly the chapters before `chapter` and make it the active one. */
+  jumpToChapter(chapter: number): void {
+    const c = Math.max(0, Math.min(this.chapterCount - 1, chapter));
+    this.remembered.clear();
+    for (const it of this.items) if (it.chapter < c) this.remembered.add(it.id);
+    this.chapter = c;
+    this.freeRoam = false;
+  }
+
   serialize(): string {
     return JSON.stringify([...this.remembered]);
   }

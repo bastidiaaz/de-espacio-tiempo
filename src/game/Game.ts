@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { COPY } from '../content/copy';
 import { CHAPTERS, EDGE_LINES, MEMORIES, WAKE_LINES } from '../content/story';
 import type { GameActions, GameStore, Phase } from '../state/gameStore';
-import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, viewRadiusFor } from './config';
+import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, WATER, viewRadiusFor } from './config';
+import { facing, parseHash, standInFront } from './debug';
 import type { ActEngine, ActSettings } from './engine';
 import { makeNoise } from './math/noise';
 import { createHash2 } from './math/random';
@@ -18,6 +19,7 @@ import { Player } from './systems/player';
 import { Progress } from './systems/progress';
 import { Atmosphere } from './world/atmosphere';
 import { ChunkManager } from './world/chunks';
+import { DebugRing } from './world/debugRing';
 import { pushOut } from './world/collision';
 import { TerrainPalette } from './world/palette';
 import { Bursts, Embers, Motes } from './world/particles';
@@ -34,6 +36,8 @@ const TOTAL = MEMORIES.length;
 const PRE_DAWN = 0.12;
 /** Pixel height the retro mode renders at before upscaling. */
 const RETRO_HEIGHT = 460;
+/** The player stops this far (m) inside the remembered radius. */
+const EDGE_MARGIN = 1.5;
 const CHIME_ROOTS = [440, 554.37, 659.25, 880];
 
 /** What the shell gives Act I's engine (see docs/adr/0001-multi-acto.md). */
@@ -77,6 +81,9 @@ export class Game implements GameActions, ActEngine {
   private readonly input: Input;
   private readonly audio: AudioEngine;
   private readonly yawToFire: number;
+  /** `#debug` (ENG-03): debug panel on, nothing saved. */
+  private readonly debug: boolean;
+  private readonly debugRing: DebugRing | null = null;
 
   private phase: Phase = 'intro';
   private time = 0;
@@ -99,6 +106,7 @@ export class Game implements GameActions, ActEngine {
     this.memoryKey = STORAGE_KEYS.memory(seed);
     const noise = makeNoise(seed);
     this.field = new TerrainField(noise, seed);
+    this.debug = parseHash(location.hash).debug;
     addEventListener('hashchange', this.onHashChange);
 
     // --- renderer ---
@@ -175,6 +183,10 @@ export class Game implements GameActions, ActEngine {
       p.freeRoam ? FREE_ROAM_RADIUS : CHAPTERS[p.chapter].radius,
     );
     this.chunks.update(this.player.position.x, this.player.position.z, true);
+    if (this.debug) {
+      this.debugRing = new DebugRing(this.field);
+      this.scene.add(this.debugRing.line);
+    }
 
     // --- systems ---
     this.narrative = new Narrative(
@@ -223,6 +235,7 @@ export class Game implements GameActions, ActEngine {
       total: TOTAL,
       remembered: [...p.remembered],
       introLede: p.freeRoam ? COPY.intro.complete : p.count ? COPY.intro.resumed : COPY.intro.fresh,
+      debug: this.debug,
     });
 
     if (p.isFinished) options.onComplete();
@@ -268,8 +281,47 @@ export class Game implements GameActions, ActEngine {
   };
 
   restart = (): void => {
-    storage.remove(this.memoryKey);
+    if (!this.debug) storage.remove(this.memoryKey);
     this.options.onRestart();
+  };
+
+  // ---------------------------------------------------------------- debug (`#debug`, ENG-03)
+
+  /** Back at camp, facing the fire, as on waking. */
+  debugJumpToChapter = (chapter: number): void => {
+    if (!this.debug) return;
+    this.debugJump(chapter);
+    this.moveTo(this.story.bedroll.x, this.story.bedroll.z);
+    this.player.yaw = this.yawToFire;
+    this.player.pitch = 0.02;
+  };
+
+  debugJumpToItem = (id: string): void => {
+    const it = this.items.items.find((x) => x.id === id);
+    if (!it || !this.debug) return;
+    this.debugJump(it.chapter);
+    const { player } = this;
+    if (it.id === 'star') {
+      this.moveTo(this.story.bedroll.x, this.story.bedroll.z);
+      // The star sprite lives in the sky group, which is centred on the camera: its position is a direction.
+      const f = facing({ x: 0, y: 0, z: 0 }, this.sky.shipStar.position);
+      player.yaw = f.yaw;
+      player.pitch = f.pitch;
+      return;
+    }
+    const target = this.items.targetOf(it).clone();
+    const spot = standInFront(target, Math.min(9, Math.max(2.5, it.attention.range * 0.45)));
+    this.moveTo(spot.x, spot.z);
+    const eye = { x: player.position.x, y: player.position.y + player.eye, z: player.position.z };
+    const f = facing(eye, target);
+    player.yaw = f.yaw;
+    player.pitch = f.pitch;
+  };
+
+  debugCompleteAll = (): void => {
+    if (!this.debug) return;
+    this.debugJump(CHAPTERS.length - 1);
+    for (const it of this.items.items) if (!this.progress.remembered.has(it.id)) this.remember(it);
   };
 
   dispose(): void {
@@ -281,7 +333,7 @@ export class Game implements GameActions, ActEngine {
     this.audio.dispose();
     this.chunks.dispose();
     this.scene.traverse((o) => {
-      if (o instanceof THREE.Mesh || o instanceof THREE.Points || o instanceof THREE.Sprite) {
+      if (o instanceof THREE.Mesh || o instanceof THREE.Points || o instanceof THREE.Sprite || o instanceof THREE.Line) {
         o.geometry.dispose();
         const mats = Array.isArray(o.material) ? o.material : [o.material];
         mats.forEach((m: THREE.Material) => m.dispose());
@@ -328,6 +380,7 @@ export class Game implements GameActions, ActEngine {
     narrative.tickWhisper(dt);
 
     this.atmosphere.update(dt, this.time, progress.chapter);
+    if (this.debugRing) this.updateDebug();
     player.applyToCamera(this.camera, prefersReducedMotion);
     this.attention.update(dt, this.phase === 'play', player.moveAmount);
     narrative.update(dt);
@@ -369,7 +422,7 @@ export class Game implements GameActions, ActEngine {
   private resolvePlayer = (P: THREE.Vector3): void => {
     pushOut(P, this.story.colliders);
     pushOut(P, this.chunks.collidersNear(P.x, P.z));
-    const lim = this.atmosphere.radiusCur - 1.5;
+    const lim = this.atmosphere.radiusCur - EDGE_MARGIN;
     const dc = Math.hypot(P.x, P.z);
     if (!this.progress.freeRoam && dc > lim) {
       P.x *= lim / dc;
@@ -386,7 +439,7 @@ export class Game implements GameActions, ActEngine {
   private remember(it: Item): void {
     const { progress, narrative, atmosphere, audio } = this;
     progress.remember(it.id);
-    storage.set(this.memoryKey, progress.serialize());
+    if (!this.debug) storage.set(this.memoryKey, progress.serialize());
     this.store.setState({ remembered: [...progress.remembered] });
     this.lastProgress = this.time;
 
@@ -403,13 +456,64 @@ export class Game implements GameActions, ActEngine {
       audio.swell();
       if (progress.isFinished) {
         atmosphere.kTarget = PRE_DAWN;
-        this.options.onComplete();
+        if (!this.debug) this.options.onComplete();
         narrative.afterCards = () => this.later(() => this.store.setState({ endingVisible: true }), 3500);
         return;
       }
       atmosphere.radiusTarget = CHAPTERS[progress.chapter].radius;
     }
     atmosphere.kTarget = (progress.count / TOTAL) * PRE_DAWN;
+  }
+
+  // ---------------------------------------------------------------- debug helpers
+
+  /** Earlier chapters remembered, this one active, the world snapped to match. Never saved. */
+  private debugJump(chapter: number): void {
+    if (!this.debug) return;
+    const { progress, atmosphere, player } = this;
+    for (const t of this.timers) clearTimeout(t);
+    this.timers.clear();
+    progress.jumpToChapter(chapter);
+    this.narrative.clear();
+    this.store.setState({ remembered: [...progress.remembered], endingVisible: false });
+    if (this.phase === 'intro') this.audio.start();
+    if (this.phase !== 'play') {
+      player.eye = 1.6;
+      player.pitch = 0.02;
+      this.setPhase('play');
+    }
+    atmosphere.kTarget = (progress.count / TOTAL) * PRE_DAWN;
+    atmosphere.radiusTarget = CHAPTERS[progress.chapter].radius;
+    atmosphere.snap(progress.chapter);
+    this.lastProgress = this.time;
+  }
+
+  /** Teleport on the ground, out of any obstacle. */
+  private moveTo(x: number, z: number): void {
+    const P = this.player.position;
+    this.chunks.update(x, z, true);
+    P.set(x, 0, z);
+    pushOut(P, this.story.colliders);
+    pushOut(P, this.chunks.collidersNear(P.x, P.z));
+    P.y = Math.max(this.field.groundAt(P.x, P.z), WATER - 0.6);
+  }
+
+  /** The edge line, plus chapter and radius for the panel (only when they change). */
+  private updateDebug(): void {
+    const { atmosphere, progress } = this;
+    this.debugRing?.update(atmosphere.radiusCur - EDGE_MARGIN, !progress.freeRoam);
+    const next = {
+      debugChapter: progress.chapter,
+      debugRadius: Math.round(atmosphere.radiusCur),
+      debugRadiusTarget: Math.round(atmosphere.radiusTarget),
+    };
+    const s = this.store.getState();
+    if (
+      s.debugChapter !== next.debugChapter ||
+      s.debugRadius !== next.debugRadius ||
+      s.debugRadiusTarget !== next.debugRadiusTarget
+    )
+      this.store.setState(next);
   }
 
   // ---------------------------------------------------------------- helpers

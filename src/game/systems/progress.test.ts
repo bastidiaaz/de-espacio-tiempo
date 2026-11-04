@@ -28,6 +28,23 @@ describe('Progress', () => {
     expect(p.freeRoam).toBe(true);
   });
 
+  it('jumps to a chapter with exactly the earlier chapters remembered', () => {
+    const p = new Progress(MEMORIES, CHAPTERS.length, ['fire', 'patch', 'ship']);
+    p.jumpToChapter(2);
+    expect(p.chapter).toBe(2);
+    expect(p.freeRoam).toBe(false);
+    expect([...p.remembered].sort()).toEqual(
+      MEMORIES.filter((m) => m.chapter < 2)
+        .map((m) => m.id)
+        .sort(),
+    );
+    p.jumpToChapter(0);
+    expect(p.count).toBe(0);
+    p.jumpToChapter(99);
+    expect(p.chapter).toBe(CHAPTERS.length - 1);
+    expect(p.isFinished).toBe(false);
+  });
+
   it('round-trips through storage and tolerates garbage', () => {
     const p = new Progress(MEMORIES, CHAPTERS.length, ['fire']);
     expect(Progress.parse(p.serialize())).toEqual(['fire']);

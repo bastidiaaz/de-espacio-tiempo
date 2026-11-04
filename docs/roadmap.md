@@ -73,7 +73,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - un test que falla si falta o sobra un id.
 - **Hecho cuando:** el autor puede cambiar cualquier texto sin tocar TypeScript, y lint, typecheck, test y build pasan.
 
-**ENG-03 · Modo debug** · S · P0
+**ENG-03 · Modo debug** · S · P0 · ✅ hecho (2026-11-04): `#debug` (o `#w123&debug`) en el Acto I; saltar a un ítem te deja frente a él y la mirada la haces tú; en debug no se guarda nada
 - **Inputs:** `Game.ts`, `narrative.ts`, `progress.ts`.
 - **Output:** un modo oculto, activado con hash (`#debug`), que permite:
   - saltar a cualquier capítulo o ítem;

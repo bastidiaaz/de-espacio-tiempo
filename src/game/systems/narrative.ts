@@ -48,6 +48,16 @@ export class Narrative {
     else this.next();
   }
 
+  /** Drop every queued card, the pending afterCards and the whisper (debug jumps). */
+  clear(): void {
+    this.queue.length = 0;
+    this.card = null;
+    this.afterCards = null;
+    this.whisperTime = 0;
+    this.view.hideCard();
+    this.view.hideWhisper();
+  }
+
   update(dt: number): void {
     const card = this.card;
     if (!card) return;

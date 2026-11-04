@@ -40,6 +40,25 @@ describe('Narrative', () => {
     expect(n.card?.text).toBe('Second');
   });
 
+  it('clear() drops the queue, the pending afterCards and the whisper', () => {
+    const v = view();
+    const n = new Narrative(v, false);
+    const after = vi.fn();
+    n.say('One');
+    n.say('Two');
+    n.afterCards = after;
+    n.whisper('psst', 3);
+    n.clear();
+    expect(n.card).toBeNull();
+    expect(n.whisperTime).toBe(0);
+    expect(v.hideCard).toHaveBeenCalled();
+    expect(v.hideWhisper).toHaveBeenCalled();
+    for (let i = 0; i < 400; i++) n.update(0.05);
+    expect(after).not.toHaveBeenCalled();
+    n.say('Three');
+    expect(n.card?.text).toBe('Three');
+  });
+
   it('whispers expire', () => {
     const v = view();
     const n = new Narrative(v, false);

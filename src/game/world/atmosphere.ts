@@ -58,6 +58,13 @@ export class Atmosphere {
     this.radiusTarget = this.radiusCur = radius;
   }
 
+  /** Debug jumps: land on the targets now instead of easing towards them. */
+  snap(chapter: number): void {
+    this.kCur = this.kTarget;
+    this.radiusCur = this.radiusTarget;
+    this.d.sky.shipStar.material.opacity = chapter >= 4 ? 1 : 0;
+  }
+
   update(dt: number, time: number, chapter: number): void {
     const { fog, sky, hemi, sun, motesMaterial, field, viewRadius } = this.d;
     this.kCur += (this.kTarget - this.kCur) * (1 - Math.exp(-dt * 0.25));
