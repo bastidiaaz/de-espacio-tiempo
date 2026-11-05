@@ -24,6 +24,26 @@ npm run dev        # http://localhost:5173
 
 Para jugar un mundo concreto: `http://localhost:5173/#w12345`.
 
+## Trabajar con Claude Code
+
+El repo trae su configuración de Claude Code. Al abrirlo por primera vez, Claude Code pide confirmar que confías en la carpeta y luego ofrece instalar lo que falte:
+
+| Qué                                                                     | Dónde se declara        | Para qué                                             |
+| ----------------------------------------------------------------------- | ----------------------- | ---------------------------------------------------- |
+| Skills del proyecto (`generating-act-briefs`, `running-roadmap-audits`) | `.claude/skills/`       | Briefs de acto y auditorías del roadmap              |
+| Plugin **superpowers** (marketplace oficial)                            | `.claude/settings.json` | Lo exige `generating-act-briefs` (brainstorming)     |
+| Plugin **impeccable** (`pbakaus/impeccable`)                            | `.claude/settings.json` | Diseño y revisión de UI                              |
+| MCP **polyfork**                                                        | `.mcp.json`             | Buscar y descargar modelos 3D (ver `docs/assets.md`) |
+
+polyfork necesita una clave personal (cada persona la suya; nunca se commitea). Créala en [polyfork.dev](https://polyfork.dev) y déjala como variable de entorno **antes** de abrir Claude Code:
+
+```bash
+# PowerShell (persistente):  setx POLYFORK_API_KEY "pf_..."
+# bash/zsh:                  export POLYFORK_API_KEY=pf_...
+```
+
+Ajustes personales (permisos, etc.) van en `.claude/settings.local.json`, que está en `.gitignore`.
+
 ## Arquitectura en una imagen
 
 ```

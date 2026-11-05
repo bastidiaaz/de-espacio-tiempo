@@ -5,3 +5,4 @@ coverage
 .DS_Store
 .vite
 reference/
+.claude/settings.local.json

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "polyfork": {
+      "type": "http",
+      "url": "https://polyfork.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer ${POLYFORK_API_KEY}"
+      }
+    }
+  }
+}
