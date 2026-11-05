@@ -24,7 +24,7 @@ const UI_KEYS: Record<string, readonly string[]> = {
   hud: ['nada_mirado', 'contador', 'diario'],
   tarjeta: ['continuar_tactil', 'continuar_teclado', 'etiqueta_boton'],
   diario: ['titulo', 'desconocido', 'volver', 'reiniciar'],
-  final: ['titulo', 'cuerpo', 'seguir_caminando', 'reiniciar'],
+  final: ['titulo', 'cuerpo', 'seguir_caminando', 'reiniciar', 'invitacion', 'escuchar'],
 };
 const VOICE_KEYS = ['al_despertar', 'al_llegar_al_borde', 'quedarse_quieta'] as const;
 const MEMORY_KEYS = ['titulo', 'texto'] as const;

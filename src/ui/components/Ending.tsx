@@ -1,5 +1,6 @@
 import { COPY } from '../../content/copy';
 import { useGameActions, useGameState } from '../GameContext';
+import './Ending.css';
 
 export function Ending() {
   const visible = useGameState((s) => s.endingVisible);
@@ -15,6 +16,12 @@ export function Ending() {
         <button className="quiet" onClick={restart}>
           {COPY.ending.restart}
         </button>
+        <div className="invite">
+          <p>{COPY.ending.invite}</p>
+          <a className="quiet" href={COPY.ending.listenUrl} target="_blank" rel="noopener">
+            {COPY.ending.listen}
+          </a>
+        </div>
       </div>
     </div>
   );

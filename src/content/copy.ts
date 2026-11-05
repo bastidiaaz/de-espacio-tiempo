@@ -6,6 +6,9 @@ import { ACTO1_TEXTS } from './story';
 
 const ui = ACTO1_TEXTS.interfaz;
 
+/** Where the ending invites the player to listen to the song (DIS-07). A link, not prose. */
+const LISTEN_URL = 'https://ffm.to/tiann-astronauta';
+
 export const COPY = {
   title: ui.titulo,
   act: ui.acto,
@@ -38,6 +41,9 @@ export const COPY = {
     body: ui.final.cuerpo,
     wander: ui.final.seguir_caminando,
     restart: ui.final.reiniciar,
+    invite: ui.final.invitacion,
+    listen: ui.final.escuchar,
+    listenUrl: LISTEN_URL,
   },
   canvasLabel: ui.etiqueta_del_lienzo,
 };

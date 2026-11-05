@@ -116,5 +116,9 @@ describe('textos cargados (cableados desde acto1.json)', () => {
     expect(COPY.intro.how(true)).toBe(`${ui.intro.como_jugar_tactil} ${ui.intro.como_jugar_final}`);
     expect(COPY.intro.how(false)).toBe(`${ui.intro.como_jugar_teclado} ${ui.intro.como_jugar_final}`);
     expect(COPY.card.next(false)).toBe(ui.tarjeta.continuar_teclado);
+    expect(COPY.ending.title).toBe('Te sientas junto al fuego');
+    expect(COPY.ending.invite).toBe(ui.final.invitacion);
+    expect(COPY.ending.listen).toBe(ui.final.escuchar);
+    expect(COPY.ending.listenUrl).toBe('https://ffm.to/tiann-astronauta');
   });
 });
