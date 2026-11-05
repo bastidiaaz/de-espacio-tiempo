@@ -10,6 +10,7 @@ import { createHash2 } from './math/random';
 import { easeInOut, lerp, lerpAngle } from './math/util';
 import { isCoarsePointer, prefersReducedMotion, storage } from './platform';
 import { ItemSet, type Item } from './story/items';
+import { migrateSave } from './story/saveMigration';
 import { buildStoryWorld, type StoryWorld } from './story/storyWorld';
 import { Attention } from './systems/attention';
 import { AudioEngine } from './systems/audio';
@@ -155,7 +156,11 @@ export class Game implements GameActions, ActEngine {
     this.story = buildStoryWorld(this.field, kit, glow, seed);
     this.scene.add(this.story.group);
     this.items = new ItemSet(MEMORIES, this.story.objects, this.sky.shipStar, this.story.group, glow);
-    this.progress = new Progress(MEMORIES, CHAPTERS.length, Progress.parse(storage.get(this.memoryKey)));
+    this.progress = new Progress(
+      MEMORIES,
+      CHAPTERS.length,
+      migrateSave(Progress.parse(storage.get(this.memoryKey))),
+    );
 
     // --- player + particles ---
     const { x: bx, z: bz } = this.story.bedroll;

@@ -172,7 +172,19 @@ export function buildStoryWorld(field: TerrainField, kit: PropKit, glow: THREE.T
     campfire,
     bedroll: { x: bx, z: bz },
     colliders,
-    objects: { fire: campfire.group, helmet, thermos, patch, photo, seeds, recorder, beacon, ship },
+    // `campfire` (DIS-07) is the same fire, recalled a second time.
+    objects: {
+      fire: campfire.group,
+      helmet,
+      thermos,
+      patch,
+      photo,
+      seeds,
+      recorder,
+      beacon,
+      ship,
+      campfire: campfire.group,
+    },
     update(time) {
       const blink = Math.sin(time * 4) > 0.6 ? 1 : 0.2;
       shipLampColor.setRGB(blink, blink * 0.35, blink * 0.35);

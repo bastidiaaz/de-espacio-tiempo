@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { validateActo1, acto1Raw } from './acto1Texts';
 import { COPY } from './copy';
-import { CHAPTERS, EDGE_LINES, EXPECTED_IDS, HIDDEN, MEMORIES, STILLNESS_LINE, WAKE_LINES } from './story';
+import {
+  CAMPFIRE_CHAPTER,
+  CHAPTERS,
+  EDGE_LINES,
+  EXPECTED_IDS,
+  HIDDEN,
+  MEMORIES,
+  STILLNESS_LINE,
+  WAKE_LINES,
+} from './story';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const clone = (): any => JSON.parse(JSON.stringify(acto1Raw));
@@ -30,12 +39,18 @@ describe('acto1.json', () => {
   it('avisa de textos vacíos y de claves de interfaz faltantes', () => {
     const d = clone();
     d.memorias.fire.texto = '   ';
-    d.capitulos.capitulo5.al_terminar = [];
+    d.capitulos.capitulo5.al_terminar = ['  '];
     delete d.interfaz.hud.diario;
     const p = validateActo1(d, EXPECTED_IDS);
     expect(p).toContain('"memorias.fire.texto" está vacío.');
-    expect(p.some((m) => m.startsWith('"capitulos.capitulo5.al_terminar"'))).toBe(true);
+    expect(p).toContain('"capitulos.capitulo5.al_terminar[1]" está vacío.');
     expect(p).toContain('Falta "diario" en "interfaz.hud".');
+  });
+
+  it('al_terminar de un capítulo puede quedar vacío', () => {
+    const d = clone();
+    d.capitulos.capitulo5.al_terminar = [];
+    expect(validateActo1(d, EXPECTED_IDS)).toEqual([]);
   });
 
   it('avisa qué oculto falta o sobra', () => {
@@ -60,13 +75,18 @@ describe('textos cargados (cableados desde acto1.json)', () => {
   const raw = acto1Raw;
 
   it('memorias y capítulos', () => {
-    expect(MEMORIES).toHaveLength(10);
+    expect(MEMORIES).toHaveLength(11);
+    expect(MEMORIES.map((m) => m.id).slice(8)).toEqual(['ship', 'campfire', 'star']);
+    expect(MEMORIES.find((m) => m.id === 'campfire')!.chapter).toBe(CAMPFIRE_CHAPTER);
     for (const m of MEMORIES) {
       expect(m.title).toBe(raw.memorias[m.id].titulo);
       expect(m.text).toBe(raw.memorias[m.id].texto);
     }
-    expect(MEMORIES[9].attention.range).toBe(Infinity);
-    expect(CHAPTERS.map((c) => c.radius)).toEqual([14, 48, 90, 150, 150]);
+    expect(MEMORIES[10].attention.range).toBe(Infinity);
+    expect(CHAPTERS.map((c) => c.radius)).toEqual([14, 48, 90, 150, 150, 150]);
+    expect(raw.capitulos.capitulo4.al_terminar.at(-1)).toBe(
+      'Tengo mucho en mi cabeza. Necesito sentarme a reordenar mis ideas...',
+    );
     CHAPTERS.forEach((c, i) => {
       const ch = raw.capitulos[`capitulo${i + 1}` as keyof typeof raw.capitulos];
       expect(c.hint).toBe(ch.pista);

@@ -3,14 +3,23 @@
  * (ahí se editan); aquí solo queda lo que no es prosa: ids, capítulo de cada memoria,
  * geometría de la mirada y radios. El orden de MEMORY_STRUCT es el orden del diario.
  *
- * Isi recuerda todo; lo que no puede es mirarlo de frente. Sostener la mirada es
- * atreverse a admitir una verdad que ya conoce, y el radio que crece es el miedo que
- * cede, no la memoria que vuelve.
+ * Isi despierta sin recordar: sostener la mirada le devuelve un recuerdo, y el radio
+ * que crece es también el miedo que cede (canon revisado, ver el brief del Acto I).
  */
 import { loadActo1 } from './acto1Texts';
 
 export type ItemId =
-  'fire' | 'helmet' | 'thermos' | 'patch' | 'photo' | 'seeds' | 'recorder' | 'beacon' | 'ship' | 'star';
+  | 'fire'
+  | 'helmet'
+  | 'thermos'
+  | 'patch'
+  | 'photo'
+  | 'seeds'
+  | 'recorder'
+  | 'beacon'
+  | 'ship'
+  | 'campfire'
+  | 'star';
 
 export interface MemoryDef {
   id: ItemId;
@@ -49,11 +58,18 @@ const MEMORY_STRUCT: readonly MemoryStruct[] = [
   { id: 'recorder', chapter: 2, attention: { offsetY: 0.3, range: 7, cone: 0.24 } },
   { id: 'beacon', chapter: 2, attention: { offsetY: 1.0, range: 8, cone: 0.26 } },
   { id: 'ship', chapter: 3, attention: { offsetY: 2.0, range: 24, cone: 0.42 } },
-  { id: 'star', chapter: 4, attention: { offsetY: 0, range: Infinity, cone: 0.14 } },
+  // DIS-07: back at the fire she wakes by, a second time. Same object, so same gaze geometry as `fire`.
+  { id: 'campfire', chapter: 4, attention: { offsetY: 0.6, range: 8, cone: 0.26 } },
+  { id: 'star', chapter: 5, attention: { offsetY: 0, range: Infinity, cone: 0.14 } },
 ];
 
+/** Chapter where Isi goes back to the fire and sits down (DIS-07). */
+export const CAMPFIRE_CHAPTER = 4;
+/** Last chapter: she looks for the star, seated by the fire. */
+export const STAR_CHAPTER = 5;
+
 /** Radios de cada capítulo (m). Su id en el JSON es `capitulo<N>` (N desde 1). */
-const CHAPTER_RADII: readonly number[] = [14, 48, 90, 150, 150];
+const CHAPTER_RADII: readonly number[] = [14, 48, 90, 150, 150, 150];
 
 /** Id de un capítulo en `acto1.json`. */
 export const chapterKey = (index: number): string => `capitulo${index + 1}`;

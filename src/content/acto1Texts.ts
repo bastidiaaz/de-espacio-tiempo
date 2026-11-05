@@ -38,8 +38,12 @@ function checkText(v: unknown, path: string, out: string[]): void {
   else if (v.trim() === '') out.push(`"${path}" está vacío.`);
 }
 
-function checkList(v: unknown, path: string, out: string[]): void {
-  if (!Array.isArray(v) || v.length === 0) {
+function checkList(v: unknown, path: string, out: string[], allowEmpty = false): void {
+  if (!Array.isArray(v)) {
+    out.push(`"${path}" debe ser una lista [ ... ]${allowEmpty ? '' : ' con al menos un texto'}.`);
+    return;
+  }
+  if (v.length === 0 && !allowEmpty) {
     out.push(`"${path}" debe ser una lista [ ... ] con al menos un texto.`);
     return;
   }
@@ -110,7 +114,8 @@ export function validateActo1(data: unknown, ids: ExpectedIds): string[] {
       if (c === undefined) continue;
       if (!checkKeys(c, CHAPTER_KEYS, `capitulos.${id}`, out)) continue;
       checkText(c.pista, `capitulos.${id}.pista`, out);
-      checkList(c.al_terminar, `capitulos.${id}.al_terminar`, out);
+      // Un capítulo puede terminar sin pensamientos (DIS-07: la fogata).
+      checkList(c.al_terminar, `capitulos.${id}.al_terminar`, out, true);
     }
   }
   return out;

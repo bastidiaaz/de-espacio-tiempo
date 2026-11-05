@@ -86,6 +86,10 @@
       "titulo": "Mi nave",
       "texto": "Siempre quise volar entre las estrellas. ¿Por qué me duele tanto mirarla ahora?"
     },
+    "campfire": {
+      "titulo": "[PENDIENTE] La fogata",
+      "texto": "[PENDIENTE] Isi recupera convicción para poder mirar al cielo."
+    },
     "star": {
       "titulo": "Una estrella lejana",
       "texto": "Debo llegar a ella. Debo completar la misión. Aunque me asuste..."
@@ -137,10 +141,15 @@
     "capitulo4": {
       "pista": "La nave debe estar por aquí...",
       "al_terminar": [
-        "Ya lo recuerdo... mi objetivo está arriba. Me preparé tanto, y casi llegando a mi destino, dudé. Eso fue suficiente para hacerme caer..."
+        "Ya lo recuerdo... mi objetivo está arriba. Me preparé tanto, y casi llegando a mi destino, dudé. Eso fue suficiente para hacerme caer...",
+        "Tengo mucho en mi cabeza. Necesito sentarme a reordenar mis ideas..."
       ]
     },
     "capitulo5": {
+      "pista": "[PENDIENTE] pista para volver a la fogata",
+      "al_terminar": []
+    },
+    "capitulo6": {
       "pista": "Mi destino está allá arriba...",
       "al_terminar": [
         "La parte más fácil será arreglar la nave.",
