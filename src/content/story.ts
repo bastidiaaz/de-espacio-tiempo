@@ -58,9 +58,23 @@ const CHAPTER_RADII: readonly number[] = [14, 48, 90, 150, 150];
 /** Id de un capítulo en `acto1.json`. */
 export const chapterKey = (index: number): string => `capitulo${index + 1}`;
 
+/**
+ * Objetos ocultos del paseo libre (DIS-04). Isi no los reconoce; no cuentan en el
+ * contador. Su colocación en el mundo es ENG-13; aquí solo están los ids y los textos.
+ */
+export const HIDDEN_IDS = ['guitar', 'insulin', 'campanil', 'earring', 'letter'] as const;
+export type HiddenId = (typeof HIDDEN_IDS)[number];
+
+export interface HiddenDef {
+  id: HiddenId;
+  title: string;
+  text: string;
+}
+
 /** Ids que el código espera encontrar en `acto1.json` (los usa el test de validación). */
 export const EXPECTED_IDS = {
   memorias: MEMORY_STRUCT.map((m) => m.id),
+  ocultos: HIDDEN_IDS,
   capitulos: CHAPTER_RADII.map((_, i) => chapterKey(i)),
 };
 
@@ -71,6 +85,12 @@ export const MEMORIES: readonly MemoryDef[] = MEMORY_STRUCT.map((m) => ({
   ...m,
   title: ACTO1_TEXTS.memorias[m.id as keyof typeof ACTO1_TEXTS.memorias].titulo,
   text: ACTO1_TEXTS.memorias[m.id as keyof typeof ACTO1_TEXTS.memorias].texto,
+}));
+
+export const HIDDEN: readonly HiddenDef[] = HIDDEN_IDS.map((id) => ({
+  id,
+  title: ACTO1_TEXTS.ocultos[id].titulo,
+  text: ACTO1_TEXTS.ocultos[id].texto,
 }));
 
 export const CHAPTERS: readonly ChapterDef[] = CHAPTER_RADII.map((radius, i) => {

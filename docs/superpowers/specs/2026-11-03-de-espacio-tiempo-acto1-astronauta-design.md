@@ -6,6 +6,7 @@
 - **2026-11-05: cambio de canon decidido por el autor**, al reescribir los textos (DIS-02). Cambian las decisiones 2, 4, 5, 7 y 8, el mapeo de objetos y los textos de dirección. Lo que el autor ya escribió está en `src/content/acto1.json`, que ahora es la referencia del copy; este brief fija el canon que esos textos establecen.
 - **2026-11-05: revisión de objetos (DIS-03), aprobada por el autor.** La estructura (5 capítulos, 10 ids, mismas posiciones) no cambia. Cambia la forma de cinco objetos para que correspondan a sus textos: `thermos`, `photo`, `seeds`, `recorder` y `beacon`. Los modelos se construyen en ART-07.
 - **2026-11-05: objetos ocultos (DIS-04).** Cinco guiños a Tiann en el paseo libre (guitarra, lápiz de insulina, foto del campanil, arete de hoja y carta en el mirador); Isi no los reconoce. Ver "Objetos ocultos".
+- **2026-11-05: decisiones del autor para los textos de los ocultos (DIS-12).** Títulos con artículo indefinido, el reverso de la foto del campanil, la voz de la carta y un dato de canon nuevo: Isi vive mucho después de 2025. Ver "Textos: decisiones del autor".
 
 ## Contexto
 
@@ -280,6 +281,25 @@ los propone audio y los aprueba el autor.
 - **Modelos.** Son cinco modelos nuevos con las mismas reglas de ART-07 (low-poly,
   Lambert flat, presupuesto de `models.test.ts`). La foto del campanil puede ser
   una imagen pixelada pequeña, como la `photo` del capítulo 1.
+
+### Textos: decisiones del autor (DIS-12, 2026-11-05)
+
+- **Títulos con artículo indefinido** ("Una guitarra", "Un arete"…), a
+  diferencia de las memorias ("El casco"). Así se marca sin decirlo que el
+  objeto no es de Isi.
+- **Isi identifica qué es cada objeto, aunque no sepa de quién es.** La
+  excepción es el lápiz de insulina: lo describe sin saber qué es.
+- **Campanil:** en el reverso de la foto está escrito "7 de Noviembre de
+  2025, Concepción". El lugar se nombra solo así, como un dato del objeto.
+- **Canon nuevo, por la foto:** Isi vive **mucho después de 2025**. Al leer la
+  fecha dice "Eso fue hace mucho tiempo". No se fija cuánto tiempo pasó ni el
+  año de Isi; los actos siguientes no deben contradecirlo.
+- **Carta:** habla solo la voz de quien la escribió, entre «», y Isi no agrega
+  nada. Cabe en una sola tarjeta y no lleva firma: una inicial acercaría
+  demasiado el nombre de Tiann.
+- **Ninguna tarjeta dice "alguien estuvo aquí".** Los ocultos se encuentran en
+  cualquier orden y la sorpresa la da el objeto ajeno, no una frase.
+- **Textos aprobados (2026-11-05):** viven en `acto1.json`, sección `ocultos`.
 
 ## Notas de implementación
 

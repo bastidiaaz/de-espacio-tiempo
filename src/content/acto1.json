@@ -92,6 +92,29 @@
     }
   },
 
+  "ocultos": {
+    "guitar": {
+      "titulo": "Una guitarra",
+      "texto": "Es una hermosa guitarra marca «Manuel Rodríguez». El tiempo ha hecho lo suyo. La canción sonaba algo así..."
+    },
+    "insulin": {
+      "titulo": "Un lápiz extraño",
+      "texto": "Parece ser medicina o algo así. La etiqueta dice «NovoRapid»."
+    },
+    "campanil": {
+      "titulo": "Una foto de una torre",
+      "texto": "Aparece una torre con un reloj que marca las 12:43, y mucha gente alrededor. En el reverso está escrito «7 de noviembre de 2025, Concepción». Eso fue hace mucho tiempo."
+    },
+    "earring": {
+      "titulo": "Un arete de cobre",
+      "texto": "Tiene la forma de una hojita de otoño. Aunque no parece haber otoños en este planeta..."
+    },
+    "letter": {
+      "titulo": "Una carta abierta",
+      "texto": "«Te regalo este paisaje, que es lo más parecido que he encontrado al cosmos de emociones que habita dentro de mí.»"
+    }
+  },
+
   "capitulos": {
     "capitulo1": {
       "pista": "Debe haber algo junto al fuego que me ayude a recordar...",

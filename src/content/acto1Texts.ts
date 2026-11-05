@@ -8,6 +8,8 @@ import raw from './acto1.json';
 /** Ids que el código espera encontrar en el JSON. Se derivan de la estructura en story.ts. */
 export interface ExpectedIds {
   memorias: readonly string[];
+  /** Objetos ocultos del paseo libre (DIS-04, DIS-12). Mismo formato que las memorias. */
+  ocultos: readonly string[];
   capitulos: readonly string[];
 }
 
@@ -61,7 +63,7 @@ function checkKeys(obj: unknown, expected: readonly string[], path: string, out:
 /** Devuelve la lista de problemas del JSON (vacía si todo está bien). */
 export function validateActo1(data: unknown, ids: ExpectedIds): string[] {
   const out: string[] = [];
-  if (!checkKeys(data, ['interfaz', 'voz_de_isi', 'memorias', 'capitulos'], '', out)) return out;
+  if (!checkKeys(data, ['interfaz', 'voz_de_isi', 'memorias', 'ocultos', 'capitulos'], '', out)) return out;
 
   // Interfaz
   const ui = data.interfaz;
@@ -89,15 +91,16 @@ export function validateActo1(data: unknown, ids: ExpectedIds): string[] {
     checkText(voice.quedarse_quieta, 'voz_de_isi.quedarse_quieta', out);
   }
 
-  // Memorias y capítulos: mismos ids que el código
-  const mems = data.memorias;
-  if (checkKeys(mems, ids.memorias, 'memorias', out)) {
-    for (const id of ids.memorias) {
-      const m = mems[id];
+  // Memorias, ocultos y capítulos: mismos ids que el código
+  for (const section of ['memorias', 'ocultos'] as const) {
+    const items = data[section];
+    if (!checkKeys(items, ids[section], section, out)) continue;
+    for (const id of ids[section]) {
+      const m = items[id];
       if (m === undefined) continue; // ya avisado arriba como "Falta"
-      if (!checkKeys(m, MEMORY_KEYS, `memorias.${id}`, out)) continue;
-      checkText(m.titulo, `memorias.${id}.titulo`, out);
-      checkText(m.texto, `memorias.${id}.texto`, out);
+      if (!checkKeys(m, MEMORY_KEYS, `${section}.${id}`, out)) continue;
+      checkText(m.titulo, `${section}.${id}.titulo`, out);
+      checkText(m.texto, `${section}.${id}.texto`, out);
     }
   }
   const chs = data.capitulos;

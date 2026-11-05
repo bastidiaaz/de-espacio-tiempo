@@ -124,7 +124,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Mecánica de los ocultos:** solo aparecen en el paseo libre, no cuentan en el contador, y al encontrarlos dan texto y sonido, igual que hoy.
 - **Hecho cuando:** hay 5 conceptos aprobados.
 
-**DIS-12 · Textos de los objetos ocultos (autor)** · S · P1 · depende de DIS-04; la carta, de DIS-05
+**DIS-12 · Textos de los objetos ocultos (autor)** · S · P1 · depende de DIS-04; la carta, de DIS-05 · ✅ hecho (2026-11-05): textos del autor en `acto1.json` (sección `ocultos`, validada), decisiones en el brief. La carta se escribió antes de DIS-05; si el mirador cambia lo que se ve, se revisa
 - **Inputs:** la sección "Objetos ocultos" del brief del Acto I. Es un título y un texto para cada uno: guitarra, lápiz de insulina, foto del campanil, arete de hoja y carta.
 - **Reglas del brief:**
   - Isi no reconoce los objetos;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateActo1, acto1Raw } from './acto1Texts';
 import { COPY } from './copy';
-import { CHAPTERS, EDGE_LINES, EXPECTED_IDS, MEMORIES, STILLNESS_LINE, WAKE_LINES } from './story';
+import { CHAPTERS, EDGE_LINES, EXPECTED_IDS, HIDDEN, MEMORIES, STILLNESS_LINE, WAKE_LINES } from './story';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const clone = (): any => JSON.parse(JSON.stringify(acto1Raw));
@@ -38,6 +38,15 @@ describe('acto1.json', () => {
     expect(p).toContain('Falta "diario" en "interfaz.hud".');
   });
 
+  it('avisa qué oculto falta o sobra', () => {
+    const d = clone();
+    delete d.ocultos.guitar;
+    d.ocultos.cohete = { titulo: 'x', texto: 'y' };
+    const p = validateActo1(d, EXPECTED_IDS);
+    expect(p).toContain('Falta "guitar" en "ocultos".');
+    expect(p).toContain('Sobra "cohete" en "ocultos": el juego no sabe dónde usarlo.');
+  });
+
   it('exige conservar {n} y {total} en el contador', () => {
     const d = clone();
     d.interfaz.hud.contador = 'mirados';
@@ -63,6 +72,14 @@ describe('textos cargados (cableados desde acto1.json)', () => {
       expect(c.hint).toBe(ch.pista);
       expect(c.done).toEqual(ch.al_terminar);
     });
+  });
+
+  it('ocultos', () => {
+    expect(HIDDEN.map((h) => h.id)).toEqual(Object.keys(raw.ocultos));
+    for (const h of HIDDEN) {
+      expect(h.title).toBe(raw.ocultos[h.id].titulo);
+      expect(h.text).toBe(raw.ocultos[h.id].texto);
+    }
   });
 
   it('líneas sueltas', () => {
