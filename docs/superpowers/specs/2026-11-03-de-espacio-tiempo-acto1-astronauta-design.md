@@ -4,6 +4,7 @@
 
 - **2026-11-03:** versión original. Premisa de duda sin amnesia, sin vínculos humanos y cierre en quietud junto al fuego.
 - **2026-11-05: cambio de canon decidido por el autor**, al reescribir los textos (DIS-02). Cambian las decisiones 2, 4, 5, 7 y 8, el mapeo de objetos y los textos de dirección. Lo que el autor ya escribió está en `src/content/acto1.json`, que ahora es la referencia del copy; este brief fija el canon que esos textos establecen.
+- **2026-11-05: revisión de objetos (DIS-03), aprobada por el autor.** La estructura (5 capítulos, 10 ids, mismas posiciones) no cambia. Cambia la forma de cinco objetos para que correspondan a sus textos: `thermos`, `photo`, `seeds`, `recorder` y `beacon`. Los modelos se construyen en ART-07.
 
 ## Contexto
 
@@ -133,26 +134,54 @@ ternura lo es todo.
 Se conservan los `id` técnicos (son claves internas y de `localStorage`). El
 copy final vive en `src/content/acto1.json`; aquí va el eje de cada objeto.
 
+### Tabla de objetos (DIS-03, aprobada 2026-11-05)
+
+| Capítulo | id | Qué se ve | Qué recuerdo recupera Isi |
+|---|---|---|---|
+| 0 · despertar | `fire` | igual que hoy | no sabe si hizo el fuego ella misma |
+| 0 | `helmet` | igual que hoy | su nombre, «ISI» |
+| 0 | `thermos` | **set de mate**: termo, mate de madera y bombilla | un olor familiar, de casa |
+| 1 · antes de partir | `patch` | igual que hoy (cohete y planeta) | tenía una misión |
+| 1 | `photo` | **foto donde se distinguen Isi joven, la familia y el gato**, pequeños y pixelados | su familia; empieza a recordar de verdad |
+| 1 | `seeds` | **walkie-talkie** con antena | más de 100 mensajes sin respuesta |
+| 2 · el miedo | `recorder` | **cuaderno negro de tapa dura**, con el cohete y el planeta de la insignia en la tapa | el miedo que escribió durante el vuelo |
+| 2 | `beacon` | **rejilla del motor con polvo acumulado**; mantiene la luz roja que parpadea, eco de la nave | reconoce una pieza de su nave |
+| 3 · la nave | `ship` | igual que hoy | quería volar; dudó |
+| 4 · el destino | `star` | igual que hoy | la estrella a la que iba |
+
+Criterios para el arte (ART-07): mismo estilo low-poly y Lambert flat del
+juego; la foto es la única excepción, con una imagen pixelada muy pequeña.
+Cada objeto conserva aproximadamente su tamaño y posición actuales para que la
+mecánica de mirar no cambie. El dibujo de la tapa del cuaderno es el mismo
+emblema de la insignia (`patch`).
+
 ### Capítulo 0 — despertar junto al fuego
 - **`fire`**: el fuego. Isi no sabe si lo hizo ella misma.
 - **`helmet`**: el casco de astronauta, maltratado, con la etiqueta «ISI»
   adentro. Es el primer dato de quién es.
 - **`thermos`**: un set de mate (termo, mate de madera, bombilla). El olor le
-  resulta familiar. *Pendiente de arte (DIS-03): hoy la escena solo tiene un
-  termo; el mate y la bombilla no existen.*
+  resulta familiar. *Modelo pendiente (ART-07): hoy la escena solo tiene un
+  termo.*
 
 ### Capítulo 1 — quién era antes de partir
 - **`patch`**: la insignia de la misión (cohete y planeta). Isi recuerda que
   tenía una misión.
-- **`photo`**: Isi joven con su familia y un gato. Aquí empieza a recordar de
-  verdad. *Pendiente de arte (DIS-03): la familia y el gato no se ven.*
-- **`seeds`** (transmisor): más de cien mensajes al espacio, sin respuesta.
+- **`photo`**: Isi joven con su familia y un gato, que se distinguen aunque
+  sean pequeños y pixelados. Aquí empieza a recordar de verdad. *Modelo
+  pendiente (ART-07): hoy la foto es un rectángulo de color.*
+- **`seeds`** (transmisor): un walkie-talkie con antena. Más de cien mensajes
+  al espacio, sin respuesta. *Modelo pendiente (ART-07): hoy es un frasco de
+  semillas.*
 
 ### Capítulo 2 — el miedo del viaje
-- **`recorder`**: un mensaje que Isi misma escribió durante el vuelo: tenía
-  miedo y extrañaba la seguridad de casa.
-- **`beacon`**: una pieza del motor cubierta de polvo; la reconoce como parte
-  de su nave. Eco de "el polvo de la duda se acumula en el motor".
+- **`recorder`**: un cuaderno negro de tapa dura con el emblema de la misión
+  (cohete y planeta). Adentro, un mensaje que Isi misma escribió durante el
+  vuelo: tenía miedo y extrañaba la seguridad de casa. *Modelo pendiente
+  (ART-07): hoy es una caja naranja.*
+- **`beacon`**: una rejilla del motor con polvo acumulado y la luz roja que
+  parpadea; la reconoce como parte de su nave. Eco de "el polvo de la duda se
+  acumula en el motor". *Modelo pendiente (ART-07): hoy es un poste con un
+  plato (la baliza del original).*
 
 ### Capítulo 3 — la nave
 - **`ship`**: siempre quiso volar entre las estrellas, y ahora le duele mirar

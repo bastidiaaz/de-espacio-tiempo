@@ -3,7 +3,7 @@
 > **DIS-01.** Esta guía sirve para reescribir los textos de `src/content/acto1.json` (DIS-02). Los textos los escribe el autor. Aquí hay criterios, preguntas y notas; no hay líneas de reemplazo.
 > **Canon revisado (2026-11-05):** al reescribir, el autor cambió el canon (ver el historial del brief). Isi ahora despierta sin recordar, así que el principio 1 ya no aplica tal cual: el gesto es recuperar un recuerdo, no admitir algo sabido. Las notas de la sección 4 comentan los textos del 2026-11-04 y quedan como historial. Los demás principios siguen vigentes.
 >
-> **Fuentes:** el brief del Acto I (`docs/superpowers/specs/2026-11-03-de-espacio-tiempo-acto1-astronauta-design.md`), la letra de "Astronauta" tal como aparece en ese brief y los textos actuales (2026-11-04). Si DIS-03 cambia algún objeto, su nota de aquí queda obsoleta.
+> **Fuentes:** el brief del Acto I (`docs/superpowers/specs/2026-11-03-de-espacio-tiempo-acto1-astronauta-design.md`), la letra de "Astronauta" tal como aparece en ese brief y los textos actuales (2026-11-04). Si DIS-03 cambia algún objeto, su nota de aquí queda obsoleta. **DIS-03 (2026-11-05)** cambió la forma de `thermos`, `photo`, `seeds`, `recorder` y `beacon`, así que sus notas de la sección 4 son historial; la forma vigente está en la tabla de objetos del brief.
 
 ## 1. La voz de Isi
 

@@ -112,7 +112,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** un archivo de textos nuevo. Claude lo revisa contra el brief.
 - **Hecho cuando:** el autor da su visto bueno jugando.
 
-**DIS-03 · Revisión de objetos por capa** · M · P1
+**DIS-03 · Revisión de objetos por capa** · M · P1 · ✅ hecho (2026-11-05): tabla aprobada por el autor en el brief del Acto I ("Tabla de objetos"); cambian `thermos`, `photo`, `seeds`, `recorder` y `beacon`
 - **Inputs:** el brief, la letra y la estructura de 5 capas (que no cambia).
 - **Pendiente de los textos nuevos (2026-11-05):** el `thermos` ahora es un set de mate (falta el mate y la bombilla en escena) y la `photo` muestra a Isi con su familia y un gato (no se ven).
 - **Output:** una tabla de objeto → capa → qué recuerdo recupera Isi. Si cambian objetos, se actualiza el brief y, por ejemplo, el transmisor y la pieza de motor reciben una forma que corresponda.
@@ -205,7 +205,13 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Hecho cuando:** se encuentra sin pista en menos de 30 s.
 
 **ART-07 · Objetos de memoria actualizados** · M · P1 · depende de DIS-03, ENG-10
-- **Output:** modelos coherentes con la lista aprobada (incluye el transmisor y la pieza de motor).
+- **Inputs:** la tabla de objetos del brief del Acto I (DIS-03). Cinco modelos nuevos:
+  - `thermos`: set de mate (termo, mate de madera, bombilla);
+  - `photo`: foto pixelada, muy pequeña, donde se distinguen Isi joven, la familia y el gato;
+  - `seeds`: walkie-talkie con antena;
+  - `recorder`: cuaderno negro de tapa dura con el cohete y el planeta de la insignia;
+  - `beacon`: rejilla del motor con polvo, que mantiene la luz roja que parpadea.
+- **Output:** modelos coherentes con la lista aprobada, del tamaño y en la posición de los actuales.
 - **Ojo:** el determinismo de `storyWorld.ts`.
 
 **ART-08 · Mirador** · M · P1 · depende de DIS-05
