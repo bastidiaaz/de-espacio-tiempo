@@ -11,6 +11,8 @@ export interface StickState {
 export interface InputOptions {
   /** Pointer input only drives the game while this returns true. */
   enabled: () => boolean;
+  /** Touch on the left half spawns the walking stick only while this returns true (default: always). */
+  canMove?: () => boolean;
   onLook: (dx: number, dy: number, sensitivity: number) => void;
   onKey: (code: string) => void;
   onStick: (s: StickState) => void;
@@ -75,7 +77,8 @@ export class Input {
   private onDown = (e: PointerEvent) => {
     if (!this.o.enabled()) return;
     this.canvas.setPointerCapture(e.pointerId);
-    if (e.pointerType !== 'mouse' && e.clientX < innerWidth * 0.5 && this.stickId === null) {
+    const canMove = this.o.canMove?.() ?? true;
+    if (canMove && e.pointerType !== 'mouse' && e.clientX < innerWidth * 0.5 && this.stickId === null) {
       this.stickId = e.pointerId;
       this.ox = e.clientX;
       this.oy = e.clientY;

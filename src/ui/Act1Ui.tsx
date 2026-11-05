@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Blink } from './components/Blink';
 import { DebugPanel } from './components/DebugPanel';
 import { Ending } from './components/Ending';
+import { Fade } from './components/Fade';
 import { Hud } from './components/Hud';
 import { Intro } from './components/Intro';
 import { Journal } from './components/Journal';
@@ -19,6 +20,7 @@ export function Act1Ui() {
   return (
     <>
       <Blink />
+      <Fade />
       <Reticle />
       <Whisper />
       <MemoryCard />

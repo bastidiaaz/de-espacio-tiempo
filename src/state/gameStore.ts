@@ -31,6 +31,10 @@ export interface GameUiState {
   /** 0..1 progress of the attention ring. */
   focus: number;
   endingVisible: boolean;
+  /** Isi is sitting by the fire, or sitting down / getting up (DIS-07): no walking. */
+  seated: boolean;
+  /** Short black fade, used instead of camera motion with reduced motion. */
+  fade: boolean;
   stick: StickState;
   /** `#debug` in the URL (ENG-03). Everything below is only published while it is on. */
   debug: boolean;
@@ -55,6 +59,8 @@ export const createGameStore = (): GameStore =>
     reticleNear: false,
     focus: 0,
     endingVisible: false,
+    seated: false,
+    fade: false,
     stick: { active: false, x: 0, y: 0, dx: 0, dy: 0 },
     debug: false,
     debugChapter: 0,

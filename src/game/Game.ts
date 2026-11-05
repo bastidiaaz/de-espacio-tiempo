@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { COPY } from '../content/copy';
-import { CHAPTERS, EDGE_LINES, MEMORIES, WAKE_LINES } from '../content/story';
+import { CHAPTERS, EDGE_LINES, MEMORIES, STAR_CHAPTER, WAKE_LINES } from '../content/story';
 import type { GameActions, GameStore, Phase } from '../state/gameStore';
 import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, WATER, viewRadiusFor } from './config';
 import { facing, parseHash, standInFront } from './debug';
@@ -18,6 +18,7 @@ import { Input } from './systems/input';
 import { Narrative } from './systems/narrative';
 import { Player } from './systems/player';
 import { Progress } from './systems/progress';
+import { SEATED_EYE, STAND_EYE, Seat, type Pose } from './systems/seat';
 import { Atmosphere } from './world/atmosphere';
 import { ChunkManager } from './world/chunks';
 import { DebugRing } from './world/debugRing';
@@ -42,6 +43,8 @@ const RETRO_HEIGHT = 460;
 /** The player stops this far (m) inside the remembered radius. */
 const EDGE_MARGIN = 1.5;
 const CHIME_ROOTS = [440, 554.37, 659.25, 880];
+/** Reduced motion: how long the screen stays black while Isi sits down or gets up (ms). */
+const FADE_MS = 400;
 
 /** What the shell gives Act I's engine (see docs/adr/0001-multi-acto.md). */
 export interface GameOptions {
@@ -81,6 +84,8 @@ export class Game implements GameActions, ActEngine {
   private readonly narrative: Narrative;
   private readonly attention: Attention;
   private readonly player: Player;
+  /** Sitting by the fire (DIS-07). */
+  private readonly seat: Seat;
   private readonly input: Input;
   private readonly audio: AudioEngine;
   private readonly yawToFire: number;
@@ -171,6 +176,9 @@ export class Game implements GameActions, ActEngine {
       0.35,
     );
     this.yawToFire = Math.atan2(-(0 - bx), -(0 - bz));
+    // She sits where she woke up: next to the fire and clear of every collider.
+    this.seat = new Seat(this.story.bedroll);
+    if (!this.progress.freeRoam && this.progress.chapter === STAR_CHAPTER) this.seat.snapSeated();
     this.motes = new Motes(isCoarsePointer ? 140 : 240, glow, this.player.position);
     this.embers = new Embers(this.story.campfire.group.position.y, glow);
     this.bursts = new Bursts(glow);
@@ -229,6 +237,7 @@ export class Game implements GameActions, ActEngine {
     });
     this.input = new Input(this.canvas, {
       enabled: () => this.phase === 'play' && !this.paused,
+      canMove: () => !this.seat.locksMovement,
       onLook: (dx, dy, k) => this.player.look(dx, dy, k),
       onKey: (code) => {
         if (this.paused) return;
@@ -392,7 +401,9 @@ export class Game implements GameActions, ActEngine {
     } else if (this.phase === 'waking') {
       this.updateWaking(dt);
     } else {
-      player.update(dt, this.input, this.field, this.resolvePlayer);
+      const pose = this.seat.update(dt);
+      if (pose) this.applyPose(pose, dt);
+      else player.update(dt, this.input, this.field, this.resolvePlayer);
       // Note: the `chapter < length` guard is the one intentional fix vs. the single-file version,
       // which threw here if you waited 45 s on the ending screen.
       if (
@@ -407,6 +418,8 @@ export class Game implements GameActions, ActEngine {
     }
     this.edgeT -= dt;
     narrative.tickWhisper(dt);
+    const seated = this.seat.locksMovement;
+    if (this.store.getState().seated !== seated) this.store.setState({ seated });
 
     this.atmosphere.update(dt, this.time, progress.chapter);
     if (this.debugRing) this.updateDebug();
@@ -426,7 +439,7 @@ export class Game implements GameActions, ActEngine {
     const { player } = this;
     this.wakeT += dt / 4;
     const e = easeInOut(Math.min(1, this.wakeT));
-    player.eye = lerp(0.35, 1.6, e);
+    player.eye = lerp(0.35, this.seat.locksMovement ? SEATED_EYE : STAND_EYE, e);
     player.pitch = lerp(0.75, 0.02, e);
     player.yaw = lerpAngle(player.yaw, this.yawToFire, Math.min(1, dt * 1.2));
     if (this.wakeT >= 1) {
@@ -434,6 +447,38 @@ export class Game implements GameActions, ActEngine {
       this.lastProgress = this.time;
       if (!this.progress.count) WAKE_LINES.forEach((line) => this.narrative.say(line));
     }
+  }
+
+  /** Seated (or sitting down / getting up): the seat drives position and eye height. */
+  private applyPose(pose: Pose, dt: number): void {
+    const { player } = this;
+    const P = player.position;
+    player.moveAmount = 0;
+    P.x = pose.x;
+    P.z = pose.z;
+    P.y = this.field.groundAt(P.x, P.z);
+    player.eye = pose.eye;
+    if (this.seat.state === 'sitting') {
+      const yaw = facing({ x: P.x, y: 0, z: P.z }, { x: 0, y: 0, z: 0 }).yaw;
+      player.yaw = lerpAngle(player.yaw, yaw, Math.min(1, dt * 2.4));
+      player.pitch = lerp(player.pitch, -0.12, Math.min(1, dt * 2.4));
+    }
+  }
+
+  /** After the campfire memory (DIS-07): down by the fire, or a short fade with reduced motion. */
+  private sitDown(): void {
+    const { player } = this;
+    if (!prefersReducedMotion) {
+      this.seat.sit({ x: player.position.x, z: player.position.z, eye: player.eye });
+      return;
+    }
+    this.store.setState({ fade: true });
+    this.later(() => {
+      this.seat.snapSeated();
+      player.yaw = this.yawToFire;
+      player.pitch = -0.12;
+      this.store.setState({ fade: false });
+    }, FADE_MS);
   }
 
   private updateEffects(dt: number): void {
@@ -478,6 +523,7 @@ export class Game implements GameActions, ActEngine {
     audio.chime(base * 1.5, 0.05, 0.3);
     if (it.id !== 'star') this.bursts.spawn(this.items.targetOf(it));
     narrative.say(it.text, it.title, 'memory');
+    if (it.id === 'campfire') this.sitDown();
 
     if (progress.isChapterComplete(progress.chapter)) {
       CHAPTERS[progress.chapter].done.forEach((t) => narrative.say(t));
@@ -504,10 +550,12 @@ export class Game implements GameActions, ActEngine {
     this.timers.clear();
     progress.jumpToChapter(chapter);
     this.narrative.clear();
-    this.store.setState({ remembered: [...progress.remembered], endingVisible: false });
+    this.store.setState({ remembered: [...progress.remembered], endingVisible: false, fade: false });
+    if (progress.chapter === STAR_CHAPTER) this.seat.snapSeated();
+    else this.seat.snapStanding();
+    player.eye = this.seat.locksMovement ? SEATED_EYE : STAND_EYE;
     if (this.phase === 'intro') this.audio.start();
     if (this.phase !== 'play') {
-      player.eye = 1.6;
       player.pitch = 0.02;
       this.setPhase('play');
     }

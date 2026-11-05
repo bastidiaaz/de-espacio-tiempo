@@ -43,4 +43,24 @@ describe('Input', () => {
     canvas.handlers.pointermove(ev(305));
     expect(looks).toEqual([[10, 0], [5, 0]]);
   });
+  it('with canMove false, a left-half touch looks instead of spawning the stick', () => {
+    vi.stubGlobal('addEventListener', () => {});
+    vi.stubGlobal('removeEventListener', () => {});
+    vi.stubGlobal('innerWidth', 1000);
+    const canvas = fakeCanvas();
+    const looks: number[][] = [];
+    const sticks: boolean[] = [];
+    new Input(canvas as unknown as HTMLCanvasElement, {
+      enabled: () => true,
+      canMove: () => false,
+      onLook: (dx, dy) => looks.push([dx, dy]),
+      onKey: () => {},
+      onStick: (s) => sticks.push(s.active),
+    });
+    const ev = (clientX: number) => ({ pointerId: 1, pointerType: 'touch', clientX, clientY: 0 });
+    canvas.handlers.pointerdown(ev(100));
+    canvas.handlers.pointermove(ev(110));
+    expect(looks).toEqual([[10, 0]]);
+    expect(sticks).not.toContain(true);
+  });
 });
