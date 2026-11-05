@@ -6,6 +6,7 @@
 - **2026-11-05: cambio de canon decidido por el autor**, al reescribir los textos (DIS-02). Cambian las decisiones 2, 4, 5, 7 y 8, el mapeo de objetos y los textos de dirección. Lo que el autor ya escribió está en `src/content/acto1.json`, que ahora es la referencia del copy; este brief fija el canon que esos textos establecen.
 - **2026-11-05: revisión de objetos (DIS-03), aprobada por el autor.** La estructura (5 capítulos, 10 ids, mismas posiciones) no cambia. Cambia la forma de cinco objetos para que correspondan a sus textos: `thermos`, `photo`, `seeds`, `recorder` y `beacon`. Los modelos se construyen en ART-07.
 - **2026-11-05: objetos ocultos (DIS-04).** Cinco guiños a Tiann en el paseo libre (guitarra, lápiz de insulina, foto del campanil, arete de hoja y carta en el mirador); Isi no los reconoce. Ver "Objetos ocultos".
+- **2026-11-05: mirador (DIS-05).** Una cordillera en el borde del mundo que, al escalarla, revela un cielo que solo existe ahí: un planeta anillado gigante y una galaxia. La carta está en la cima. El planeta del cielo normal se achica. Ver "Mirador".
 - **2026-11-05: decisiones del autor para los textos de los ocultos (DIS-12).** Títulos con artículo indefinido, el reverso de la foto del campanil, la voz de la carta y un dato de canon nuevo: Isi vive mucho después de 2025. Ver "Textos: decisiones del autor".
 
 ## Contexto
@@ -300,6 +301,113 @@ los propone audio y los aprueba el autor.
 - **Ninguna tarjeta dice "alguien estuvo aquí".** Los ocultos se encuentran en
   cualquier orden y la sorpresa la da el objeto ajeno, no una frase.
 - **Textos aprobados (2026-11-05):** viven en `acto1.json`, sección `ocultos`.
+
+## Mirador (DIS-05)
+
+### La idea
+
+Detrás de una cordillera, en el borde del mundo, hay un cielo que no existe en
+ningún otro lugar del acto: un **planeta gigante con anillos de colores**,
+enorme sobre el horizonte, y detrás una **galaxia vibrante**, con estrellas y
+nebulosas que destellan lentamente. Lo que el jugador debe sentir: **algo
+abrumador, hermoso y desconocido, que lo hace sentirse pequeño frente al
+universo**. La carta («Te regalo este paisaje…») es de quien encontró ese
+lugar antes; su texto ya calza y no cambia.
+
+### Decisiones del autor (2026-11-05)
+
+- **Una montaña grande, parte de una cordillera** que bloquea la vista hacia el
+  otro lado. Subirla es la **única** manera de ver lo que hay detrás.
+- **Se descubre por pura curiosidad.** La montaña es visible; lo escondido es la
+  vista. Nada la señala: sin texto, sin destello, sin sonido que llame.
+- **El cielo del mirador existe solo ahí.** No se ve desde ningún otro punto del
+  mapa.
+- **La cima mira hacia fuera del mundo**, más allá del borde del paseo libre:
+  un primer vistazo a lo que hay más allá del miedo. Isi mira, no se va: no
+  insinúa el despegue (Acto 6).
+- **La revelación es gradual:** el cielo va emergiendo mientras se escala, no
+  aparece de golpe al coronar.
+- **En la cima, el jugador sigue libre** y mira a su ritmo. Sin cámara guiada,
+  sin pausa, sin que Isi se siente. La carta está ahí para quien la encuentre.
+- **El planeta anillado del cielo normal** (`sky.ts`) se hace **más pequeño y
+  más lejano**, para que no compita con el del mirador. Se queda como un eco
+  lejano de lo que espera detrás de la cordillera.
+
+### Ubicación
+
+- Una cordillera en **una sola dirección desde el fuego**, con la cresta entre
+  unos **360 y 395 m** y un **pico** más alto que el resto, que es el que se
+  puede subir. El resto de la cresta es demasiado empinado o está bloqueado.
+- La dirección no coincide con la de la nave, la de la estrella ni la de los
+  otros cuatro ocultos. Se fija por semilla con un generador propio, igual que
+  los ocultos.
+- **Del otro lado hay un precipicio.** La cima queda al borde de ese
+  precipicio, justo dentro del límite de 400 m: el borde del mundo coincide con
+  el borde físico, y se mira hacia fuera sin poder cruzar.
+
+### La revelación
+
+- El cielo del mirador está colocado **en la dirección de fuera** (del fuego
+  hacia el pico) y **bajo, cerca del horizonte**, de modo que la cresta lo tape
+  mientras se sube.
+- Aparece en función de la altura del jugador sobre la ladera y de su cercanía
+  al pico: primero asoma el borde de los anillos sobre la cresta y, en la cima,
+  se ve completo. Al bajar, se desvanece en sentido inverso.
+- El viento y silencio de AUD-03 crece con la misma curva.
+
+### En la cima
+
+- El jugador queda libre. No aparece texto de Isi (si el autor quiere una
+  frase, la escribe él).
+- **La carta** descansa sobre una roca al borde del precipicio, **de cara al
+  planeta**: al sostenerle la mirada, el jugador ya está mirando el paisaje
+  (como la foto del campanil, que mira hacia la estrella). Sigue las reglas de
+  los ocultos: se activa con la mirada, se guarda en `lvr-a1-hidden-<seed>` y
+  tiene el destello de cercanía a unos 30 m.
+- **No salta la frase del borde** ("No me atrevo a mirar más allá
+  todavía…") dentro del mirador: ahí sí se atreve a mirar.
+
+### Encuadre ideal (lo que ART-08 debe poder capturar)
+
+De pie en la cima, mirando hacia fuera:
+
+- el planeta llena una buena parte del cuadro, cerca del horizonte, con los
+  anillos inclinados y de colores;
+- detrás, la banda de la galaxia, las nebulosas y las estrellas destellando;
+- abajo y delante, **siluetas por capas** de **agujas de cristal**, que se
+  pierden en la bruma (son las referencias del autor del roadmap);
+- la carta en primer plano, al borde, sin tapar la vista.
+
+### Decisiones de Claude (revisables)
+
+- **La montaña se construye a mano**, junto con el mundo, como el escondite de
+  los ocultos: el terreno sale de la semilla y no garantiza una montaña.
+  **No puede cambiar la altura del terreno existente**: `TerrainField` y su
+  fixture son invariantes. Lo que sume la montaña tiene que ser nulo dentro de
+  unos 340 m del fuego y fuera de su sector, o hay que regenerar el fixture y documentarlo. El suelo
+  que pisa el jugador (`groundAt`) debe incluir la montaña.
+- **Visibilidad.** La niebla corta la vista a unos 105 m en celular y 160 m
+  en computador, así que la montaña no se ve desde el fuego: aparece como una
+  silueta al acercarse. Es parte de la curiosidad, no un problema.
+- **Determinismo.** El cielo del mirador, la cordillera y la dirección usan su
+  propio generador derivado de la semilla; nunca el `rng()` de `chunks.ts`,
+  `storyWorld.ts` ni `sky.ts`. Achicar el planeta normal solo cambia tamaño y
+  distancia, sin llamadas nuevas a `rng()`.
+- **Móvil primero.** El cielo del mirador son pocos meshes y sprites, sin
+  sombras. Las siluetas de cristal son capas planas o low-poly.
+- **La estrella se mueve** (`atmosphere.ts` la hace girar lento), así que
+  "no en la dirección de la estrella" se mide contra su dirección al empezar
+  el paseo libre, con el mismo criterio que use ENG-13 para los ocultos.
+- **Modo debug:** un salto "ir al mirador" en el panel, para revisar el
+  encuadre.
+
+### Lo que queda para quien lo construya
+
+- La forma exacta de la cordillera, la pendiente y el camino de subida
+  (ART-08).
+- El tamaño, los colores de los anillos y el ritmo del destello de la galaxia,
+  dentro del tono pedido. El autor aprueba con una captura (ART-08).
+- La curva exacta de la revelación y la del viento (con AUD-03).
 
 ## Notas de implementación
 

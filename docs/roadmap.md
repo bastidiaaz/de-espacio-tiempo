@@ -134,7 +134,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** los textos en `acto1.json`, en una sección propia de ocultos. Claude los revisa contra el brief.
 - **Hecho cuando:** el autor les da el visto bueno.
 
-**DIS-05 · Mirador oculto** · S · P1
+**DIS-05 · Mirador oculto** · S · P1 · ✅ hecho (2026-11-05): sección "Mirador" del brief del Acto I, aprobada por el autor. Cordillera en el borde del mundo; al escalar el pico se revela un cielo que solo existe ahí (planeta anillado gigante y galaxia), con la carta en la cima. El planeta del cielo normal se achica. Siguen ART-08, ENG-13 (la carta) y AUD-03
 - **Inputs:** las referencias visuales del autor: un planeta anillado enorme sobre el horizonte, agujas de cristal y siluetas por capas.
 - **Output:** un spec con:
   - la ubicación;
