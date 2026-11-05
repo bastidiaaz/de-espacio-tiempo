@@ -90,7 +90,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - un presupuesto de polígonos por objeto.
 - **Hecho cuando:** un asset de prueba se ve en escena con flat shading coherente, sin alterar el orden de `rng()` (el test de terreno pasa).
 
-**ENG-04 · Deploy** · S · P0 · ✅ workflow listo (2026-11-04): job `deploy` en `.github/workflows/ci.yml`, publica el mismo `dist/` que pasó los checks; repo público y Pages activado con Source: GitHub Actions. URL: https://bastidiaaz.github.io/de-espacio-tiempo/
+**ENG-04 · Deploy** · S · P0 · ✅ workflow listo (2026-11-04): job `deploy` en `.github/workflows/ci.yml`, publica el mismo `dist/` que pasó los checks; repo público y Pages activado con Source: GitHub Actions. URL: https://play.tiannmusica.com/ (dominio propio verificado; DNS en Bandzoogle)
 - **Inputs:** `vite.config.ts` (ya tiene `base './'`), `.github/workflows/ci.yml`.
 - **Output:** un deploy automático desde `main` y una URL pública.
 - **Hecho cuando:** cada push a `main` con CI en verde publica el juego.

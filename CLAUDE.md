@@ -24,7 +24,7 @@
 
 - `npm run dev` · `npm test` · `npm run lint` · `npm run typecheck` · `npm run build`
 - **Modo debug (ENG-03):** abre el Acto I con `#debug` en la URL (`#w123&debug` fija además la semilla). Panel para saltar a un capítulo o quedar frente a un ítem, "marcar todo" para ver el final, y un anillo en el suelo con el borde caminable. En debug no se guarda progreso ni se marca el acto como completado. Lógica pura en `src/game/debug.ts`.
-- **Deploy (ENG-04):** cada push a `main` con CI en verde publica `dist/` en GitHub Pages (job `deploy` de `.github/workflows/ci.yml`). Los PR solo corren los checks. URL: `https://bastidiaaz.github.io/de-espacio-tiempo/`.
+- **Deploy (ENG-04):** cada push a `main` con CI en verde publica `dist/` en GitHub Pages (job `deploy` de `.github/workflows/ci.yml`). Los PR solo corren los checks. URL: `https://play.tiannmusica.com/` (dominio propio: CNAME `play` → `bastidiaaz.github.io` en el DNS Manager de Bandzoogle, y TXT de verificación `_github-pages-challenge-bastidiaaz`, que no se borra). La URL de `github.io` redirige ahí.
 - Antes de dar algo por terminado: `npm run lint && npm run typecheck && npm test && npm run build` (es lo que corre CI).
 
 ## Arquitectura (reglas)
