@@ -1,4 +1,4 @@
-import { easeInOut, lerp } from '../math/util';
+import { easeInOut, lerp, lerpAngle } from '../math/util';
 
 /** Eye height standing and sitting by the fire (m). */
 export const STAND_EYE = 1.6;
@@ -15,8 +15,10 @@ export interface Pose {
 export type SeatState = 'standing' | 'sitting' | 'seated' | 'rising';
 
 /**
- * Isi sitting down by the fire (DIS-07, ART-09): slides from where she stands to a fixed spot
- * while the eye drops, and back up in place. Pure: the engine applies the returned pose.
+ * Isi sitting down by the fire (DIS-07, ART-09): moves from where she stands to a fixed spot
+ * while the eye drops, and back up in place. The fire is at the origin, so the move goes around
+ * it (angle and distance to the fire are eased separately) instead of straight through the
+ * flames. Pure: the engine applies the returned pose.
  */
 export class Seat {
   state: SeatState = 'standing';
@@ -64,7 +66,9 @@ export class Seat {
         this.t = Math.min(1, this.t + dt / SIT_SECONDS);
         const e = easeInOut(this.t);
         if (this.t >= 1) this.state = 'seated';
-        return { x: lerp(this.from.x, spot.x, e), z: lerp(this.from.z, spot.z, e), eye: lerp(this.from.eye, SEATED_EYE, e) };
+        const a = lerpAngle(Math.atan2(this.from.z, this.from.x), Math.atan2(spot.z, spot.x), e);
+        const r = lerp(Math.hypot(this.from.x, this.from.z), Math.hypot(spot.x, spot.z), e);
+        return { x: Math.cos(a) * r, z: Math.sin(a) * r, eye: lerp(this.from.eye, SEATED_EYE, e) };
       }
       case 'rising': {
         this.t = Math.min(1, this.t + dt / SIT_SECONDS);

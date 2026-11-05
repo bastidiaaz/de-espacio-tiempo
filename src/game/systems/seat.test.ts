@@ -36,6 +36,18 @@ describe('Seat', () => {
     expect(end.z).toBeCloseTo(spot.z);
   });
 
+  it('walks around the fire (at the origin), never through it, when sitting from the far side', () => {
+    const s = new Seat({ x: -2.8, z: 0 });
+    s.sit({ x: 6, z: 0.2, eye: STAND_EYE });
+    let closest = Infinity;
+    for (let i = 0; i < 60; i++) {
+      const p = s.update(SIT_SECONDS / 60)!;
+      closest = Math.min(closest, Math.hypot(p.x, p.z));
+    }
+    expect(closest).toBeGreaterThanOrEqual(2.8 - 1e-6);
+    expect(s.state).toBe('seated');
+  });
+
   it('snapSeated jumps straight to the seated pose', () => {
     const s = new Seat(spot);
     s.snapSeated();
