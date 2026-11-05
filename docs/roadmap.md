@@ -118,11 +118,21 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** una tabla de objeto → capa → qué recuerdo recupera Isi. Si cambian objetos, se actualiza el brief y, por ejemplo, el transmisor y la pieza de motor reciben una forma que corresponda.
 - **Hecho cuando:** el autor aprueba la lista y el brief queda al día.
 
-**DIS-04 · Conceptos de los 5 objetos ocultos** · S · P1 · depende de ENG-01
+**DIS-04 · Conceptos de los 5 objetos ocultos** · S · P1 · depende de ENG-01 · ✅ hecho (2026-11-05): sección "Objetos ocultos" del brief del Acto I, aprobada por el autor. Son guiños a Tiann que Isi no reconoce: guitarra, lápiz de insulina, foto del campanil, arete de hoja y carta en el mirador. Siguen DIS-12, ENG-13, ART-11 y AUD-08
 - **Inputs:** el brief, la letra y las restricciones (no resolver hilos reservados: el despegue es del Acto 6, y a quién transmite Isi no tiene acto asignado todavía).
 - **Output:** 5 conceptos propuestos por Claude, con ubicación y razón de cada uno. El autor elige y escribe los textos.
 - **Mecánica de los ocultos:** solo aparecen en el paseo libre, no cuentan en el contador, y al encontrarlos dan texto y sonido, igual que hoy.
 - **Hecho cuando:** hay 5 conceptos aprobados.
+
+**DIS-12 · Textos de los objetos ocultos (autor)** · S · P1 · depende de DIS-04; la carta, de DIS-05
+- **Inputs:** la sección "Objetos ocultos" del brief del Acto I. Es un título y un texto para cada uno: guitarra, lápiz de insulina, foto del campanil, arete de hoja y carta.
+- **Reglas del brief:**
+  - Isi no reconoce los objetos;
+  - nunca se dice quién estuvo aquí ni se nombra a Tiann;
+  - nada insinúa el despegue;
+  - la carta no es para Isi ni de ella, y habla del paisaje del mirador.
+- **Output:** los textos en `acto1.json`, en una sección propia de ocultos. Claude los revisa contra el brief.
+- **Hecho cuando:** el autor les da el visto bueno.
 
 **DIS-05 · Mirador oculto** · S · P1
 - **Inputs:** las referencias visuales del autor: un planeta anillado enorme sobre el horizonte, agujas de cristal y siluetas por capas.
@@ -171,6 +181,16 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 **ENG-09 · Opciones de accesibilidad** · S · P1
 - **Output:** sensibilidad de cámara y tamaño de texto, guardados en claves nuevas `lvr-*`. Las existentes no cambian.
 
+**ENG-13 · Objetos ocultos en el juego** · M · P1 · depende de DIS-04 y DIS-12; la carta, de DIS-05
+- **Inputs:** la sección "Objetos ocultos" del brief del Acto I y los textos de DIS-12.
+- **Output:**
+  - los cinco ocultos, solo en el paseo libre, entre 220 y 380 m del fuego y cada uno en una dirección distinta, fuera de las direcciones de la nave y de la estrella;
+  - cada uno con su propio escondite;
+  - se activan con la mirada, sin contar en el contador, y se guardan en `lvr-a1-hidden-<seed>`;
+  - un panel en el modo debug para saltar a cada uno.
+- **Ojo:** no tocar el orden de `rng()` (usar un generador propio derivado de la semilla), y correr un oculto al punto seco más cercano si cae en agua o dentro de un collider.
+- **Hecho cuando:** el autor encuentra los cinco sin debug, y le cuesta pero lo logra.
+
 **Arte y animación**
 
 **ART-01 · Dirección de arte de la UI, estilo sketch** · M · P1 · depende de D7
@@ -214,6 +234,10 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** modelos coherentes con la lista aprobada, del tamaño y en la posición de los actuales.
 - **Ojo:** el determinismo de `storyWorld.ts`.
 
+**ART-11 · Modelos de los objetos ocultos** · M · P1 · depende de DIS-04, ENG-10
+- **Inputs:** la tabla "Objetos ocultos" del brief del Acto I. Son cinco modelos: guitarra clásica, lápiz de insulina, foto del campanil de Concepción (imagen pixelada pequeña), arete alargado de hoja en cobre rojizo, y una carta.
+- **Output:** los modelos con las reglas de ENG-10, más el destello de cercanía (visible a unos 30 m).
+
 **ART-08 · Mirador** · M · P1 · depende de DIS-05
 - **Output:** el lugar, su acceso y el encuadre con el planeta dominante.
 - **Hecho cuando:** existe una captura comparable a las referencias del autor.
@@ -245,6 +269,11 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **AUD-06 · Música por capítulo** · M · P1
 - **Output:** el pad y las notas de cajita ganan capas en cada capítulo, sin reemplazar lo actual.
+
+**AUD-08 · Arpegio de la guitarra oculta** · S · P1 · depende de DIS-04
+- **Inputs:** el arpegio del brief del Acto I (sección "Sonido de la guitarra"): Sol4, Re4, La#3, Sol3, Re#3 y La#2, barrido de la 1.ª a la 6.ª cuerda.
+- **Output:** un sonido de guitarra sintetizado en `audio.ts`, que reemplaza el de recuerdo solo para la guitarra.
+- **Hecho cuando:** el autor aprueba el timbre y la velocidad del barrido.
 
 **Cierre del release**
 
@@ -292,5 +321,5 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 1. **Fase 0:** ENG-01, ENG-02, ENG-03, ENG-04, ENG-10 y DIS-01. Pueden ir en paralelo.
 2. **Diseño:** DIS-03 → DIS-04, DIS-05, DIS-06, DIS-07 y DIS-08. Los specs son cortos y se aprueban rápido.
-3. **Producción:** arte, UI y audio en paralelo. El autor reescribe textos (DIS-02) mientras tanto.
+3. **Producción:** arte, UI y audio en paralelo. El autor reescribe textos (DIS-02) y escribe los de los ocultos (DIS-12) mientras tanto.
 4. **Calidad:** ENG-06 a ENG-09 durante la producción; ENG-05 y REL-01 al final.
