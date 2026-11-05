@@ -143,7 +143,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - qué ocurre ahí (contemplar; ¿puede ser uno de los 5 ocultos?).
 - **Hecho cuando:** el autor aprueba el spec.
 
-**DIS-06 · Señales antes del borde** · S · P1
+**DIS-06 · Señales antes del borde** · S · P1 · ✅ hecho (2026-11-05): sección "Borde" del brief del Acto I, aprobada por el autor. Antes del tope, el mundo se apaga (oscuridad y viñeta, la música baja, crece el viento) e Isi avanza más lento, como empujada de vuelta. El paseo libre tiene el mismo borde a los 400 m, salvo en el mirador, con una frase propia. Siguen ENG-14 y AUD-05
 - **Inputs:** `atmosphere.ts`, `Game.resolvePlayer` y los EDGE_LINES.
 - **Output:** un spec de señal progresiva, visual (niebla, viñeta o algo similar) y sonora (AUD-05), que avise antes del tope duro.
 - **Hecho cuando:** el jugador nota el borde antes de chocar con él, sin una pared invisible abrupta.
@@ -190,6 +190,17 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - un panel en el modo debug para saltar a cada uno.
 - **Ojo:** no tocar el orden de `rng()` (usar un generador propio derivado de la semilla), y correr un oculto al punto seco más cercano si cae en agua o dentro de un collider.
 - **Hecho cuando:** el autor encuentra los cinco sin debug, y le cuesta pero lo logra.
+
+**ENG-14 · El borde se apaga** · S · P1 · depende de DIS-06; la excepción del mirador, de ENG-13/ART-08
+- **Inputs:** la sección "Borde" del brief del Acto I.
+- **Output:**
+  - la franja antes del tope (25 % del radio, entre 4 y 25 m; 15 m en el paseo libre), donde la escena se oscurece con una viñeta suave;
+  - el empuje: la velocidad hacia fuera baja hasta cerca de un 30 % en el tope;
+  - el tope duro también en el paseo libre (400 m), sin oscuridad ni empuje en el sector del mirador;
+  - la frase «Hasta aquí llega lo que puedo caminar...» en `voz_de_isi.al_llegar_al_borde_libre` de `acto1.json`, validada;
+  - un segundo anillo en el modo debug donde empieza la franja.
+- **Ojo:** la oscuridad es un multiplicador sobre la luz, no cambia `k` ni la paleta del cielo; sin postproceso caro en móvil.
+- **Hecho cuando:** el autor llega al borde de cada capítulo y del paseo libre y lo nota antes de chocar.
 
 **Arte y animación**
 
@@ -264,8 +275,8 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 **AUD-04 · Sonido de la mirada** · S · P1
 - **Output:** un tono que crece con el progreso de foco de `attention` y resuelve en la campanita actual.
 
-**AUD-05 · Aviso de borde** · S · P1 · depende de DIS-06
-- **Output:** un sonido que crece al acercarse al radio.
+**AUD-05 · Aviso de borde** · S · P1 · depende de DIS-06 y AUD-03
+- **Output:** en la franja del borde, el viento de AUD-03 sube y el pad, la cajita y la canción bajan, hasta que en el tope solo queda el viento (sección "Borde" del brief).
 
 **AUD-06 · Música por capítulo** · M · P1
 - **Output:** el pad y las notas de cajita ganan capas en cada capítulo, sin reemplazar lo actual.

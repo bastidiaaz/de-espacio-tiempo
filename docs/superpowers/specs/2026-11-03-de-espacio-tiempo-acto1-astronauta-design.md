@@ -8,6 +8,7 @@
 - **2026-11-05: objetos ocultos (DIS-04).** Cinco guiños a Tiann en el paseo libre (guitarra, lápiz de insulina, foto del campanil, arete de hoja y carta en el mirador); Isi no los reconoce. Ver "Objetos ocultos".
 - **2026-11-05: mirador (DIS-05).** Una cordillera en el borde del mundo que, al escalarla, revela un cielo que solo existe ahí: un planeta anillado gigante y una galaxia. La carta está en la cima. El planeta del cielo normal se achica. Ver "Mirador".
 - **2026-11-05: decisiones del autor para los textos de los ocultos (DIS-12).** Títulos con artículo indefinido, el reverso de la foto del campanil, la voz de la carta y un dato de canon nuevo: Isi vive mucho después de 2025. Ver "Textos: decisiones del autor".
+- **2026-11-05: borde (DIS-06).** Antes del tope, el mundo se apaga: se oscurece, la música se desvanece, crece el viento e Isi camina más lento, como empujada. El paseo libre tiene el mismo borde a los 400 m, salvo en el mirador, y una frase propia. Ver "Borde".
 
 ## Contexto
 
@@ -408,6 +409,115 @@ De pie en la cima, mirando hacia fuera:
 - El tamaño, los colores de los anillos y el ritmo del destello de la galaxia,
   dentro del tono pedido. El autor aprueba con una captura (ART-08).
 - La curva exacta de la revelación y la del viento (con AUD-03).
+
+## Borde (DIS-06)
+
+### La idea
+
+Hoy el borde es una pared invisible: Isi frena en seco al llegar al radio del
+capítulo (`Game.resolvePlayer`) y aparece una frase de `al_llegar_al_borde`.
+El jugador no tiene cómo verlo venir. Ahora, **antes de chocar, el mundo se
+apaga**: todo se oscurece, la música se desvanece, el viento crece e Isi avanza cada vez más lento,
+como si algo la empujara de vuelta. Lo que el
+jugador debe sentir: **soledad**. El borde no es una pared; es el lugar donde
+Isi se queda sola.
+
+### Decisiones del autor (2026-11-05)
+
+- **El mundo se apaga:** se oscurece la escena y se apaga la música.
+- **Isi camina más lento, como si algo la empujara de vuelta.** El avance
+  hacia fuera se hace más pesado a lo largo de la franja; al volver hacia el
+  fuego camina normal.
+- **El viento se escucha más fuerte** a medida que se acerca.
+- **Al final de la oscuridad, se frena igual que hoy**, con el mismo margen y
+  la misma frase de `al_llegar_al_borde` (y su espera de 7 s).
+- **El paseo libre tiene el mismo borde**, a los 400 m (`FREE_ROAM_RADIUS`).
+  Hoy el código no lo frena en el paseo libre (`!progress.freeRoam`); eso
+  cambia: el tope duro también vale ahí, y es el que hace coincidir el borde
+  del mundo con el precipicio del mirador.
+- **En el paseo libre, Isi dice otra frase.** Las de `al_llegar_al_borde`
+  hablan de un miedo que el final ya dejó atrás. En el paseo libre dice una
+  sola, aprobada por el autor: **«Hasta aquí llega lo que puedo caminar...»**.
+  Va en `acto1.json`, en una clave nueva `voz_de_isi.al_llegar_al_borde_libre`
+  (lista de un elemento, para que el autor pueda sumar más), validada como las
+  demás, con la misma espera de 7 s.
+- **Excepción: el mirador.** En el sector del mirador el borde no se oscurece
+  ni apaga la música: el precipicio ya es el límite físico, y la vista hacia
+  fuera es justo lo que el mirador revela. El tope duro sigue ahí (coincide
+  con el precipicio) y, como ya dice "Mirador", no salta la frase del borde.
+
+### Cómo se comporta
+
+- **Una franja antes del tope.** La señal crece de 0 a 1 a lo largo de una
+  franja que termina en el tope duro (`radiusCur - EDGE_MARGIN`). Fuera de la
+  franja, nada cambia respecto de hoy.
+- **Depende solo de la distancia al fuego.** Es continua: al darse vuelta y
+  alejarse del borde, el mundo vuelve a la normalidad con la misma curva.
+- **Acompaña al radio.** Al completar un capítulo, el radio crece suavemente
+  (`radiusCur`) y la franja se corre con él: si Isi estaba en el borde, la
+  oscuridad se retira sola. Eso cuenta que ahora se atreve a mirar más lejos.
+- **Visual:** la luz de la escena (cielo, niebla, luces) baja hacia un negro
+  azulado, más una viñeta suave en los bordes de la pantalla. En el tope, el
+  mundo inmediato sigue legible (se ve el suelo y por dónde volver), pero
+  apagado.
+- **Sonido (AUD-05):** sobre la capa de viento de AUD-03 (el "silencio" del
+  juego, el mismo que antes de la nave y en el mirador). En la franja, el
+  viento sube y el pad, la cajita musical y la canción (AUD-01, si suena) bajan.
+  En el tope, la música está casi apagada y solo queda el viento. El fuego ya
+  se apaga con la distancia (`setFireLevel`) y no cambia.
+
+### Decisiones de Claude (revisables)
+
+- **Ancho de la franja proporcional al radio:** el 25 % del radio, con mínimo
+  4 m y máximo 25 m. Con metros fijos, el capítulo 1 (14 m) quedaría oscuro
+  casi entero. Valores: cap. 1 → 4 m, cap. 2 → 12 m, cap. 3 → 22,5 m,
+  caps. 4–5 → 25 m.
+- **Paseo libre: franja de 15 m** (de unos 383,5 m al tope). Así no toca a los
+  ocultos, que llegan hasta 380 m (DIS-04): su destello no compite con la
+  oscuridad. El rango de los ocultos no cambia.
+- **Orden de construcción.** La parte visual puede construirse ya. El sonido
+  (AUD-05) espera a que exista el viento de AUD-03, para no hacer un viento
+  provisional que el autor apruebe dos veces. Mientras no exista el mirador
+  (ENG-13/ART-08), el borde del paseo libre se oscurece en todas las
+  direcciones; la excepción llega junto con la cordillera.
+- **Curva suave** (por ejemplo `smoothstep`), para que el principio de la
+  franja no se note como una línea.
+- **Intensidad en el tope:** la luz baja hasta cerca de un 35 % de la normal y
+  la música hasta un 10 %. Ajustable al probar.
+- **El empuje:** solo frena la parte del movimiento que va hacia fuera (la
+  componente radial); caminar de lado o de vuelta no se frena. Con la misma
+  curva que la oscuridad, la velocidad hacia fuera baja hasta cerca de un 30 %
+  justo antes del tope. Ajustable al probar. Se aplica en
+  `resolvePlayer` (o en el paso de movimiento de `player`), sin tocar la
+  mecánica de la mirada. En el mirador no hay empuje, igual que no hay
+  oscuridad.
+- **El cielo no amanece por esto ni se toca su paleta:** la oscuridad es un
+  multiplicador encima de la curva noche → `PRE_DAWN`, no un cambio de `k`.
+- **Ningún ítem del capítulo actual puede quedar dentro de la franja.** Si
+  alguno cae ahí, se achica la franja de ese capítulo, no se mueve el ítem. La
+  nave (cap. 4) y la estrella (cap. 5, en el cielo) se revisan al probar.
+- **El sector del mirador** se define con la misma dirección y ancho angular
+  que use ENG-13/ART-08 para la cordillera; fuera de ese sector, el borde del
+  paseo libre se comporta como cualquier otro.
+- **Motor / UI:** el motor calcula un valor de borde (0–1) por frame. Si la
+  viñeta es un overlay de React, el motor la publica en el store redondeada
+  (por ejemplo a 0,05), solo cuando cambia. Si es parte del render, no pasa por
+  el store.
+- **Modo debug:** el anillo del suelo ya marca el tope; suma un segundo anillo
+  donde empieza la franja.
+- **Móvil primero:** sin pases de postproceso caros. Basta con una viñeta
+  barata (overlay o quad) y la luz que ya existe.
+
+### Lo que queda para quien lo construya
+
+- El color exacto del negro azulado, la forma de la viñeta y las curvas finas
+  de luz y sonido. El autor aprueba jugando hasta el borde de cada capítulo.
+- El sonido del viento en sí (AUD-03).
+
+### Hecho cuando
+
+El jugador nota el borde antes de chocar con él, porque todo se apaga y queda
+solo el viento, y al frenarse ya no se siente una pared invisible abrupta.
 
 ## Notas de implementación
 
