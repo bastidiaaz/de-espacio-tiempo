@@ -1,21 +1,21 @@
 {
   "interfaz": {
-    "titulo": "De Espacio-Tiempo",
+    "titulo": "De espacio-tiempo",
     "acto": "Acto I — Astronauta",
-    "etiqueta_del_lienzo": "Un valle alienígena en calma, de noche, iluminado por una hoguera",
+    "etiqueta_del_lienzo": "Un valle de un planeta desconocido, de noche, con una pequeña fogata encendida",
     "intro": {
-      "primera_vez": "Despiertas junto a un fuego pequeño. Lo encendiste tú, y lo recuerdas todo.",
-      "retomando": "Te quedas dormida junto al fuego. Al despertar, te atreves a mirar un poco más.",
-      "completo": "Ya lo miraste todo de frente. El fuego sigue encendido.",
-      "como_jugar_tactil": "Arrastra a la izquierda para caminar y a la derecha para mirar.",
-      "como_jugar_teclado": "Camina con WASD, arrastra para mirar alrededor.",
-      "como_jugar_final": "Para mirar algo de frente, quédate quieta y sostén la mirada en eso.",
+      "primera_vez": "Despiertas junto a un fuego pequeño. El paisaje es desconocido, y te preguntas cómo llegaste aquí. Tal vez mirar alrededor te ayude a recordar.",
+      "retomando": "Sientes el calor de la fogata. Al despertar, decides continuar tu exploración.",
+      "completo": "Ya recuperaste tus memorias. ¿Tal vez hay algo más que descubrir?",
+      "como_jugar_tactil": "Mantén presionado y arrastra en la zona izquierda de la pantalla para caminar, y en la zona derecha para mirar alrededor.",
+      "como_jugar_teclado": "Camina con WASD. Usa el mouse para arrastrar y mirar alrededor.",
+      "como_jugar_final": "Para inspeccionar un objeto, apúntalo con la vista, quédate quieta y mantén la mirada por un momento.",
       "boton_empezar": "Despertar"
     },
     "hud": {
-      "nada_mirado": "Nada mirado de frente todavía",
-      "contador": "{n} de {total} mirados de frente",
-      "diario": "Diario"
+      "nada_mirado": "Aún no recuperas ninguna memoria",
+      "contador": "{n} de {total} memorias recuperadas",
+      "diario": "Bitácora"
     },
     "tarjeta": {
       "continuar_tactil": "Toca para continuar",
@@ -23,106 +23,107 @@
       "etiqueta_boton": "Continuar"
     },
     "diario": {
-      "titulo": "Lo que ya puedo mirar",
-      "desconocido": "Algo que todavía no me atrevo a mirar.",
-      "volver": "Volver al valle",
-      "reiniciar": "Borrar todo y empezar de nuevo"
+      "titulo": "Memorias recuperadas",
+      "desconocido": "???",
+      "volver": "Seguir explorando",
+      "reiniciar": "Empezar desde el principio"
     },
     "final": {
-      "titulo": "Por ahora",
-      "cuerpo": "Isi se queda quieta junto al fuego. Ya mira de frente el medio segundo que la trajo al suelo, y eso no arregla nada. Nadie puede ser astronauta con los pies en la Tierra. El cielo sigue ahí arriba. La pregunta también.",
-      "seguir_caminando": "Seguir caminando",
+      "titulo": "Completaste el Acto I",
+      "cuerpo": "Lo siguiente es arreglar la nave y salir al espacio. Pero antes, tal vez quieras explorar el planeta un poquito más...",
+      "seguir_caminando": "Seguir explorando",
       "reiniciar": "Empezar de nuevo"
     }
   },
 
   "voz_de_isi": {
     "al_despertar": [
-      "Otra vez aquí. El fuego, y la misma pregunta de siempre.",
-      "Si me quedo quieta, tal vez por fin pueda mirarlo de frente."
+      "Mmmm... hmm... ¿Dónde estoy?",
+      "¿Estas son mis cosas? Tal vez mirar alrededor me ayude a recordar."
     ],
     "al_llegar_al_borde": [
-      "Todavía no. Eso no.",
-      "El miedo pesa más que la curiosidad, por ahora.",
-      "Hay algo más cerca que sí puedo mirar."
+      "No me atrevo a mirar más allá todavía...",
+      "El miedo pesa más que la curiosidad...",
+      "Debe haber algo más cerca que me ayude a recordar..."
     ],
-    "quedarse_quieta": "Quédate quieta un momento."
+    "quedarse_quieta": "Mantén la mirada fija."
   },
 
   "memorias": {
     "fire": {
       "titulo": "El fuego",
-      "texto": "Tres piedras, ramas secas, una chispa contra el guante. Esto sí lo hice yo. Por una vez, no dudé."
+      "texto": "Un par de piedras, ramas secas y una chispita. ¿Será que lo hice yo misma?"
     },
     "helmet": {
-      "titulo": "El casco rayado",
-      "texto": "El rayón ya estaba aquí antes de caer. Este casco vivió años guardado en una caja, listo para un viaje que yo seguía posponiendo."
+      "titulo": "El casco de astronauta",
+      "texto": "Se ve muy maltratado. Tiene un rayón grandote al costado. Adentro tiene una etiqueta que dice: «ISI»."
     },
     "thermos": {
-      "titulo": "El termo abollado",
-      "texto": "Cardamomo, para las noches frías. Me lo preparo yo misma, cada vez, como si alguien más fuera a tomarlo conmigo."
+      "titulo": "El set de mate",
+      "texto": "Un termito de acero inoxidable, un mate de madera y una bombilla. Su olor se siente familiar."
     },
     "patch": {
       "titulo": "La insignia",
-      "texto": "SURVEY ONE. La cosí yo misma, para una misión que me inventé, para tener por fin una excusa con la que partir."
+      "texto": "Una insignia de tela con un cohete y un planeta. Sí... yo tenía una misión..."
     },
     "photo": {
-      "titulo": "La fotografía",
-      "texto": "Yo, mucho más joven, mirando la cámara sin miedo. Antes de empezar a temerle al cielo que todavía no me atrevo a cruzar."
+      "titulo": "La foto",
+      "texto": "Una joven, con personas graciosas y un gato. La joven soy yo... y ellos son mi familia... Ah, comienzo a recordar..."
     },
     "seeds": {
       "titulo": "El transmisor",
-      "texto": "Grabé cien mensajes dirigidos a quien fuera que estuviera escuchando. Ninguno volvió con respuesta. Seguí grabando igual."
+      "texto": "Más de 100 mensajes al espacio, sin respuestas. ¿Habrá alguien que me escuche?"
     },
     "recorder": {
       "titulo": "Registro de vuelo",
-      "texto": "Mi propia voz en la última entrada: «Perdiendo altitud. Puedo corregir, puedo—». Y después, silencio. No terminé la frase. Tampoco terminé la maniobra."
+      "texto": "«Tengo miedo, ¿por qué salí afuera? Estaba tan segura en casa...» Un mensaje que yo misma escribí..."
     },
     "beacon": {
       "titulo": "Pieza del motor",
-      "texto": "El polvo se acumuló justo aquí, en el encendido que debía responder a tiempo. Dudé medio segundo. Fue suficiente."
+      "texto": "Hay mucho polvo acumulado aquí, pero reconozco esta pieza. Es parte de mi nave."
     },
     "ship": {
       "titulo": "Mi nave",
-      "texto": "Bajo el cristal de la cabina, estampado a mano: ISI. Aquí fue. Un pie todavía en la Tierra, cuando ya estaba en el aire."
+      "texto": "Siempre quise volar entre las estrellas. ¿Por qué me duele tanto mirarla ahora?"
     },
     "star": {
-      "titulo": "Una estrella lenta",
-      "texto": "No hay más que decir, y lo sé desde el primer día. Dudé. Eso fue todo. Eso fue suficiente para caer."
+      "titulo": "Una estrella lejana",
+      "texto": "Debo llegar a ella. Debo completar la misión. Aunque me asuste..."
     }
   },
 
   "capitulos": {
     "capitulo1": {
-      "pista": "Algo junto al fuego espera que lo mires.",
+      "pista": "Debe haber algo junto al fuego que me ayude a recordar...",
       "al_terminar": [
-        "La oscuridad cede un poco. Un surco de tierra abierta se aleja del campamento."
+        "La oscuridad cede un poco, y se ve un surco quemado que se aleja del campamento. Debe haber más pistas por allá."
       ]
     },
     "capitulo2": {
-      "pista": "El surco se aleja del campamento. Lo que dejé por el camino todavía está ahí.",
+      "pista": "Lo que dejé por el camino todavía debe estar por aquí...",
       "al_terminar": [
-        "Todo esto lo preparé durante años. Nada de esto explica todavía por qué estoy en el suelo."
+        "Claro... tenía una misión importante en el espacio... pero ¿qué fue lo que me hizo caer hasta este planeta desconocido?"
       ]
     },
     "capitulo3": {
-      "pista": "El surco quemado continúa. Lo que pasó en el descenso empieza a tener sonido.",
+      "pista": "El surco quemado continúa. Lo que pasó en el descenso empieza a tener sentido...",
       "al_terminar": [
         "Ya sé dónde buscar el resto. La nave tiene que estar justo delante."
       ]
     },
     "capitulo4": {
-      "pista": "El surco termina en la nave.",
+      "pista": "La nave debe estar por aquí...",
       "al_terminar": [
-        "Aquí fue. Y todavía no me atrevo a decirlo completo. Algo allá arriba se mueve despacio."
+        "Ya lo recuerdo... mi objetivo está arriba. Me preparé tanto, y casi llegando a mi destino, dudé. Eso fue suficiente para hacerme caer..."
       ]
     },
     "capitulo5": {
-      "pista": "Mira al cielo, aunque duela.",
+      "pista": "Mi destino está allá arriba...",
       "al_terminar": [
-        "Nadie puede ser astronauta con los pies en la Tierra.",
-        "Lo sé ahora. No sé todavía qué hacer con eso.",
-        "Por ahora vuelvo al fuego y me quedo quieta."
+        "La parte más fácil será arreglar la nave.",
+        "La más difícil, atreverme a salir.",
+        "Por alguna razón, viene a mi mente lo que escuché una vez en una canción...",
+        "«Nadie puede ser astronauta con los pies en la Tierra»."
       ]
     }
   }

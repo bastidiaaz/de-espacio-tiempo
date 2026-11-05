@@ -5,14 +5,14 @@
 - **Adaptación jugable del álbum _despacio-tiempo_**: un acto del juego por canción, en el mismo orden del tracklist.
 - El juego se llama **"De Espacio-Tiempo"** (juego de palabras: "despacio" + "espacio-tiempo"). Antes se llamaba "Lumen Vale — Remember": ese es el MVP del que viene todo el código actual.
 - Protagonista: **Isi**. Idioma in-game: **español**.
-- **Dispositivo narrativo: no es amnesia.** Isi recuerda perfectamente lo que pasó; lo que no puede es mirarlo de frente. En el Acto I, sostener la mirada es "atreverse a admitir una verdad que ya conoce"; cada acto puede redefinir qué significa el gesto sin tocar la mecánica. El radio que crece es miedo, no memoria.
+- **Dispositivo narrativo (canon revisado el 2026-11-05):** Isi despierta en un planeta desconocido sin recordar cómo llegó, y mirar los objetos le devuelve la memoria. El radio que crece sigue siendo miedo: no se atreve a mirar más allá todavía. Cada acto puede redefinir qué significa sostener la mirada sin tocar la mecánica.
 - **Fuente de verdad narrativa:** los briefs en `docs/superpowers/specs/*-de-espacio-tiempo-acto*-design.md`, leídos en orden de acto. El código **no** es fuente de verdad narrativa.
 - Para redactar el brief de un acto nuevo: skill `generating-act-briefs` (`.claude/skills/generating-act-briefs/SKILL.md`). Exige la letra completa de la canción y diálogo con el autor; nunca se redacta unilateralmente desde un resumen temático.
-- **Hilos reservados** (no resolverlos antes de su acto): "¿volverá a volar?" → Acto 6 ("el regreso"); a quién le habla Isi cuando transmite → acto futuro, sin asignar.
+- **Hilos reservados** (no resolverlos antes de su acto): el despegue (si se atreve a subir a la nave y salir; el Acto I ya deja claro que quiere) → Acto 6 ("el regreso"); a quién le habla Isi cuando transmite → acto futuro, sin asignar.
 
 ## Estado actual vs. canon
 
-- **Implementado:** el motor completo + el Acto I ("Astronauta") según su brief: todo el texto in-game en español, premisa de duda (no de amnesia), 10 ítems en 5 capítulos, cierre en quietud junto al fuego.
+- **Implementado:** el motor completo + el Acto I ("Astronauta") según su brief: todo el texto in-game en español, 10 ítems en 5 capítulos. Los textos son los que reescribió el autor (DIS-02), con el canon revisado: Isi recupera la memoria, tiene familia, cayó porque dudó y cierra sabiendo que lo difícil es atreverse a salir.
 - **Decisiones de implementación del Acto I que no están en el brief:** el cielo ya no amanece — `PRE_DAWN` (`Game.ts`) bajó de 0.6 a 0.12 y además es el tope al terminar, porque el amanecer rosado leía como sanación y el álbum guarda el amanecer para el Acto 6; `seeds` (transmisor) y `beacon` (pieza de motor) se reinterpretaron solo por texto, sin tocar su geometría; la intro muestra `COPY.act` ("Acto I — Astronauta") bajo el título; la estrella lenta de `sky.shipStar` se mantiene a la deriva, ya no como nave que llega sino como estrella a la que Isi sostiene la mirada.
 - **Sin brief todavía:** del Acto II en adelante. El brief del Acto I ya adelanta de qué trata la canción #2 ("Despacio": contemplación, refugio, saberse rebelde), pero eso es contexto, no un brief — hay que generarlo con la skill, la letra completa y el diálogo con el autor.
 - **Roadmap:** `docs/roadmap.md` (tareas con inputs/outputs, decisiones abiertas y lo que no se toca). Los textos in-game los escribe el autor; Claude orienta y revisa. Para auditar y rehacer el roadmap: skill `running-roadmap-audits` (`.claude/skills/running-roadmap-audits/SKILL.md`).

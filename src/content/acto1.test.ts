@@ -45,36 +45,39 @@ describe('acto1.json', () => {
   });
 });
 
-describe('textos cargados (idénticos al contenido original)', () => {
+// Comprueba que cada texto del JSON llega a su lugar. Compara contra el propio
+// JSON (no contra frases fijas) para que el autor pueda reescribir sin romper tests.
+describe('textos cargados (cableados desde acto1.json)', () => {
+  const raw = acto1Raw;
+
   it('memorias y capítulos', () => {
     expect(MEMORIES).toHaveLength(10);
-    expect(MEMORIES[0].title).toBe('El fuego');
-    expect(MEMORIES[0].text).toBe(
-      'Tres piedras, ramas secas, una chispa contra el guante. Esto sí lo hice yo. Por una vez, no dudé.',
-    );
-    expect(MEMORIES[6].text).toContain('«Perdiendo altitud. Puedo corregir, puedo—».');
+    for (const m of MEMORIES) {
+      expect(m.title).toBe(raw.memorias[m.id].titulo);
+      expect(m.text).toBe(raw.memorias[m.id].texto);
+    }
     expect(MEMORIES[9].attention.range).toBe(Infinity);
     expect(CHAPTERS.map((c) => c.radius)).toEqual([14, 48, 90, 150, 150]);
-    expect(CHAPTERS[4].done).toHaveLength(3);
-    expect(CHAPTERS[3].hint).toBe('El surco termina en la nave.');
+    CHAPTERS.forEach((c, i) => {
+      const ch = raw.capitulos[`capitulo${i + 1}` as keyof typeof raw.capitulos];
+      expect(c.hint).toBe(ch.pista);
+      expect(c.done).toEqual(ch.al_terminar);
+    });
   });
 
   it('líneas sueltas', () => {
-    expect(WAKE_LINES).toHaveLength(2);
-    expect(EDGE_LINES[0]).toBe('Todavía no. Eso no.');
-    expect(STILLNESS_LINE).toBe('Quédate quieta un momento.');
+    expect(WAKE_LINES).toEqual(raw.voz_de_isi.al_despertar);
+    expect(EDGE_LINES).toEqual(raw.voz_de_isi.al_llegar_al_borde);
+    expect(STILLNESS_LINE).toBe(raw.voz_de_isi.quedarse_quieta);
   });
 
   it('COPY', () => {
-    expect(COPY.title).toBe('De Espacio-Tiempo');
-    expect(COPY.act).toBe('Acto I — Astronauta');
-    expect(COPY.hud.count(3, 10)).toBe('3 de 10 mirados de frente');
-    expect(COPY.intro.how(true)).toBe(
-      'Arrastra a la izquierda para caminar y a la derecha para mirar. Para mirar algo de frente, quédate quieta y sostén la mirada en eso.',
-    );
-    expect(COPY.intro.how(false)).toBe(
-      'Camina con WASD, arrastra para mirar alrededor. Para mirar algo de frente, quédate quieta y sostén la mirada en eso.',
-    );
-    expect(COPY.card.next(false)).toBe('Clic o E para continuar');
+    const ui = raw.interfaz;
+    expect(COPY.title).toBe(ui.titulo);
+    expect(COPY.act).toBe(ui.acto);
+    expect(COPY.hud.count(3, 10)).toBe(ui.hud.contador.replace('{n}', '3').replace('{total}', '10'));
+    expect(COPY.intro.how(true)).toBe(`${ui.intro.como_jugar_tactil} ${ui.intro.como_jugar_final}`);
+    expect(COPY.intro.how(false)).toBe(`${ui.intro.como_jugar_teclado} ${ui.intro.como_jugar_final}`);
+    expect(COPY.card.next(false)).toBe(ui.tarjeta.continuar_teclado);
   });
 });

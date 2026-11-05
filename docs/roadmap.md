@@ -95,7 +95,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** un deploy automático desde `main` y una URL pública.
 - **Hecho cuando:** cada push a `main` con CI en verde publica el juego.
 
-**DIS-01 · Guía de escritura del Acto I** · S · P0
+**DIS-01 · Guía de escritura del Acto I** · S · P0 · ✅ hecho (2026-11-05): `docs/guia-textos-acto1.md`, usada por el autor en DIS-02. Los tests de `acto1.test.ts` ya no fijan frases literales, así que reescribir no rompe `npm test`
 - **Inputs:** el brief del Acto I, la letra completa de "Astronauta" y los textos actuales.
 - **Output:** `docs/guia-textos-acto1.md`, con:
   - principios de la voz de Isi;
@@ -107,18 +107,19 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **Game design y narrativa**
 
-**DIS-02 · Reescritura de textos (autor)** · M · P1 · depende de ENG-02, DIS-01, DIS-03
+**DIS-02 · Reescritura de textos (autor)** · M · P1 · depende de ENG-02, DIS-01, DIS-03 · ✅ hecho (2026-11-05): textos del autor en `acto1.json`, con el cambio de canon pasado al brief
 - **Inputs:** la guía DIS-01 y el modo debug.
 - **Output:** un archivo de textos nuevo. Claude lo revisa contra el brief.
 - **Hecho cuando:** el autor da su visto bueno jugando.
 
 **DIS-03 · Revisión de objetos por capa** · M · P1
 - **Inputs:** el brief, la letra y la estructura de 5 capas (que no cambia).
-- **Output:** una tabla de objeto → capa → qué verdad admite Isi. Si cambian objetos, se actualiza el brief y, por ejemplo, el transmisor y la pieza de motor reciben una forma que corresponda.
+- **Pendiente de los textos nuevos (2026-11-05):** el `thermos` ahora es un set de mate (falta el mate y la bombilla en escena) y la `photo` muestra a Isi con su familia y un gato (no se ven).
+- **Output:** una tabla de objeto → capa → qué recuerdo recupera Isi. Si cambian objetos, se actualiza el brief y, por ejemplo, el transmisor y la pieza de motor reciben una forma que corresponda.
 - **Hecho cuando:** el autor aprueba la lista y el brief queda al día.
 
 **DIS-04 · Conceptos de los 5 objetos ocultos** · S · P1 · depende de ENG-01
-- **Inputs:** el brief, la letra y las restricciones (no resolver hilos reservados: "¿volverá a volar?" es del Acto 6, y a quién transmite Isi no tiene acto asignado todavía).
+- **Inputs:** el brief, la letra y las restricciones (no resolver hilos reservados: el despegue es del Acto 6, y a quién transmite Isi no tiene acto asignado todavía).
 - **Output:** 5 conceptos propuestos por Claude, con ubicación y razón de cada uno. El autor elige y escribe los textos.
 - **Mecánica de los ocultos:** solo aparecen en el paseo libre, no cuentan en el contador, y al encontrarlos dan texto y sonido, igual que hoy.
 - **Hecho cuando:** hay 5 conceptos aprobados.
@@ -270,11 +271,11 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 ### Fase 3 — Actos 3 a 6 (con el álbum, ~marzo de 2027)
 
 - Se repite el patrón de la Fase 2 por canción: brief → mecánica → identidad visual → canción en versión juego → textos del autor → release.
-- Los hilos reservados se respetan: "¿volverá a volar?" se resuelve en el Acto 6 ("el regreso"), y a quién le habla Isi cuando transmite todavía no tiene acto asignado.
+- Los hilos reservados se respetan: el despegue (si Isi se atreve a salir) se resuelve en el Acto 6 ("el regreso"), y a quién le habla Isi cuando transmite todavía no tiene acto asignado.
 
 ## Inputs que dependen del autor
 
-- [ ] Letra completa de "Astronauta" (para DIS-01 y DIS-03).
+- [x] Letra completa de "Astronauta" (para DIS-01 y DIS-03): está en el brief del Acto I.
 - [ ] Partitura de la voz principal de "Astronauta" (para AUD-01).
 - [x] Conectar el MCP polyfork en Claude Code (D5).
 - [ ] Decisiones D3, D6 y D7.
