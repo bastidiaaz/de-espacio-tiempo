@@ -9,6 +9,7 @@
 - **2026-11-05: mirador (DIS-05).** Una cordillera en el borde del mundo que, al escalarla, revela un cielo que solo existe ahí: un planeta anillado gigante y una galaxia. La carta está en la cima. El planeta del cielo normal se achica. Ver "Mirador".
 - **2026-11-05: decisiones del autor para los textos de los ocultos (DIS-12).** Títulos con artículo indefinido, el reverso de la foto del campanil, la voz de la carta y un dato de canon nuevo: Isi vive mucho después de 2025. Ver "Textos: decisiones del autor".
 - **2026-11-05: borde (DIS-06).** Antes del tope, el mundo se apaga: se oscurece, la música se desvanece, crece el viento e Isi camina más lento, como empujada. El paseo libre tiene el mismo borde a los 400 m, salvo en el mirador, y una frase propia. Ver "Borde".
+- **2026-11-05: cierre (DIS-07).** Capítulo nuevo entre la nave y la estrella: Isi vuelve a la fogata, recupera convicción y se sienta (11 recuerdos, 6 capítulos). Sentada mira la estrella; tras la cita suena el coro de "Astronauta" una vez, con la cámara guiada, y aparece la pantalla final «Te sientas junto al fuego» con la invitación a ffm.to. Resuelve D6. Ver "Cierre".
 
 ## Contexto
 
@@ -123,7 +124,8 @@ ternura lo es todo.
    llega como algo que Isi escuchó una vez en una canción. El cierre tiene dos
    mitades, y las dos deben estar: **todavía duele** (el miedo no se fue) y
    **está bien atreverse**, aunque la incertidumbre siga presente. No muestra el
-   despegue ni la reparación.
+   despegue ni la reparación. Antes de la estrella, Isi vuelve a la fogata y se
+   sienta (DIS-07); la secuencia completa está en "Cierre".
 
 8. **Encaje con el arco del álbum (revisado 2026-11-05):** el Acto I planta la
    herida (por qué cayó) y deja claro el deseo de volver a volar. Lo que queda
@@ -133,7 +135,7 @@ ternura lo es todo.
    la caída y el deseo. Acto 6 = el ascenso. Todo lo del medio es el "despacio"
    entre ambos.
 
-## Mapeo de objetos/recuerdos (10 ítems, 5 capítulos, radio creciente)
+## Mapeo de objetos/recuerdos (11 ítems, 6 capítulos, radio creciente)
 
 Se conservan los `id` técnicos (son claves internas y de `localStorage`). El
 copy final vive en `src/content/acto1.json`; aquí va el eje de cada objeto.
@@ -151,7 +153,8 @@ copy final vive en `src/content/acto1.json`; aquí va el eje de cada objeto.
 | 2 · el miedo | `recorder` | **cuaderno negro de tapa dura**, con el cohete y el planeta de la insignia en la tapa | el miedo que escribió durante el vuelo |
 | 2 | `beacon` | **rejilla del motor con polvo acumulado**; mantiene la luz roja que parpadea, eco de la nave | reconoce una pieza de su nave |
 | 3 · la nave | `ship` | igual que hoy | quería volar; dudó |
-| 4 · el destino | `star` | igual que hoy | la estrella a la que iba |
+| 4 · la fogata (DIS-07) | `campfire` | el mismo fuego del campamento | recupera convicción para poder mirar al cielo; se sienta |
+| 5 · el destino | `star` | igual que hoy | la estrella a la que iba |
 
 Criterios para el arte (ART-07): mismo estilo low-poly y Lambert flat del
 juego; la foto es la única excepción, con una imagen pixelada muy pequeña.
@@ -191,11 +194,17 @@ emblema de la insignia (`patch`).
 - **`ship`**: siempre quiso volar entre las estrellas, y ahora le duele mirar
   la nave. Al terminar el capítulo admite la causa: dudó.
 
-### Capítulo 4 — el destino
-- **`star`** (gatillo: mirar al cielo): la estrella lejana a la que iba. Debe
-  completar la misión, aunque le asuste.
-- Beat final (`al_terminar` del capítulo 5 en el JSON): lo fácil y lo difícil,
-  y la frase central como algo escuchado en una canción.
+### Capítulo 4 — la fogata (DIS-07)
+- **`campfire`**: Isi vuelve al fuego del campamento porque necesita sentarse
+  a reordenar sus ideas. Recupera convicción para poder mirar al cielo, y se
+  sienta.
+
+### Capítulo 5 — el destino
+- **`star`** (gatillo: mirar al cielo, ya sentada junto al fuego): la estrella
+  lejana a la que iba. Debe completar la misión, aunque le asuste.
+- Beat final (`al_terminar` del capítulo 6 en el JSON): lo fácil y lo difícil,
+  y la frase central como algo escuchado en una canción. Después, el coro
+  (ver "Cierre").
 
 ## Objetos ocultos (DIS-04)
 
@@ -518,6 +527,152 @@ Isi se queda sola.
 
 El jugador nota el borde antes de chocar con él, porque todo se apaga y queda
 solo el viento, y al frenarse ya no se siente una pared invisible abrupta.
+
+## Cierre (DIS-07)
+
+### La idea
+
+El acto termina en **calma**: Isi vuelve al fuego, se sienta y se toma un
+momento para interiorizar todo lo que acaba de recordar. No hay euforia ni
+amanecer (el cielo sigue topado en `PRE_DAWN`); no se muestra la reparación ni
+el despegue. Sentarse es el gesto de detenerse a reordenar las ideas antes de
+mirar hacia arriba con convicción.
+
+### Decisiones del autor (2026-11-05)
+
+- **Capítulo nuevo: la fogata, entre la nave y la estrella.** Después de la
+  nave, Isi tiene que volver caminando al campamento. El acto pasa a **11
+  recuerdos en 6 capítulos**: 0 despertar · 1 antes de partir · 2 el miedo ·
+  3 la nave · **4 la fogata** · 5 el destino.
+- **Frase nueva al terminar el capítulo de la nave**, a continuación de
+  "…Eso fue suficiente para hacerme caer...": **«Tengo mucho en mi cabeza.
+  Necesito sentarme a reordenar mis ideas...»** (texto del autor, tal cual).
+- **El recuerdo de la fogata:** al mirarla esta segunda vez, Isi **recupera
+  convicción para poder mirar al cielo**. El texto de la tarjeta lo escribe el
+  autor.
+- **Isi se sienta al recuperar el recuerdo de la fogata.** Mira la estrella ya
+  sentada.
+- **Orden después de la estrella:** tarjeta de `star` → "La parte más fácil…"
+  → "La más difícil…" → "…lo que escuché una vez en una canción..." → la cita
+  **«Nadie puede ser astronauta con los pies en la Tierra»**, entera → recién
+  entonces entra **el coro de "Astronauta" (B1) desde el principio, una sola
+  vez**. Texto y música no se sincronizan.
+- **Durante el coro, la cámara va sola.**
+- **Al terminar el coro, la cámara se queda mirando la estrella** y aparece la
+  pantalla final.
+- **Pantalla final:** el título cambia de "Completaste el Acto I" a **«Te
+  sientas junto al fuego»**. El cuerpo actual ("Lo siguiente es arreglar la
+  nave…") se mantiene. **Debajo va la invitación a escuchar** en
+  `https://ffm.to/tiann-astronauta`.
+- **"Seguir explorando":** Isi se pone de pie y empieza el paseo libre.
+- **D6 resuelta:** suena **solo el coro, una vez, solo en este momento**. No se
+  repite en el paseo libre.
+- **Se publica por partes.** Cada pieza sale a producción cuando está lista,
+  aunque falten el coro (AUD-01) o los textos del autor: mientras tanto, la
+  pausa del coro va en silencio y los textos faltantes van como provisionales.
+  No hace falta esconderlo detrás del modo debug.
+
+### Secuencia
+
+| # | Momento | Jugador | Cámara | Sonido | UI |
+|---|---|---|---|---|---|
+| 1 | Termina el cap. 3 (nave) | camina | libre | `swell` como hoy | frases de `al_terminar`, incluida la nueva |
+| 2 | Cap. 4: vuelve al campamento | camina | libre | ambiente normal | pista del cap. 4 |
+| 3 | Sostiene la mirada en la fogata | — | — | campanilla de recuerdo | tarjeta de la fogata |
+| 4 | Isi se sienta | **no puede caminar desde aquí** | baja al sentarse; luego mirar libre | — | — |
+| 5 | Cap. 5: busca la estrella, sentada | solo mirar | libre | ambiente normal | pista del cap. 5 |
+| 6 | Sostiene la mirada en la estrella | solo mirar | libre | campanilla | tarjeta de `star` y las 4 frases |
+| 7 | Termina la cita | sin control | va sola: baja al fuego, vuelve a la estrella | coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
+| 8 | Termina el coro | sin control | fija en la estrella | ambiente vuelve | pantalla final + invitación |
+| 9 | "Seguir explorando" | camina | se pone de pie | ambiente normal | paseo libre |
+
+### Decisiones de Claude (revisables)
+
+- **Id nuevo para la fogata:** `campfire` (no se reutiliza `fire`: ya está
+  recordado desde el capítulo 0 y el capítulo nuevo se daría por hecho).
+  Mira el mismo objeto de la escena (el grupo de `Campfire`); no agrega
+  llamadas a `rng()` ni cambia posiciones. Su `attention` copia la de `fire`.
+- **Radio del capítulo de la fogata: 150**, igual que la nave y la estrella
+  (`CHAPTER_RADII` pasa a `[14, 48, 90, 150, 150, 150]`). Volver al centro no
+  necesita más mundo.
+- **Textos que cambian de lugar en `acto1.json`:** lo que hoy es `capitulo5`
+  (estrella) pasa a `capitulo6`; `capitulo5` es la fogata, con su `pista` y
+  `al_terminar` que escribe el autor (si `al_terminar` queda vacío, el loader
+  debe aceptarlo). La memoria nueva va bajo `memorias.campfire`.
+  `interfaz.final.titulo` pasa a «Te sientas junto al fuego».
+- **Sentarse (ART-09):** la cámara baja de 1,6 m a unos 0,9 m en ~1,5 s,
+  junto al fuego, mirando hacia él. Sentada, el jugador mueve la mirada
+  igual que de pie (ratón/arrastre), sin caminar. Con *reduced motion*: un
+  fundido corto en vez del movimiento, igual al levantarse.
+- **Cámara del coro:** desde la estrella, baja despacio al fuego, se queda ahí
+  y sube de vuelta a la estrella para llegar justo cuando termina el coro. Con
+  *reduced motion*, la cámara no se mueve: queda mirando la estrella.
+- **Tiempos:** el coro entra ~1,5 s después de que se cierra la tarjeta de la
+  cita (reemplaza los 3,5 s actuales de `afterCards`); la pantalla final
+  aparece ~2 s después de la última nota.
+- **Mientras no exista AUD-01** (falta la partitura), el paso 7 es una pausa
+  de la duración aproximada del coro (~35 s) con la misma cámara, para poder
+  aprobar la secuencia. Cuando llegue AUD-01, la duración sale de los datos
+  de la melodía.
+- **La invitación**: una línea de texto y un enlace/botón que abre
+  `https://ffm.to/tiann-astronauta` en una pestaña nueva, debajo de los
+  botones actuales. El texto lo escribe el autor (hasta entonces, provisional
+  marcado como tal). El diseño visual llega con UI-03.
+- **Dónde se sienta:** en un punto fijo junto al fuego (unos 2 m), libre de
+  los colliders del casco y el set de mate, mirando hacia el fuego. Al
+  sentarse, la cámara se desliza hasta ahí desde donde estaba. El mismo punto
+  sirve para reanudar sentada y para que el plano del coro sea siempre igual.
+  No se alinea con la estrella (deriva) ni depende de ART-06.
+- **Cuándo se da por terminado el acto:** `star` y la marca de acto completado
+  (`onComplete`, `lvr-acts-done`) se guardan **cuando aparece la pantalla
+  final**, no al recordar la estrella. Si alguien recarga a mitad de las
+  frases o del coro, vuelve sentado al capítulo 5 y mira la estrella otra vez;
+  nadie se pierde el coro ni la invitación. Así "tiene `star`" sigue
+  significando "vio el final".
+- **`Narrative` y `gameStore`:** la nota "no tocar" de "Notas de
+  implementación" se refiere a su mecánica (la cola de tarjetas, el patrón del
+  store). Sumar campos al store (por ejemplo `seated` o una fase del cierre,
+  para ocultar el joystick y bloquear el movimiento) está bien y es lo
+  esperado.
+- **Guardado y reanudación:**
+  - Si un jugador recarga con la fogata ya recordada y la estrella no,
+    reaparece **sentado junto al fuego**, en el capítulo 5.
+  - Las partidas guardadas que ya tienen `star` (terminaron el acto con 10
+    recuerdos) se tratan como terminadas: se agrega `campfire` al cargar, para
+    que no vuelvan a un capítulo 4 y salten el cierre. No cambia ninguna clave
+    de `localStorage`.
+  - Al volver de la pantalla final (paseo libre ya activo), Isi aparece de pie.
+- **Numeración:** en esta sección los capítulos van de 0 a 5, como en la tabla
+  de objetos; las claves del JSON son 1 más (`capitulo5` = fogata,
+  `capitulo6` = estrella). La sección "Borde" numera desde 1.
+- **Borde (DIS-06):** la franja se calcula igual; nave, fogata y estrella
+  (caps. 4–6 en la numeración de "Borde") usan 25 m. Sentada no hay
+  movimiento, así que el borde no interviene.
+- **Debug:** el panel de saltos suma el capítulo nuevo; "saltar al cap. 5" deja
+  a Isi sentada junto al fuego.
+- **Cuando la estrella ya fue mirada**, la mirada en el cielo no vuelve a
+  disparar nada; el paseo libre no tiene coro.
+
+### Lo que queda para quien lo construya
+
+- Curvas finas de la cámara (sentarse, coro, levantarse); el autor las aprueba
+  jugando.
+- La voz del coro en sí (AUD-01) y el rediseño de la pantalla final (UI-03).
+- Si el modelo del fuego necesita algo para que la segunda mirada se lea
+  distinta a la primera (no es obligatorio).
+
+### Textos pendientes del autor
+
+- Tarjeta de la fogata (`memorias.campfire`: título y texto).
+- `capitulo5` (fogata): `pista` y, si quiere, `al_terminar`.
+- La pista del capítulo de la estrella puede necesitar ajuste ahora que Isi la
+  busca sentada.
+- La línea de la invitación a ffm.to.
+
+### Hecho cuando
+
+El autor juega el final completo, de la nave a "Seguir explorando", y lo
+aprueba; y queda implementado mediante ART-09, AUD-01 y UI-03.
 
 ## Notas de implementación
 

@@ -43,7 +43,7 @@
 | D3 | Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami) | Autor | ENG-05 |
 | ~~D4~~ | ~~GitHub Pages o Vercel~~ — **resuelta (2026-11-04): GitHub Pages**, publicado desde el workflow de CI | Autor | — |
 | ~~D5~~ | ~~Conexión del MCP polyfork y licencias de sus assets~~ — **resuelta (2026-11-04):** conectado (plan gratis); los modelos low-poly se pueden incluir en el juego sin atribución; las ediciones HD no. Ver `docs/assets.md` | Autor conecta → Claude verifica | — |
-| D6 | Al cierre, ¿canción completa o un fragmento? ¿Se repite en el paseo libre? | Autor | AUD-01, DIS-07 |
+| ~~D6~~ | ~~Al cierre, ¿canción completa o un fragmento? ¿Se repite en el paseo libre?~~ — **resuelta (2026-11-05): solo el coro (B1), una vez, junto al fuego; no se repite en el paseo libre.** Ver "Cierre" en el brief del Acto I | Autor | — |
 | D7 | Tipografía manuscrita (licencia OFL, o letras dibujadas por el autor) | Autor | ART-01 |
 
 ## Tareas
@@ -148,8 +148,8 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** un spec de señal progresiva, visual (niebla, viñeta o algo similar) y sonora (AUD-05), que avise antes del tope duro.
 - **Hecho cuando:** el jugador nota el borde antes de chocar con él, sin una pared invisible abrupta.
 
-**DIS-07 · Secuencia de cierre** · M · P1 · depende de D6
-- **Secuencia:** mirar la estrella desde cerca de la fogata → Isi se sienta junto al fuego (cámara) → "Astronauta" en versión juego → invitación a escuchar en `https://ffm.to/tiann-astronauta` → paseo libre con los ocultos y el mirador.
+**DIS-07 · Secuencia de cierre** · M · P1 · guion ✅ aprobado (2026-11-05): sección "Cierre" del brief del Acto I. Capítulo nuevo de la fogata entre la nave y la estrella (11 recuerdos, 6 capítulos); Isi se sienta al recordarla, mira la estrella sentada y, tras la cita, suena el coro una vez con cámara guiada; pantalla final «Te sientas junto al fuego» con la invitación debajo. Se publica por partes. Falta implementarlo (ART-09, AUD-01, UI-03) y los textos del autor
+- **Secuencia (original):** mirar la estrella desde cerca de la fogata → Isi se sienta junto al fuego (cámara) → "Astronauta" en versión juego → invitación a escuchar en `https://ffm.to/tiann-astronauta` → paseo libre con los ocultos y el mirador.
 - **Output:** un guion con tiempos y estados de UI.
 - **Hecho cuando:** el autor lo aprueba, y queda implementado mediante ART-09, AUD-01 y UI-03.
 
@@ -324,7 +324,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - [x] Letra completa de "Astronauta" (para DIS-01 y DIS-03): está en el brief del Acto I.
 - [ ] Partitura de la voz principal de "Astronauta" (para AUD-01).
 - [x] Conectar el MCP polyfork en Claude Code (D5).
-- [ ] Decisiones D3, D6 y D7.
+- [ ] Decisiones D3 y D7.
 - [ ] Reescritura de textos (DIS-02).
 - [ ] Letra y partitura de "Despacio", y portada (para la Fase 2).
 
