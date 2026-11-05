@@ -558,8 +558,10 @@ mirar hacia arriba con convicción.
   entonces entra **el coro de "Astronauta" (B1) desde el principio, una sola
   vez**. Texto y música no se sincronizan.
 - **Durante el coro, la cámara va sola.**
-- **Al terminar el coro, la cámara se queda mirando la estrella** y aparece la
-  pantalla final.
+- **La pantalla final aparece cuando la cámara guiada termina su recorrido**
+  y vuelve a la estrella (revisado 2026-11-05). La cámara se queda mirando la
+  estrella y **el coro sigue sonando detrás** de la pantalla final hasta
+  terminar.
 - **Pantalla final:** el título cambia de "Completaste el Acto I" a **«Te
   sientas junto al fuego»**. El cuerpo actual ("Lo siguiente es arreglar la
   nave…") se mantiene. **Debajo va la invitación a escuchar** en
@@ -582,8 +584,8 @@ mirar hacia arriba con convicción.
 | 4 | Isi se sienta | **no puede caminar desde aquí** | baja al sentarse; luego mirar libre | — | — |
 | 5 | Cap. 5: busca la estrella, sentada | solo mirar | libre | ambiente normal | pista del cap. 5 |
 | 6 | Sostiene la mirada en la estrella | solo mirar | libre | campanilla | tarjeta de `star` y las 4 frases |
-| 7 | Termina la cita | sin control | va sola: baja al fuego, vuelve a la estrella | coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
-| 8 | Termina el coro | sin control | fija en la estrella | ambiente vuelve | pantalla final + invitación |
+| 7 | Termina la cita | sin control | va sola: baja al fuego, vuelve a la estrella | entra el coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
+| 8 | La cámara vuelve a la estrella | sin control | fija en la estrella | el coro sigue hasta terminar; luego vuelve el ambiente | pantalla final + invitación |
 | 9 | "Seguir explorando" | camina | se pone de pie | ambiente normal | paseo libre |
 
 ### Decisiones de Claude (revisables)
@@ -605,15 +607,19 @@ mirar hacia arriba con convicción.
   igual que de pie (ratón/arrastre), sin caminar. Con *reduced motion*: un
   fundido corto en vez del movimiento, igual al levantarse.
 - **Cámara del coro:** desde la estrella, baja despacio al fuego, se queda ahí
-  y sube de vuelta a la estrella para llegar justo cuando termina el coro. Con
-  *reduced motion*, la cámara no se mueve: queda mirando la estrella.
-- **Tiempos:** el coro entra ~1,5 s después de que se cierra la tarjeta de la
-  cita (reemplaza los 3,5 s actuales de `afterCards`); la pantalla final
-  aparece ~2 s después de la última nota.
-- **Mientras no exista AUD-01** (falta la partitura), el paso 7 es una pausa
-  de la duración aproximada del coro (~35 s) con la misma cámara, para poder
-  aprobar la secuencia. Cuando llegue AUD-01, la duración sale de los datos
-  de la melodía.
+  y sube de vuelta a la estrella. Dura **~18 s** (unos 5 s bajando, 7 s en el
+  fuego, 6 s subiendo), independiente del largo del coro. Con *reduced
+  motion*, la cámara no se mueve (queda mirando la estrella), pero la pantalla
+  final espera lo mismo.
+- **Tiempos:** el coro y la cámara arrancan juntos ~1,5 s después de que se
+  cierra la tarjeta de la cita (reemplaza los 3,5 s actuales de
+  `afterCards`); la pantalla final aparece ~1 s después de que la cámara llega
+  a la estrella.
+- **Si el jugador aprieta "Seguir explorando" antes de que acabe el coro**, el
+  coro sigue hasta su final (no se corta) y no se repite.
+- **Mientras no exista AUD-01** (falta la partitura), el coro no suena: la
+  cámara y la pantalla final funcionan igual, en silencio. La secuencia no
+  depende de la duración del coro.
 - **La invitación**: una línea de texto y un enlace/botón que abre
   `https://ffm.to/tiann-astronauta` en una pestaña nueva, debajo de los
   botones actuales. El texto lo escribe el autor (hasta entonces, provisional
