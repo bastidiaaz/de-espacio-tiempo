@@ -10,6 +10,7 @@ import { createHash2 } from './math/random';
 import { easeInOut, lerp, lerpAngle } from './math/util';
 import { isCoarsePointer, prefersReducedMotion, storage } from './platform';
 import { ItemSet, type Item } from './story/items';
+import { Closing, guidedLook } from './story/closing';
 import { migrateSave } from './story/saveMigration';
 import { buildStoryWorld, type StoryWorld } from './story/storyWorld';
 import { Attention } from './systems/attention';
@@ -86,6 +87,8 @@ export class Game implements GameActions, ActEngine {
   private readonly player: Player;
   /** Sitting by the fire (DIS-07). */
   private readonly seat: Seat;
+  /** After the last quote: guided camera, then the ending screen (DIS-07). */
+  private readonly closing = new Closing();
   private readonly input: Input;
   private readonly audio: AudioEngine;
   private readonly yawToFire: number;
@@ -236,7 +239,7 @@ export class Game implements GameActions, ActEngine {
       onRemember: (it) => this.remember(it),
     });
     this.input = new Input(this.canvas, {
-      enabled: () => this.phase === 'play' && !this.paused,
+      enabled: () => this.phase === 'play' && !this.paused && !this.closing.locksLook,
       canMove: () => !this.seat.locksMovement,
       onLook: (dx, dy, k) => this.player.look(dx, dy, k),
       onKey: (code) => {
@@ -294,6 +297,8 @@ export class Game implements GameActions, ActEngine {
 
   keepWandering = (): void => {
     this.store.setState({ endingVisible: false });
+    this.closing.reset();
+    this.standUp();
     this.progress.freeRoam = true;
     this.atmosphere.radiusTarget = FREE_ROAM_RADIUS;
   };
@@ -404,11 +409,17 @@ export class Game implements GameActions, ActEngine {
       const pose = this.seat.update(dt);
       if (pose) this.applyPose(pose, dt);
       else player.update(dt, this.input, this.field, this.resolvePlayer);
+      const stage = this.closing.update(dt);
+      // AUD-01: aquí entra el coro (una vez) y baja el ambiente; sigue sonando tras la pantalla
+      // final y aunque se apriete "Seguir explorando".
+      if (stage === 'ending') this.showEnding();
+      if (this.closing.locksLook) this.guideCamera(dt);
       // Note: the `chapter < length` guard is the one intentional fix vs. the single-file version,
       // which threw here if you waited 45 s on the ending screen.
       if (
         !progress.freeRoam &&
         !narrative.card &&
+        this.closing.stage === 'idle' &&
         progress.chapter < CHAPTERS.length &&
         this.time - this.lastProgress > HINT_DELAY
       ) {
@@ -481,6 +492,47 @@ export class Game implements GameActions, ActEngine {
     }, FADE_MS);
   }
 
+  /** Guided camera of the closing: star → fire → star; held on the star with reduced motion. */
+  private guideCamera(dt: number): void {
+    const { player } = this;
+    // The star sprite lives in the sky group, centred on the camera: its position is a direction.
+    const star = facing({ x: 0, y: 0, z: 0 }, this.sky.shipStar.position);
+    let look = star;
+    if (!prefersReducedMotion) {
+      const campfire = this.items.items.find((x) => x.id === 'campfire')!;
+      const eye = { x: player.position.x, y: player.position.y + player.eye, z: player.position.z };
+      look = guidedLook(this.closing.cameraU, star, facing(eye, this.items.targetOf(campfire)));
+    }
+    // Follow with a little lag: no snap when the camera takes over, and the drifting star stays framed.
+    const k = Math.min(1, dt * 3);
+    player.yaw = lerpAngle(player.yaw, look.yaw, k);
+    player.pitch = lerp(player.pitch, look.pitch, k);
+  }
+
+  /** The act counts as finished only now, so a reload mid-closing replays it (DIS-07). */
+  private showEnding(): void {
+    if (!this.debug) {
+      storage.set(this.memoryKey, this.progress.serialize());
+      this.options.onComplete();
+    }
+    this.store.setState({ endingVisible: true });
+  }
+
+  /** "Seguir explorando": up on her feet, or a short fade with reduced motion. */
+  private standUp(): void {
+    if (this.seat.state !== 'seated') return;
+    if (!prefersReducedMotion) {
+      this.seat.rise();
+      return;
+    }
+    this.store.setState({ fade: true });
+    this.later(() => {
+      this.seat.snapStanding();
+      this.player.eye = STAND_EYE;
+      this.store.setState({ fade: false });
+    }, FADE_MS);
+  }
+
   private updateEffects(dt: number): void {
     const { time, progress, player } = this;
     this.story.campfire.update(time, this.atmosphere.kCur);
@@ -513,7 +565,8 @@ export class Game implements GameActions, ActEngine {
   private remember(it: Item): void {
     const { progress, narrative, atmosphere, audio } = this;
     progress.remember(it.id);
-    if (!this.debug) storage.set(this.memoryKey, progress.serialize());
+    // `star` is saved with the ending screen (showEnding), not here.
+    if (!this.debug && it.id !== 'star') storage.set(this.memoryKey, progress.serialize());
     this.store.setState({ remembered: [...progress.remembered] });
     this.lastProgress = this.time;
 
@@ -531,8 +584,7 @@ export class Game implements GameActions, ActEngine {
       audio.swell();
       if (progress.isFinished) {
         atmosphere.kTarget = PRE_DAWN;
-        if (!this.debug) this.options.onComplete();
-        narrative.afterCards = () => this.later(() => this.store.setState({ endingVisible: true }), 3500);
+        narrative.afterCards = () => this.closing.start();
         return;
       }
       atmosphere.radiusTarget = CHAPTERS[progress.chapter].radius;
@@ -549,6 +601,7 @@ export class Game implements GameActions, ActEngine {
     for (const t of this.timers) clearTimeout(t);
     this.timers.clear();
     progress.jumpToChapter(chapter);
+    this.closing.reset();
     this.narrative.clear();
     this.store.setState({ remembered: [...progress.remembered], endingVisible: false, fade: false });
     if (progress.chapter === STAR_CHAPTER) this.seat.snapSeated();
