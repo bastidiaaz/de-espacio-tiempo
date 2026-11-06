@@ -10,7 +10,7 @@ const palette = (p: Record<string, string>) =>
     THREE.Color
   >;
 
-/** Night -> dawn, driven by how much has been remembered. */
+/** Night -> dawn palettes. Act I caps k at PRE_DAWN (Game.ts), so it never gets near dawn. */
 const NIGHT = palette({
   h: '#3d3a78',
   m: '#2b2c66',
@@ -42,8 +42,8 @@ export interface AtmosphereDeps {
 
 /**
  * Owns the two story-driven dials:
- *  - k: 0 (deep night) -> 1 (dawn)
- *  - radius: how far the "light of memory" reaches (fog + walkable area)
+ *  - k: 0 (deep night) -> 1 (dawn); driven by how much Isi has remembered, capped by the act
+ *  - radius: how far Isi dares to look for now (fog + walkable area); it grows as the fear eases
  */
 export class Atmosphere {
   kTarget: number;

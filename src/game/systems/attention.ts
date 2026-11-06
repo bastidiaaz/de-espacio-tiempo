@@ -10,7 +10,7 @@ export interface AttentionView {
 }
 
 /**
- * The core verb: stand still and hold your gaze on something to remember it.
+ * The core verb: stand still and hold your gaze on an object; looking at it gives Isi the memory back.
  * Picks the available memory closest to screen center and fills a ring over DWELL_SECONDS.
  */
 export class Attention {

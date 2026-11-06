@@ -164,7 +164,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** tres eventos anónimos: inicio, acto completado y clic en ffm.to. Sin cookies.
 - **Hecho cuando:** los eventos aparecen en el panel, y no hay banner de consentimiento porque no se necesita.
 
-**ENG-06 · Deuda conocida** · S · P1
+**ENG-06 · Deuda conocida** · S · P1 · ✅ hecho (2026-11-05): `MemoryCard` detiene la propagación de Enter/Espacio; comentarios alineados con el canon revisado; doc-comment duplicado de `PRE_DAWN` eliminado; CLAUDE.md al día
 - **Output:**
   - corregir el doble Enter con la tarjeta enfocada;
   - limpiar los comentarios con la premisa antigua (`sky.ts`, `attention.ts`, `atmosphere.ts`);

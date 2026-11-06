@@ -28,7 +28,7 @@ export interface SkyUniforms {
   sunDir: THREE.IUniform<THREE.Vector3>;
 }
 
-/** Sky dome, stars, ringed giant, moon and the drifting colony-ship "star". Follows the camera. */
+/** Sky dome, stars, ringed giant, moon and the slow drifting star (`shipStar`). Follows the camera. */
 export class Sky {
   readonly group = new THREE.Group();
   readonly uniforms: SkyUniforms = {
@@ -118,7 +118,8 @@ export class Sky {
     moon.position.set(0.62, 0.5, -0.35).normalize().multiplyScalar(470);
     this.group.add(planet, ring, moon);
 
-    // The colony ship: a slow "star" that only appears in the last chapter.
+    // A slow drifting star that fades in from chapter 4 (Atmosphere) and that Isi ends up holding
+    // the gaze on. The name is historical: in the original premise it was a colony ship arriving.
     this.shipStar = additiveSprite(glowTexture, 0xfff1c0, 0, false);
     this.shipStar.scale.setScalar(18);
     this.group.add(this.shipStar);

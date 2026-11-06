@@ -36,7 +36,6 @@ import { loadModel } from './three/gltf';
 import { createGlowTexture, disposeObject } from './three/helpers';
 
 const TOTAL = MEMORIES.length;
-/** Night sky "brightens" up to this much before the ending's dawn. */
 /** Brightest the sky ever gets: the act closes in stillness, never in a full dawn. */
 const PRE_DAWN = 0.12;
 /** Pixel height the retro mode renders at before upscaling. */

@@ -13,6 +13,9 @@ export function MemoryCard() {
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      // Input also advances the card on Enter from its window listener; stop the event here so a
+      // focused card advances once, not twice.
+      e.stopPropagation();
       advanceCard();
     }
   };

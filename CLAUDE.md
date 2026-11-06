@@ -53,7 +53,7 @@
 ## Diferencias conocidas con la versión original
 
 - **Corregido:** el aviso de pista tras 45 s ya no lanza una excepción cuando el jugador espera en la pantalla final (`Game.frame`, guard `chapter < CHAPTERS.length`).
-- **Pendiente (se mantiene igual que el original a propósito):** con la tarjeta enfocada por teclado, Enter avanza dos veces (handler de la tarjeta + listener global de `Input`).
+- **Corregido (ENG-06):** con la tarjeta enfocada por teclado, Enter avanzaba dos veces (handler de la tarjeta + listener global de `Input`). `MemoryCard` ahora detiene la propagación del evento.
 
 ## Ideas de evolución (no hechas)
 
