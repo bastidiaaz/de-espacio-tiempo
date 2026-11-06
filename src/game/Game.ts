@@ -616,7 +616,6 @@ export class Game implements GameActions, ActEngine {
   private resolvePlayer = (P: THREE.Vector3): void => {
     pushOut(P, this.story.colliders);
     pushOut(P, this.hidden.colliders);
-    if (this.progress.freeRoam) pushOut(P, this.hidden.trailColliders);
     pushOut(P, this.chunks.collidersNear(P.x, P.z));
     const lim = this.atmosphere.radiusCur - EDGE_MARGIN;
     const dc = Math.hypot(P.x, P.z);

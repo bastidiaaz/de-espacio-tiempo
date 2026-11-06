@@ -69,10 +69,6 @@ export class HiddenSet {
   readonly tints: TintZone[];
   /** The colossal structure of each place (the letter has none). */
   readonly structures: Partial<Record<HiddenId, Structure>>;
-  /** Trails of crumbs from the fire to each structure: free roam only (`update` shows them). */
-  private readonly trails: THREE.Group;
-  /** The trails' colliders: only solid in the free roam (Game.resolvePlayer). */
-  readonly trailColliders: Collider[];
 
   constructor(field: TerrainField, kit: PropKit, glow: THREE.Texture, seed: number) {
     this.layout = layoutHidden({
@@ -133,10 +129,6 @@ export class HiddenSet {
     this.clearings.push(...places.clearings);
     this.tints = places.tints;
     this.structures = places.structures;
-    this.trails = places.trails;
-    this.trails.visible = false;
-    this.group.add(this.trails);
-    this.trailColliders = places.trailColliders;
   }
 
   /** World-space point the player has to look at. Shared vector: copy it to keep it. */
@@ -161,7 +153,6 @@ export class HiddenSet {
    * light, appears within ~30 m on the ones not found yet; never from afar, never as text.
    */
   update(dt: number, time: number, viewer: THREE.Vector3, active: boolean, found: ReadonlySet<string>): void {
-    this.trails.visible = active;
     this.items.forEach((h, i) => {
       const d = Math.hypot(viewer.x - h.obj.position.x, viewer.z - h.obj.position.z);
       h.obj.visible = active && d < DRAW_DISTANCE;

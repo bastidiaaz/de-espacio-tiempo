@@ -327,16 +327,9 @@ estructura en cada uno, propia del planeta (natural, no hecha por nadie):
   roca flotante, además, asoma entera sobre la loma). Tope: 12 veces su
   primer tamaño; detrás de una loma muy grande junto al campamento, asoma
   menos.
-- **Rastros desde la fogata (decisión del autor, 2026-11-06):** desde unos
-  28 m de la fogata hasta cerca de cada estructura hay pistas sueltas de su
-  bioma: arbolitos de madera hacia el árbol madre, cristales azules hacia la
-  catedral, pequeñas rocas flotantes con un tallo brillante colgando hacia la
-  isla y rocas cobrizas hacia el arco. Van cada 18–28 m y se desvían hasta
-  8 m a los lados, para que no se lean como un camino; si caen en un lago,
-  se corren hasta 12 m buscando tierra o asoman del agua, para que el rastro
-  no se corte. **Solo existen en el paseo libre**, para no invitar a salir
-  del radio durante la historia. La carta no tiene rastro: al mirador no lo
-  señala nada.
+- **Sin rastros (decisión del autor, 2026-11-06):** se probó un rastro de
+  pistas del bioma desde la fogata hasta cada estructura y el autor lo quitó:
+  ver las siluetas desde lejos basta para guiar la exploración.
 - Más marcados: el bioma llega a unos **55 m** del objeto (la tierra teñida, a
   ~60 m), con el doble de elementos, más detalle a ras de suelo y la tierra a
   casi plena intensidad. Dentro del bioma no aparecen los hongos, tallos ni

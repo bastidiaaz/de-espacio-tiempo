@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { WATER } from '../config';
 import { makeNoise } from '../math/noise';
 import { TerrainField } from '../world/terrain';
-import { HIDDEN_IDS } from '../../content/story';
 import { createPropKit } from '../world/props';
 import { HiddenSet } from './hidden';
 import {
@@ -12,7 +11,6 @@ import {
   ISLET,
   MAX_SCALE,
   MIN_SILHOUETTE,
-  buildPlaces,
   horizonTowards,
   islandModifier,
 } from './hiddenPlaces';
@@ -45,7 +43,7 @@ describe('islandModifier', () => {
   });
 });
 
-describe('structures and trails, seen from the fire', () => {
+describe('structures, seen from the fire', () => {
   const seeds = Array.from({ length: 20 }, (_, i) => i * 7919 + 11);
   const build = (seed: number) => {
     const field = new TerrainField(makeNoise(seed), seed);
@@ -65,34 +63,6 @@ describe('structures and trails, seen from the fire', () => {
       const hill = horizonTowards(field, st!.x, st!.z);
       if (st!.scale < MAX_SCALE) expect(elevation).toBeGreaterThanOrEqual(hill + HILL_CLEARANCE - 1e-9);
       else expect(elevation).toBeGreaterThan(hill);
-    }
-  });
-
-  it.each(seeds)('seed %i: a loose trail leads from near the fire towards each structure', (seed) => {
-    const field = new TerrainField(makeNoise(seed), seed);
-    const kit = createPropKit();
-    const hidden = new HiddenSet(field, kit, new THREE.Texture(), seed);
-    const { spots } = hidden.layout;
-    const places = buildPlaces(new TerrainField(makeNoise(seed), seed), kit, spots, seed, HIDDEN_IDS);
-    expect(places.trailPoints.letter).toBeUndefined(); // nothing points at the mirador
-    for (const id of ['guitar', 'insulin', 'campanil', 'earring'] as const) {
-      const st = places.structures[id]!;
-      const points = places.trailPoints[id]!;
-      expect(points.length, id).toBeGreaterThanOrEqual(3);
-      expect(Math.hypot(points[0].x, points[0].z)).toBeLessThan(40); // seen from the fire
-      for (let k = 1; k < points.length; k++) {
-        const gap = Math.hypot(points[k].x - points[k - 1].x, points[k].z - points[k - 1].z);
-        expect(gap).toBeLessThan(55); // never a long break
-      }
-      const D = Math.hypot(st.x, st.z);
-      for (const p of points) {
-        // Along the way to the structure, wandering a little to the sides.
-        const along = (p.x * st.x + p.z * st.z) / D;
-        const side = Math.abs(p.x * st.z - p.z * st.x) / D;
-        expect(along).toBeGreaterThan(20);
-        expect(along).toBeLessThan(D);
-        expect(side).toBeLessThanOrEqual(20 + 1e-9);
-      }
     }
   });
 });

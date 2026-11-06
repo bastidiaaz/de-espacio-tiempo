@@ -5,8 +5,7 @@
  * this before" and goes to look. Never right next to the object: its hideout (hidden.ts) stays as
  * it is.
  *
- * From the fire, every structure rises as a silhouette in the fog, and a loose trail of its biome's
- * own elements leads from the fire towards it (free roam only), not obvious enough to be a path.
+ * From the fire, every structure rises as a silhouette in the fog.
  *
  * Determinism: a generator of its own per place, derived from the seed (never the world's `rng()`).
  * Only the campanil's island changes the terrain, and only around it (far from camp).
@@ -51,13 +50,6 @@ const UNDERSIDE_CLEARANCE = (2 * Math.PI) / 180;
 const HORIZON_REACH = 170;
 /** Even behind a big hill, no structure grows beyond this (a 12× tree is ~250 m tall). */
 export const MAX_SCALE = 12;
-/** Trail from the fire to each structure: starts this far from the fire, stops this far before it. */
-const TRAIL_START = 28;
-const TRAIL_STOP = 30;
-/** Distance between two trail elements (m): STEP plus up to STEP_JITTER; and their sideways wander. */
-const TRAIL_STEP = 18;
-const TRAIL_STEP_JITTER = 10;
-const TRAIL_WANDER = 16;
 /** The island: dry islet up to ISLET m, water from MOAT_IN to MOAT_OUT, back to the terrain by SHORE. */
 export const ISLET = 5;
 const MOAT_IN = 7;
@@ -65,9 +57,8 @@ const MOAT_OUT = 14;
 const SHORE = 16.5;
 /** How deep the moat goes below the water line (m): deep enough to swim. */
 const MOAT_DEPTH = 1.4;
-/** Mixed into the seed for the places' own generators, and for the trails'. */
+/** Mixed into the seed for the places' own generators. */
 const SALT = 0x91ace5;
-const TRAIL_SALT = 0x7a11e5;
 
 /**
  * The campanil's island: a ring sunk under the water around (cx, cz) and a dry islet in the middle.
@@ -102,11 +93,6 @@ export interface Places {
   /** Circles the chunks keep free of the planet's common props. */
   clearings: Collider[];
   structures: Partial<Record<HiddenId, Structure>>;
-  /** The trails from the fire: shown (and solid) only in the free roam. */
-  trails: THREE.Group;
-  trailColliders: Collider[];
-  /** Where each trail's elements stand, in order from the fire. */
-  trailPoints: Partial<Record<HiddenId, { x: number; z: number }[]>>;
 }
 
 const LIST_KEYS = [
@@ -119,7 +105,6 @@ const LIST_KEYS = [
   'reed',
   'stalk',
   'bulb',
-  'float',
 ] as const;
 type ListKey = (typeof LIST_KEYS)[number];
 const emptyLists = () =>
@@ -170,29 +155,11 @@ export function buildPlaces(
   const clearings: Collider[] = [];
   const lists = emptyLists();
   const structures: Places['structures'] = {};
-  const trails = new THREE.Group();
-  const trailLists = emptyLists();
-  const trailColliders: Collider[] = [];
-  const trailPoints: Places['trailPoints'] = {};
   order.forEach((id, i) => {
     const rng = mulberry32((seed ^ SALT ^ Math.imul(i + 1, 0x85ebca6b)) >>> 0);
     const c: PlaceCtx = { field, kit, rng, x: spots[id].x, z: spots[id].z, group, lists, colliders, tints, clearings };
     PLACE[id](c);
-    const st = c.structure;
-    const crumb = TRAIL[id];
-    if (!st) return;
-    structures[id] = st;
-    if (!crumb) return;
-    const tc: PlaceCtx = {
-      ...c,
-      rng: mulberry32((seed ^ TRAIL_SALT ^ Math.imul(i + 1, 0x27d4eb2f)) >>> 0),
-      lists: trailLists,
-      colliders: trailColliders,
-    };
-    const points = trailTowards(tc, st.x, st.z);
-    trailPoints[id] = points;
-    // In a lake, the crumb stands on the bottom only as deep as it can still stick out of the water.
-    for (const p of points) crumb(tc, p.x, Math.max(field.groundAt(p.x, p.z), WATER - 0.4), p.z);
+    if (c.structure) structures[id] = c.structure;
   });
 
   const trunkGeo = new THREE.CylinderGeometry(0.1, 0.2, 1, 5, 1).translate(0, 0.5, 0);
@@ -204,23 +171,17 @@ export function buildPlaces(
   const canopyMat = lam(0xffffff, { emissive: 0x3a2a20 }); // stands out at night
   const reedMat = lam(0xffffff);
   const cathedral = MAT.cathedral();
-  for (const [into, L] of [
-    [group, lists],
-    [trails, trailLists],
-  ] as const) {
-    const add = (im: THREE.InstancedMesh | null) => im && into.add(im);
-    add(buildInstanced(trunkGeo, trunkMat, L.trunk));
-    add(buildInstanced(canopyGeo, canopyMat, L.canopy));
-    add(buildInstanced(spireGeo, kit.mat.rock, L.spireRock));
-    add(buildInstanced(spireGeo, kit.mat.crystal, L.spireCrystal));
-    add(buildInstanced(giantGeo, cathedral, L.giantCrystal));
-    add(buildInstanced(kit.geo.rock, kit.mat.rock, L.rock));
-    add(buildInstanced(reedGeo, reedMat, L.reed));
-    add(buildInstanced(kit.geo.stalk, kit.mat.stalk, L.stalk));
-    add(buildInstanced(kit.geo.bulb, kit.mat.bulb, L.bulb));
-    add(buildInstanced(kit.geo.float, kit.mat.rock, L.float));
-  }
-  return { group, colliders, tints, clearings, structures, trails, trailColliders, trailPoints };
+  const add = (im: THREE.InstancedMesh | null) => im && group.add(im);
+  add(buildInstanced(trunkGeo, trunkMat, lists.trunk));
+  add(buildInstanced(canopyGeo, canopyMat, lists.canopy));
+  add(buildInstanced(spireGeo, kit.mat.rock, lists.spireRock));
+  add(buildInstanced(spireGeo, kit.mat.crystal, lists.spireCrystal));
+  add(buildInstanced(giantGeo, cathedral, lists.giantCrystal));
+  add(buildInstanced(kit.geo.rock, kit.mat.rock, lists.rock));
+  add(buildInstanced(reedGeo, reedMat, lists.reed));
+  add(buildInstanced(kit.geo.stalk, kit.mat.stalk, lists.stalk));
+  add(buildInstanced(kit.geo.bulb, kit.mat.bulb, lists.bulb));
+  return { group, colliders, tints, clearings, structures };
 }
 
 /**
@@ -287,33 +248,6 @@ function structureSpot(c: PlaceCtx): { x: number; z: number; y: number } {
   }
   const p = at(toFire, STRUCTURE_MIN);
   return { ...p, y: Math.max(p.y, WATER) };
-}
-
-/**
- * Loose points from the fire towards (tx, tz): every 18–28 m, wandering up to 8 m to each side
- * (up to 20 m to stay out of the water). Not a line to follow at a glance; a hint to whoever notices them.
- */
-export function trailTowards(c: Pick<PlaceCtx, 'rng' | 'field'>, tx: number, tz: number): { x: number; z: number }[] {
-  const D = Math.hypot(tx, tz);
-  const ux = tx / D;
-  const uz = tz / D;
-  const out: { x: number; z: number }[] = [];
-  for (let s = TRAIL_START; s < D - TRAIL_STOP; s += TRAIL_STEP + c.rng() * TRAIL_STEP_JITTER) {
-    const w = (c.rng() - 0.5) * TRAIL_WANDER;
-    // In the water, look sideways for dry ground (up to 12 m off the way); if there is none (a
-    // lake), the crumb goes in the water anyway, sticking out of it: the trail never breaks.
-    let at = { x: ux * s - uz * w, z: uz * s + ux * w };
-    for (const off of [0, 4, -4, 8, -8, 12, -12]) {
-      const x = ux * s - uz * (w + off);
-      const z = uz * s + ux * (w + off);
-      if (c.field.groundAt(x, z) > WATER + 0.3) {
-        at = { x, z };
-        break;
-      }
-    }
-    out.push(at);
-  }
-  return out;
 }
 
 /** A random dry point between `inner` and `outer` m from the object, or null after a few tries. */
@@ -652,89 +586,3 @@ function copperArch(c: PlaceCtx, x: number, y: number, z: number): void {
   for (const k of [-1, 1]) c.colliders.push({ x: x + ux * R * S * k, z: z + uz * R * S * k, r: 2.2 * S });
   c.structure = { x, z, top: y + unitTop * S, scale: S };
 }
-
-// ------------------------------------------------------------------ trails
-
-type Crumb = (c: PlaceCtx, x: number, y: number, z: number) => void;
-
-/** One element of each biome, dropped along its trail. The letter has none: nothing points at the mirador. */
-const TRAIL: Partial<Record<HiddenId, Crumb>> = {
-  /** A young wooden tree, like the grove's. */
-  guitar(c, x, y, z) {
-    tree(c, x, y, z, 2.5 + c.rng() * 2, 0.7 + c.rng() * 0.5);
-    c.colliders.push({ x, z, r: 0.25 });
-  },
-  /** One to three cold blue crystals. */
-  insulin(c, x, y, z) {
-    const n = 1 + Math.floor(c.rng() * 3);
-    for (let i = 0; i < n; i++) {
-      const r = 0.25 + c.rng() * 0.2;
-      pushInstance(
-        c.lists.spireCrystal,
-        x + (c.rng() - 0.5) * 1.2,
-        y - 0.2,
-        z + (c.rng() - 0.5) * 1.2,
-        r,
-        1.5 + c.rng() * 2,
-        r,
-        (c.rng() - 0.5) * 0.4,
-        c.rng() * TAU,
-        (c.rng() - 0.5) * 0.4,
-        tint(c.rng, pick(c.rng, ICE)),
-      );
-    }
-    c.colliders.push({ x, z, r: 0.5 });
-  },
-  /** A small rock floating a few metres up, with a glowing stalk hanging from it. */
-  campanil(c, x, y, z) {
-    const w = 0.7 + c.rng() * 0.6;
-    const fy = y + 3 + c.rng() * 3;
-    pushInstance(
-      c.lists.float,
-      x,
-      fy,
-      z,
-      w,
-      w * 1.2,
-      w,
-      0,
-      c.rng() * TAU,
-      0,
-      tint(c.rng, pick(c.rng, c.kit.palette.rocks)),
-    );
-    const len = 0.8 + c.rng() * 1.2;
-    const bottom = fy - w * 0.6;
-    pushInstance(c.lists.stalk, x, bottom, z, 1, len, 1, Math.PI, 0, 0); // hanging: the stalk grows downwards
-    pushInstance(
-      c.lists.bulb,
-      x,
-      bottom - len,
-      z,
-      0.8,
-      0.9,
-      0.8,
-      0,
-      c.rng() * TAU,
-      0,
-      pick(c.rng, c.kit.palette.bulbs),
-    );
-  },
-  /** A copper boulder. */
-  earring(c, x, y, z) {
-    const s = 0.5 + c.rng() * 0.6;
-    pushInstance(
-      c.lists.rock,
-      x,
-      y + s * 0.1,
-      z,
-      s,
-      s * 0.6,
-      s * 0.9,
-      c.rng(),
-      c.rng() * TAU,
-      c.rng(),
-      tint(c.rng, pick(c.rng, COPPER)),
-    );
-    c.colliders.push({ x, z, r: s * 0.8 });
-  },
-};
