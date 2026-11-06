@@ -4,7 +4,7 @@ import { TAU, easeInOut, lerp } from '../math/util';
  * Closing sequence of Act I (DIS-07), after the quote card. Seconds. The ending screen follows
  * the guided camera, not the chorus: the chorus (AUD-01) keeps playing behind it.
  */
-export const CLOSING = { leadIn: 0.5, camera: 10, holdBeforeEnding: 0.5 } as const;
+export const CLOSING = { leadIn: 0.5, camera: 15, holdBeforeEnding: 0.5 } as const;
 
 /**
  * Lowest the gaze goes mid-turn (rad above level). With the 66° vertical field of view this

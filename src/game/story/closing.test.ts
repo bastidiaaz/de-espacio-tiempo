@@ -6,10 +6,10 @@ describe('Closing', () => {
     const c = new Closing();
     expect(c.stage).toBe('idle');
     c.start();
-    expect(CLOSING).toEqual({ leadIn: 0.5, camera: 10, holdBeforeEnding: 0.5 });
+    expect(CLOSING).toEqual({ leadIn: 0.5, camera: 15, holdBeforeEnding: 0.5 });
     expect(c.update(0.4)).toBeNull();
     expect(c.update(0.2)).toBe('camera');
-    expect(c.update(10)).toBe('hold');
+    expect(c.update(15)).toBe('hold');
     expect(c.update(0.5)).toBe('ending');
     expect(c.update(5)).toBeNull();
     expect(c.stage).toBe('ending');
@@ -27,7 +27,7 @@ describe('Closing', () => {
     const c = new Closing();
     c.start();
     c.update(0.5);
-    c.update(5);
+    c.update(7.5);
     expect(c.cameraU).toBeCloseTo(0.5, 1);
     c.update(20);
     expect(c.cameraU).toBe(1);
