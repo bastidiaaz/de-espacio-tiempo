@@ -29,12 +29,12 @@
       "reiniciar": "Empezar desde el principio"
     },
     "final": {
-      "titulo": "Te sientas junto al fuego",
+      "titulo": "Descansas junto al fuego",
       "cuerpo": "Lo siguiente es arreglar la nave y salir al espacio. Pero antes, tal vez quieras explorar el planeta un poquito más...",
       "seguir_caminando": "Seguir explorando",
       "reiniciar": "Empezar de nuevo",
-      "invitacion": "[PENDIENTE] invitación a escuchar «Astronauta»",
-      "escuchar": "[PENDIENTE] Escuchar"
+      "invitacion": "También puedes escuchar la canción que inspiró esta historia aquí",
+      "escuchar": "Escucha Astronauta de Tiann"
     }
   },
 
