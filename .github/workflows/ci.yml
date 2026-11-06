@@ -29,10 +29,32 @@ jobs:
         with:
           path: dist
 
-  # Publica en GitHub Pages cada push a main con CI en verde. Los PR solo corren `check`.
+  # E2E (ENG-08): el build de producción en Chromium headless, con WebGL por SwiftShader (sin GPU).
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # El webServer de playwright.config.ts hace el build y lo sirve con `vite preview`.
+      - run: npm run test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
+  # Publica en GitHub Pages cada push a main con CI en verde (checks y E2E). Los PR solo corren los checks.
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: check
+    needs: [check, e2e]
     runs-on: ubuntu-latest
     permissions:
       pages: write

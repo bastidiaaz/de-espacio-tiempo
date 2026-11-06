@@ -175,7 +175,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Inputs:** `systems/attention.ts`. Si hace falta, se extrae la lógica sin Three.js para poder testearla en Node.
 - **Output:** tests de dwell, drain, cono, rango y selección del ítem más central.
 
-**ENG-08 · E2E con Playwright** · M · P1 · depende de ENG-03
+**ENG-08 · E2E con Playwright** · M · P1 · depende de ENG-03 · ✅ hecho (2026-11-05): `e2e/acto1.spec.ts` sobre el build de producción, Chromium + SwiftShader; job `e2e` en CI, del que depende el deploy. Suma el test de entrar y salir varias veces que pedía el ADR 0001
 - **Output:** un flujo intro → despertar → (debug) final → link de ffm.to, con WebGL vía SwiftShader, corriendo en CI.
 
 **ENG-09 · Opciones de accesibilidad** · S · P1

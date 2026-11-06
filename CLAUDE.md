@@ -22,11 +22,12 @@
 
 ## Comandos
 
-- `npm run dev` · `npm test` · `npm run lint` · `npm run typecheck` · `npm run build`
+- `npm run dev` · `npm test` · `npm run lint` · `npm run typecheck` · `npm run build` · `npm run test:e2e`
+- **E2E (ENG-08):** Playwright en `e2e/`, sobre el build de producción (`vite preview`) en Chromium headless con WebGL por SwiftShader. Cubre menú → intro → despertar → (debug) final → link de ffm.to, y entrar/salir del Acto I varias veces. Lee los textos de `acto1.json`, así que reescribirlos no lo rompe. La primera vez: `npx playwright install chromium`. Corre en CI (job `e2e`) y el deploy espera a que pase. Es lento a propósito: SwiftShader va a ~12 fps y el reloj del juego limita `dt` a 50 ms.
 - **Modo debug (ENG-03):** abre el Acto I con `#debug` en la URL (`#w123&debug` fija además la semilla). Panel para saltar a un capítulo o quedar frente a un ítem, "marcar todo" para ver el final, y un anillo en el suelo con el borde caminable. En debug no se guarda progreso ni se marca el acto como completado. Lógica pura en `src/game/debug.ts`.
 - **Deploy (ENG-04):** cada push a `main` con CI en verde publica `dist/` en GitHub Pages (job `deploy` de `.github/workflows/ci.yml`). Los PR solo corren los checks. URL: `https://play.tiannmusica.com/` (dominio propio: CNAME `play` → `bastidiaaz.github.io` en el DNS Manager de Bandzoogle, y TXT de verificación `_github-pages-challenge-bastidiaaz`, que no se borra). La URL de `github.io` redirige ahí.
 - **Analítica (ENG-05):** GoatCounter, sin cookies ni banner. `src/analytics.ts` carga `count.js` solo en el build de producción y nunca con `#debug` (sitio `tiann-play.goatcounter.com`; con `GOATCOUNTER_ENDPOINT = null` queda apagada). Eventos: `acto-N/inicio` (al entrar a un acto desde el selector), `acto-N/completado` (la primera vez en ese navegador; los emite `shellStore`) y `acto-N/escuchar` (clic en ffm.to). Un acto nuevo emite `escuchar` desde su invitación.
-- Antes de dar algo por terminado: `npm run lint && npm run typecheck && npm test && npm run build` (es lo que corre CI).
+- Antes de dar algo por terminado: `npm run lint && npm run typecheck && npm test && npm run build` (es lo que corre el job `check` de CI); si tocaste el flujo del acto o la carcasa, también `npm run test:e2e`.
 
 ## Arquitectura (reglas)
 
@@ -58,4 +59,3 @@
 ## Ideas de evolución (no hechas)
 
 - Migrar escena a React Three Fiber de forma incremental (empezar por `Sky`/`Water`, que no tienen estado de juego).
-- Tests E2E con Playwright (WebGL vía SwiftShader).
