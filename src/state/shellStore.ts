@@ -1,4 +1,5 @@
 import { createStore, type StoreApi } from 'zustand/vanilla';
+import { actEvent, track } from '../analytics';
 import { STORAGE_KEYS } from '../game/config';
 import { storage as defaultStorage, type KeyValueStorage } from '../game/platform';
 
@@ -51,8 +52,13 @@ const reloadPage = (): void => location.reload();
 /**
  * @param reload Called instead of retrying in place once an act failed to load: a failed chunk stays
  *   failed in this page (cached dynamic import, Vite's preload bookkeeping, or a stale hash after a deploy).
+ * @param trackEvent Anonymous analytics (ENG-05): act starts and first completions.
  */
-export function createShellStore(storage: KeyValueStorage = defaultStorage, reload = reloadPage): ShellStore {
+export function createShellStore(
+  storage: KeyValueStorage = defaultStorage,
+  reload = reloadPage,
+  trackEvent: (event: string) => void = track,
+): ShellStore {
   return createStore<ShellState>()((set, get) => ({
     screen: 'menu',
     actNumber: null,
@@ -71,6 +77,7 @@ export function createShellStore(storage: KeyValueStorage = defaultStorage, relo
         return;
       }
       set({ screen: 'act', actNumber: n, optionsOpen: false });
+      trackEvent(actEvent(n, 'inicio'));
     },
     loadFailed: () => set({ screen: 'select', actNumber: null, optionsOpen: false, loadError: true }),
     escape: () => {
@@ -92,9 +99,11 @@ export function createShellStore(storage: KeyValueStorage = defaultStorage, relo
       set({ retro });
     },
     markCompleted: (n) => {
+      const first = !get().actsDone.includes(n);
       const actsDone = parseActsDone(JSON.stringify([...get().actsDone, n]));
       storage.set(STORAGE_KEYS.actsDone, JSON.stringify(actsDone));
       set({ actsDone });
+      if (first && actsDone.includes(n)) trackEvent(actEvent(n, 'completado'));
     },
   }));
 }

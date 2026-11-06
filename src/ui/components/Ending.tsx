@@ -1,3 +1,4 @@
+import { actEvent, track } from '../../analytics';
 import { COPY } from '../../content/copy';
 import { useGameActions, useGameState } from '../GameContext';
 import './Ending.css';
@@ -18,7 +19,13 @@ export function Ending() {
         </button>
         <div className="invite">
           <p>{COPY.ending.invite}</p>
-          <a className="quiet" href={COPY.ending.listenUrl} target="_blank" rel="noopener">
+          <a
+            className="quiet"
+            href={COPY.ending.listenUrl}
+            target="_blank"
+            rel="noopener"
+            onClick={() => track(actEvent(1, 'escuchar'))}
+          >
             {COPY.ending.listen}
           </a>
         </div>

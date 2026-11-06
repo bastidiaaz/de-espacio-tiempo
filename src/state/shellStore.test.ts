@@ -12,6 +12,19 @@ function memoryStorage(initial: Record<string, string> = {}): KeyValueStorage & 
   };
 }
 
+describe('shell store analytics (ENG-05)', () => {
+  it('tracks every act start and only the first completion of each act', () => {
+    const events: string[] = [];
+    const store = createShellStore(memoryStorage({ 'lvr-acts-done': '[2]' }), () => {}, (e) => events.push(e));
+    store.getState().startAct(1);
+    store.getState().restartAct();
+    store.getState().markCompleted(1);
+    store.getState().markCompleted(1);
+    store.getState().markCompleted(2);
+    expect(events).toEqual(['acto-1/inicio', 'acto-1/completado']);
+  });
+});
+
 describe('shell store', () => {
   it('starts on the menu with sound and retro on', () => {
     const s = createShellStore(memoryStorage()).getState();

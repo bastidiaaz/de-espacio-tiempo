@@ -40,7 +40,7 @@
 |---|---|---|---|
 | ~~D1~~ | ~~Arquitectura multi-acto y progreso guardado~~ — **resuelta:** `docs/adr/0001-multi-acto.md` | Claude (ADR) → aprobado por el autor | — |
 | ~~D2~~ | ~~Formato del archivo de textos~~ — **resuelta: un `.json` por acto**, validado por test (`src/content/acto1.json`, guía en `docs/editar-textos.md`) | Claude propone → autor | — |
-| D3 | Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami) | Autor | ENG-05 |
+| ~~D3~~ | ~~Proveedor de analítica sin cookies (GoatCounter, Plausible o Umami)~~ — **resuelta (2026-11-05): GoatCounter** | Autor | — |
 | ~~D4~~ | ~~GitHub Pages o Vercel~~ — **resuelta (2026-11-04): GitHub Pages**, publicado desde el workflow de CI | Autor | — |
 | ~~D5~~ | ~~Conexión del MCP polyfork y licencias de sus assets~~ — **resuelta (2026-11-04):** conectado (plan gratis); los modelos low-poly se pueden incluir en el juego sin atribución; las ediciones HD no. Ver `docs/assets.md` | Autor conecta → Claude verifica | — |
 | ~~D6~~ | ~~Al cierre, ¿canción completa o un fragmento? ¿Se repite en el paseo libre?~~ — **resuelta (2026-11-05): solo el coro (B1), una vez, junto al fuego; no se repite en el paseo libre.** Ver "Cierre" en el brief del Acto I | Autor | — |
@@ -160,7 +160,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **Ingeniería**
 
-**ENG-05 · Analítica privada** · S · P1 · depende de D3
+**ENG-05 · Analítica privada** · S · P1 · código ✅ (2026-11-05): `src/analytics.ts` (GoatCounter, solo en producción y nunca con `#debug`); eventos `acto-N/inicio`, `acto-N/completado` (primera vez en ese navegador) y `acto-N/escuchar`. Sitio: `tiann-play.goatcounter.com`. Falta ver los eventos en el panel tras el deploy
 - **Output:** tres eventos anónimos: inicio, acto completado y clic en ffm.to. Sin cookies.
 - **Hecho cuando:** los eventos aparecen en el panel, y no hay banner de consentimiento porque no se necesita.
 
