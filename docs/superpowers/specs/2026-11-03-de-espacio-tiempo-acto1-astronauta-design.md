@@ -557,10 +557,12 @@ mirar hacia arriba con convicción.
   **«Nadie puede ser astronauta con los pies en la Tierra»**, entera → recién
   entonces entra **el coro de "Astronauta" (B1) desde el principio, una sola
   vez**. Texto y música no se sincronizan.
-- **Durante el coro, la cámara va sola: da una vuelta de 360° lenta a la
-  altura de la estrella** (revisado 2026-11-05). Después de la cita el
-  jugador ya está mirando la estrella, así que no vuelve al fuego: gira
-  mirando el cielo y termina otra vez en la estrella.
+- **Durante el coro, la cámara va sola: da una vuelta de 360° en 10 s**
+  (revisado 2026-11-05). Después de la cita el jugador ya está mirando la
+  estrella, así que no vuelve al fuego: gira mirando el cielo, baja un poco a
+  mitad de la vuelta para que se vea algo del horizonte, y termina otra vez en
+  la estrella. Empieza 0,5 s después de la cita y la pantalla final aparece
+  0,5 s después de que termina.
 - **La pantalla final aparece cuando la cámara guiada termina su recorrido**
   y vuelve a la estrella (revisado 2026-11-05). La cámara se queda mirando la
   estrella y **el coro sigue sonando detrás** de la pantalla final hasta
@@ -587,7 +589,7 @@ mirar hacia arriba con convicción.
 | 4 | Isi se sienta | **no puede caminar desde aquí** | baja al sentarse; luego mirar libre | — | — |
 | 5 | Cap. 5: busca la estrella, sentada | solo mirar | libre | ambiente normal | pista del cap. 5 |
 | 6 | Sostiene la mirada en la estrella | solo mirar | libre | campanilla | tarjeta de `star` y las 4 frases |
-| 7 | Termina la cita | sin control | va sola: una vuelta de 360° lenta a la altura de la estrella | entra el coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
+| 7 | Termina la cita | sin control | va sola: una vuelta de 360° en 10 s por el cielo, bajando un poco hacia el horizonte a mitad | entra el coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
 | 8 | La vuelta termina en la estrella | sin control | fija en la estrella | el coro sigue hasta terminar; luego vuelve el ambiente | pantalla final + invitación |
 | 9 | "Seguir explorando" | camina | se pone de pie | ambiente normal | paseo libre |
 
@@ -610,14 +612,15 @@ mirar hacia arriba con convicción.
   igual que de pie (ratón/arrastre), sin caminar. Con *reduced motion*: un
   fundido corto en vez del movimiento, igual al levantarse.
 - **Cámara del coro:** desde la estrella, una vuelta completa de 360° en
-  **~30 s**, con la mirada a la altura de la estrella (cielo), acelerando y
-  frenando suave, y termina en la estrella. Independiente del largo del coro.
+  **10 s** (decisión del autor), acelerando y frenando suave, y termina en la
+  estrella. A mitad de la vuelta la mirada baja hasta ~0,45 rad sobre la
+  horizontal (`PAN_PITCH`), suficiente para ver el horizonte y los cerros
+  abajo del cuadro, y vuelve a subir. Independiente del largo del coro.
   Con *reduced motion*, la cámara no se mueve (queda mirando la estrella), pero
   la pantalla final espera lo mismo.
-- **Tiempos:** el coro y la cámara arrancan juntos ~1,5 s después de que se
-  cierra la tarjeta de la cita (reemplaza los 3,5 s actuales de
-  `afterCards`); la pantalla final aparece ~1 s después de que la vuelta
-  termina en la estrella.
+- **Tiempos (decisión del autor):** el coro y la cámara arrancan juntos
+  0,5 s después de que se cierra la tarjeta de la cita; la pantalla final
+  aparece 0,5 s después de que la vuelta termina en la estrella.
 - **Si el jugador aprieta "Seguir explorando" antes de que acabe el coro**, el
   coro sigue hasta su final (no se corta) y no se repite.
 - **Mientras no exista AUD-01** (falta la partitura), el coro no suena: la

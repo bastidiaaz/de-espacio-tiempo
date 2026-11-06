@@ -1,10 +1,16 @@
-import { TAU, easeInOut } from '../math/util';
+import { TAU, easeInOut, lerp } from '../math/util';
 
 /**
  * Closing sequence of Act I (DIS-07), after the quote card. Seconds. The ending screen follows
  * the guided camera, not the chorus: the chorus (AUD-01) keeps playing behind it.
  */
-export const CLOSING = { leadIn: 1.5, camera: 30, holdBeforeEnding: 1 } as const;
+export const CLOSING = { leadIn: 0.5, camera: 10, holdBeforeEnding: 0.5 } as const;
+
+/**
+ * Lowest the gaze goes mid-turn (rad above level). With the 66° vertical field of view this
+ * leaves the horizon and the hills in the lower part of the frame.
+ */
+export const PAN_PITCH = 0.45;
 
 export type ClosingStage = 'idle' | 'leadIn' | 'camera' | 'hold' | 'ending';
 
@@ -72,9 +78,12 @@ export class Closing {
 }
 
 /**
- * Where the guided camera looks at `u` (0..1): one slow full turn at the star's height, eased in
- * and out, starting and ending on the star. She is already looking at it after the quote.
+ * Where the guided camera looks at `u` (0..1): one full turn, eased in and out, starting and
+ * ending on the star (she is already looking at it after the quote). Mid-turn the gaze dips
+ * toward `PAN_PITCH` so a little of the horizon shows, and rises back to the star.
  */
 export function panLook(u: number, star: Look): Look {
-  return { yaw: star.yaw + TAU * easeInOut(Math.min(1, Math.max(0, u))), pitch: star.pitch };
+  const t = Math.min(1, Math.max(0, u));
+  const low = Math.min(star.pitch, PAN_PITCH);
+  return { yaw: star.yaw + TAU * easeInOut(t), pitch: lerp(star.pitch, low, Math.sin(Math.PI * t)) };
 }
