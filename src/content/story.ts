@@ -76,7 +76,7 @@ export const chapterKey = (index: number): string => `capitulo${index + 1}`;
 
 /**
  * Objetos ocultos del paseo libre (DIS-04). Isi no los reconoce; no cuentan en el
- * contador. Su colocación en el mundo es ENG-13; aquí solo están los ids y los textos.
+ * contador. Dónde van y sus escondites: `game/story/hiddenLayout.ts` y `game/story/hidden.ts` (ENG-13).
  */
 export const HIDDEN_IDS = ['guitar', 'insulin', 'campanil', 'earring', 'letter'] as const;
 export type HiddenId = (typeof HIDDEN_IDS)[number];
@@ -85,7 +85,17 @@ export interface HiddenDef {
   id: HiddenId;
   title: string;
   text: string;
+  /** Same meaning as a memory's. Small objects: short range, narrow cone. */
+  attention: MemoryDef['attention'];
 }
+
+const HIDDEN_ATTENTION: Record<HiddenId, HiddenDef['attention']> = {
+  guitar: { offsetY: 0.55, range: 7, cone: 0.26 },
+  insulin: { offsetY: 0.05, range: 4.5, cone: 0.22 },
+  campanil: { offsetY: 0.15, range: 6, cone: 0.24 },
+  earring: { offsetY: 0.12, range: 5, cone: 0.22 },
+  letter: { offsetY: 0.66, range: 6, cone: 0.24 },
+};
 
 /** Ids que el código espera encontrar en `acto1.json` (los usa el test de validación). */
 export const EXPECTED_IDS = {
@@ -105,6 +115,7 @@ export const MEMORIES: readonly MemoryDef[] = MEMORY_STRUCT.map((m) => ({
 
 export const HIDDEN: readonly HiddenDef[] = HIDDEN_IDS.map((id) => ({
   id,
+  attention: HIDDEN_ATTENTION[id],
   title: ACTO1_TEXTS.ocultos[id].titulo,
   text: ACTO1_TEXTS.ocultos[id].texto,
 }));

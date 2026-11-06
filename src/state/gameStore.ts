@@ -22,6 +22,8 @@ export interface GameUiState {
   introLede: string;
   /** Remembered memory ids. */
   remembered: readonly string[];
+  /** Hidden objects found in the free roam (ENG-13). Not part of the counter. */
+  hiddenFound: readonly string[];
   total: number;
   card: CardView | null;
   cardVisible: boolean;
@@ -51,6 +53,7 @@ export const createGameStore = (): GameStore =>
     phase: 'intro',
     introLede: '',
     remembered: [],
+    hiddenFound: [],
     total: 0,
     card: null,
     cardVisible: false,
@@ -80,4 +83,8 @@ export interface GameActions {
   debugJumpToItem(id: string): void;
   /** Debug only: remember everything that is left, playing the closing sequence. */
   debugCompleteAll(): void;
+  /** Debug only: straight into the free roam, standing where the hidden object can be looked at. */
+  debugJumpToHidden(id: string): void;
+  /** Debug only: forget the hidden objects found (in memory; nothing is saved in debug). */
+  debugResetHidden(): void;
 }

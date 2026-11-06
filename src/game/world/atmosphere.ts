@@ -65,7 +65,7 @@ export class Atmosphere {
     this.d.sky.shipStar.material.opacity = chapter >= 4 ? 1 : 0;
   }
 
-  update(dt: number, time: number, chapter: number): void {
+  update(dt: number, chapter: number): void {
     const { fog, sky, hemi, sun, motesMaterial, field, viewRadius } = this.d;
     this.kCur += (this.kTarget - this.kCur) * (1 - Math.exp(-dt * 0.25));
     const k = this.kCur;
@@ -89,11 +89,6 @@ export class Atmosphere {
     fog.near = Math.min(this.radiusCur * 0.35, 28);
     fog.far = Math.min(this.radiusCur + 14, viewRadius * CHUNK_SIZE - 6);
 
-    const a = 0.6 + time * 0.006;
-    sky.shipStar.position
-      .set(Math.cos(a) * 0.55, 0.62, Math.sin(a) * 0.55)
-      .normalize()
-      .multiplyScalar(560);
     const star = sky.shipStar.material;
     star.opacity += ((chapter >= 4 ? 1 : 0) - star.opacity) * dt * 0.5;
   }

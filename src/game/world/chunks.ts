@@ -5,7 +5,7 @@ import { TAU } from '../math/util';
 import { buildInstanced, pick, pushInstance, tint } from '../three/helpers';
 import type { Collider } from './collision';
 import type { TerrainPalette } from './palette';
-import { emptyPropLists, placeMushroom, type PropKind, type PropKit } from './props';
+import { emptyPropLists, placeMushroom, type PropKind, type PropKit, type PropLists } from './props';
 import type { TerrainField } from './terrain';
 
 interface Chunk {
@@ -28,13 +28,26 @@ export class ChunkManager {
   private readonly kit: PropKit;
   private readonly seed: number;
   private readonly radius: number;
+  private readonly clearings: readonly Collider[];
 
-  constructor(field: TerrainField, palette: TerrainPalette, kit: PropKit, seed: number, radius: number) {
+  /**
+   * `clearings`: circles kept free of scattered props (the hideouts of the hidden objects, ENG-13).
+   * Props are still generated there and dropped afterwards, so the `rng()` sequence is unchanged.
+   */
+  constructor(
+    field: TerrainField,
+    palette: TerrainPalette,
+    kit: PropKit,
+    seed: number,
+    radius: number,
+    clearings: readonly Collider[] = [],
+  ) {
     this.field = field;
     this.palette = palette;
     this.kit = kit;
     this.seed = seed;
     this.radius = radius;
+    this.clearings = clearings;
   }
 
   /** Load/unload around (x, z). `sync` builds everything needed right now. */
@@ -88,6 +101,25 @@ export class ChunkManager {
       else if (o instanceof THREE.Mesh && o.material === this.kit.mat.terrain) o.geometry.dispose();
     });
     this.chunks.delete(key);
+  }
+
+  /** Drop the props (and their colliders) that landed in a clearing. Floating islets stay. */
+  private clear(cx: number, cz: number, L: PropLists, colliders: Collider[]): void {
+    const near = this.clearings.filter(
+      (c) =>
+        c.x + c.r > cx * CH && c.x - c.r < (cx + 1) * CH && c.z + c.r > cz * CH && c.z - c.r < (cz + 1) * CH,
+    );
+    if (!near.length) return;
+    const inside = (x: number, z: number) => near.some((c) => Math.hypot(x - c.x, z - c.z) < c.r);
+    for (const k of Object.keys(L) as PropKind[]) {
+      if (k === 'float') continue;
+      L[k] = L[k].filter(({ m }) => {
+        const [x, y, z] = [m.elements[12], m.elements[13], m.elements[14]];
+        // Islets (and the mushrooms on them) float 16 m or more above the ground.
+        return !inside(x, z) || y > this.field.groundAt(x, z) + 9;
+      });
+    }
+    for (let i = colliders.length - 1; i >= 0; i--) if (inside(colliders[i].x, colliders[i].z)) colliders.splice(i, 1);
   }
 
   private build(cx: number, cz: number): void {
@@ -317,6 +349,7 @@ export class ChunkManager {
       pushInstance(L.float, x, base, z, w, h, w, 0, rng() * TAU, 0, tint(rng, pick(rng, P.rocks)));
       if (rng() < 0.7) placeMushroom(L, kit, rng, x, base + h * 0.5, z, true);
     }
+    this.clear(cx, cz, L, colliders);
     for (const k of Object.keys(L) as PropKind[]) {
       const im = buildInstanced(kit.geo[k], kit.mat[k === 'float' ? 'rock' : k], L[k]);
       if (im) group.add(im);

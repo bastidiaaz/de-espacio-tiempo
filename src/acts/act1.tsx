@@ -21,6 +21,8 @@ export const act1: ActModule = {
       debugJumpToChapter: game.debugJumpToChapter,
       debugJumpToItem: game.debugJumpToItem,
       debugCompleteAll: game.debugCompleteAll,
+      debugJumpToHidden: game.debugJumpToHidden,
+      debugResetHidden: game.debugResetHidden,
     };
     return {
       engine: game,

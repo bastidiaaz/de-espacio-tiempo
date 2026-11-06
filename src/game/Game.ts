@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { COPY } from '../content/copy';
-import { CHAPTERS, EDGE_LINES, MEMORIES, STAR_CHAPTER, WAKE_LINES } from '../content/story';
+import { CHAPTERS, EDGE_LINES, HIDDEN_IDS, MEMORIES, STAR_CHAPTER, WAKE_LINES } from '../content/story';
 import type { GameActions, GameStore, Phase } from '../state/gameStore';
 import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, WATER, viewRadiusFor } from './config';
 import { facing, parseHash, standInFront } from './debug';
@@ -13,12 +13,14 @@ import { ItemSet, type Item } from './story/items';
 import { Closing, panLook } from './story/closing';
 import { migrateSave } from './story/saveMigration';
 import { buildStoryWorld, type StoryWorld } from './story/storyWorld';
-import { Attention } from './systems/attention';
+import { HiddenSet, type HiddenItem } from './story/hidden';
+import { Attention, type GazeCandidate } from './systems/attention';
 import { AudioEngine } from './systems/audio';
 import { Input } from './systems/input';
 import { Narrative } from './systems/narrative';
 import { Player } from './systems/player';
 import { Progress } from './systems/progress';
+import { panTowards, proximityLevel } from './systems/proximity';
 import { SEATED_EYE, STAND_EYE, Seat, type Pose } from './systems/seat';
 import { Atmosphere } from './world/atmosphere';
 import { ChunkManager } from './world/chunks';
@@ -68,6 +70,8 @@ export class Game implements GameActions, ActEngine {
   private readonly camera: THREE.PerspectiveCamera;
   private readonly fog: THREE.Fog;
   private readonly memoryKey: string;
+  /** `lvr-a1-hidden-<seed>` (ENG-13). */
+  private readonly hiddenKey: string;
   private readonly viewRadius = viewRadiusFor(isCoarsePointer);
 
   private readonly field: TerrainField;
@@ -76,13 +80,23 @@ export class Game implements GameActions, ActEngine {
   private readonly sky: Sky;
   private readonly story: StoryWorld;
   private readonly items: ItemSet;
+  /** The five hidden objects of the free roam (ENG-13). */
+  private readonly hidden: HiddenSet;
+  /** Hidden ids found so far. Not part of `progress`: they don't count in the counter. */
+  private readonly found: Set<string>;
   private readonly motes: Motes;
   private readonly embers: Embers;
   private readonly bursts: Bursts;
   private readonly atmosphere: Atmosphere;
   private readonly progress: Progress;
   private readonly narrative: Narrative;
-  private readonly attention: Attention;
+  private readonly attention: Attention<Item | HiddenItem>;
+  /** Reused by `gazeCandidates`: Attention reads each candidate before the next one. */
+  private readonly candidate: GazeCandidate<Item | HiddenItem> = {
+    item: null as unknown as Item,
+    target: new THREE.Vector3(),
+    tuning: { range: 0, cone: 0 },
+  };
   private readonly player: Player;
   /** Sitting by the fire (DIS-07). */
   private readonly seat: Seat;
@@ -116,6 +130,7 @@ export class Game implements GameActions, ActEngine {
     // --- seed + procedural field ---
     const seed = resolveSeed();
     this.memoryKey = STORAGE_KEYS.memory(seed);
+    this.hiddenKey = STORAGE_KEYS.hidden(seed);
     const noise = makeNoise(seed);
     this.field = new TerrainField(noise, seed);
     this.debug = parseHash(location.hash).debug;
@@ -150,12 +165,19 @@ export class Game implements GameActions, ActEngine {
     this.sky = new Sky(seed, glow);
     this.scene.add(this.sky.group);
     const kit = createPropKit();
+    // Before the chunks: they keep the hideouts clear of scattered props.
+    this.hidden = new HiddenSet(this.field, kit, glow, seed);
+    this.scene.add(this.hidden.group);
+    this.found = new Set(
+      Progress.parse(storage.get(this.hiddenKey)).filter((id) => (HIDDEN_IDS as readonly string[]).includes(id)),
+    );
     this.chunks = new ChunkManager(
       this.field,
-      new TerrainPalette(this.field, noise, createHash2(seed)),
+      new TerrainPalette(this.field, noise, createHash2(seed), this.hidden.tints),
       kit,
       seed,
       this.viewRadius,
+      this.hidden.clearings,
     );
     this.scene.add(this.chunks.group);
     this.water = new Water();
@@ -226,10 +248,9 @@ export class Game implements GameActions, ActEngine {
       },
       prefersReducedMotion,
     );
-    this.attention = new Attention({
+    this.attention = new Attention<Item | HiddenItem>({
       camera: this.camera,
-      items: this.items,
-      progress: this.progress,
+      candidates: () => this.gazeCandidates(),
       narrative: this.narrative,
       view: {
         setReticle: (near, focus) => {
@@ -237,7 +258,7 @@ export class Game implements GameActions, ActEngine {
           if (s.reticleNear !== near || s.focus !== focus) this.store.setState({ reticleNear: near, focus });
         },
       },
-      onRemember: (it) => this.remember(it),
+      onRemember: (it) => ('hidden' in it ? this.findHidden(it) : this.remember(it)),
     });
     this.input = new Input(this.canvas, {
       enabled: () => this.phase === 'play' && !this.paused && !this.closing.locksLook,
@@ -256,6 +277,7 @@ export class Game implements GameActions, ActEngine {
       phase: 'intro',
       total: TOTAL,
       remembered: [...p.remembered],
+      hiddenFound: [...this.found],
       introLede: p.freeRoam ? COPY.intro.complete : p.count ? COPY.intro.resumed : COPY.intro.fresh,
       debug: this.debug,
     });
@@ -353,6 +375,26 @@ export class Game implements GameActions, ActEngine {
     for (const it of this.items.items) if (!this.progress.remembered.has(it.id)) this.remember(it);
   };
 
+  /** Straight into the free roam, standing where the hidden object answers the gaze. */
+  debugJumpToHidden = (id: string): void => {
+    const h = this.hidden.items.find((x) => x.id === id);
+    if (!h || !this.debug) return;
+    this.debugFreeRoam();
+    const target = this.hidden.targetOf(h).clone();
+    const spot = this.hidden.standingSpot(h, Math.min(3.5, h.attention.range * 0.6));
+    this.moveTo(spot.x, spot.z);
+    const { player } = this;
+    const f = facing({ x: player.position.x, y: player.position.y + player.eye, z: player.position.z }, target);
+    player.yaw = f.yaw;
+    player.pitch = f.pitch;
+  };
+
+  debugResetHidden = (): void => {
+    if (!this.debug) return;
+    this.found.clear();
+    this.store.setState({ hiddenFound: [] });
+  };
+
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
@@ -438,7 +480,7 @@ export class Game implements GameActions, ActEngine {
     const seated = this.seat.locksMovement;
     if (this.store.getState().seated !== seated) this.store.setState({ seated });
 
-    this.atmosphere.update(dt, this.time, progress.chapter);
+    this.atmosphere.update(dt, progress.chapter);
     if (this.debugRing) this.updateDebug();
     player.applyToCamera(this.camera, prefersReducedMotion);
     this.attention.update(dt, this.phase === 'play', player.moveAmount);
@@ -541,13 +583,40 @@ export class Game implements GameActions, ActEngine {
     this.motes.update(dt, time, player.position);
     this.story.update(time);
     this.items.updateGlints(dt, time, (it) => progress.isAvailable(it) && this.phase === 'play');
+    this.hidden.update(dt, time, player.position, progress.freeRoam && this.phase === 'play', this.found);
+    this.updateProximity();
     this.bursts.update(dt);
     this.audio.setFireLevel(Math.max(0, 1 - Math.hypot(player.position.x, player.position.z) / 18) * 0.5);
+  }
+
+  /**
+   * Proximity cue (pedido del autor, 2026-11-06): a calm arpeggio whose volume grows near the
+   * closest hidden object not found yet, panned towards it. Only in the free roam, and quiet while a card is open.
+   */
+  private updateProximity(): void {
+    const { player } = this;
+    let level = 0;
+    let pan = 0;
+    if (this.progress.freeRoam && this.phase === 'play' && !this.narrative.card) {
+      for (const h of this.hidden.items) {
+        if (this.found.has(h.id)) continue;
+        const dx = h.obj.position.x - player.position.x;
+        const dz = h.obj.position.z - player.position.z;
+        const l = proximityLevel(Math.hypot(dx, dz));
+        if (l > level) {
+          level = l;
+          pan = panTowards(player.yaw, dx, dz);
+        }
+      }
+    }
+    this.audio.setProximity(level, pan);
   }
 
   /** Obstacles first, then the edge of what the player remembers. */
   private resolvePlayer = (P: THREE.Vector3): void => {
     pushOut(P, this.story.colliders);
+    pushOut(P, this.hidden.colliders);
+    if (this.progress.freeRoam) pushOut(P, this.hidden.trailColliders);
     pushOut(P, this.chunks.collidersNear(P.x, P.z));
     const lim = this.atmosphere.radiusCur - EDGE_MARGIN;
     const dc = Math.hypot(P.x, P.z);
@@ -593,7 +662,58 @@ export class Game implements GameActions, ActEngine {
     atmosphere.kTarget = (progress.count / TOTAL) * PRE_DAWN;
   }
 
+  /**
+   * What the gaze can land on this frame: the memories of the current chapter and, in the free
+   * roam, the hidden objects not found yet, from the side they answer from.
+   */
+  private *gazeCandidates(): Generator<GazeCandidate<Item | HiddenItem>> {
+    const c = this.candidate;
+    for (const it of this.items.items) {
+      if (!this.progress.isAvailable(it)) continue;
+      c.item = it;
+      c.target.copy(this.items.targetOf(it));
+      c.tuning = it.attention;
+      yield c;
+    }
+    if (!this.progress.freeRoam) return;
+    const P = this.player.position;
+    for (const h of this.hidden.items) {
+      if (this.found.has(h.id) || !this.hidden.answers(h, P.x, P.z)) continue;
+      c.item = h;
+      c.target.copy(this.hidden.targetOf(h));
+      c.tuning = h.attention;
+      yield c;
+    }
+  }
+
+  /** A hidden object (ENG-13): a card and a sound, like a memory, but outside the counter. */
+  private findHidden(h: HiddenItem): void {
+    this.found.add(h.id);
+    if (!this.debug) storage.set(this.hiddenKey, JSON.stringify([...this.found]));
+    this.store.setState({ hiddenFound: [...this.found] });
+    // AUD-08: the guitar gets its own arpeggio; until then, the usual memory chime.
+    const base = CHIME_ROOTS[this.found.size % 4];
+    this.audio.chime(base, 0.08);
+    this.audio.chime(base * 1.25, 0.06, 0.15);
+    this.audio.chime(base * 1.5, 0.05, 0.3);
+    this.bursts.spawn(this.hidden.targetOf(h));
+    this.narrative.say(h.text, h.title, 'memory');
+  }
+
   // ---------------------------------------------------------------- debug helpers
+
+  /** Every memory remembered, standing, free roam on. Never saved. */
+  private debugFreeRoam(): void {
+    const { progress, atmosphere, player } = this;
+    this.debugJump(CHAPTERS.length - 1);
+    progress.completeAll();
+    this.seat.snapStanding();
+    player.eye = STAND_EYE;
+    this.store.setState({ remembered: [...progress.remembered] });
+    atmosphere.kTarget = PRE_DAWN;
+    atmosphere.radiusTarget = FREE_ROAM_RADIUS;
+    atmosphere.snap(progress.chapter);
+  }
 
   /** Earlier chapters remembered, this one active, the world snapped to match. Never saved. */
   private debugJump(chapter: number): void {
@@ -625,6 +745,7 @@ export class Game implements GameActions, ActEngine {
     this.chunks.update(x, z, true);
     P.set(x, 0, z);
     pushOut(P, this.story.colliders);
+    pushOut(P, this.hidden.colliders);
     pushOut(P, this.chunks.collidersNear(P.x, P.z));
     P.y = Math.max(this.field.groundAt(P.x, P.z), WATER - 0.6);
   }

@@ -3,6 +3,12 @@ import type { Noise2D } from '../math/noise';
 import { mulberry32 } from '../math/random';
 import { lerp, smoothstep, TAU } from '../math/util';
 
+/**
+ * A local change to the height field, applied after the procedural shape: `(x, z, h) => h'`.
+ * Must return `h` unchanged away from its own area (ENG-13: the campanil's island, far from camp).
+ */
+export type HeightModifier = (x: number, z: number, h: number) => number;
+
 export interface TrailSample {
   /** 0 at camp, 1 at the ship. */
   t: number;
@@ -26,6 +32,7 @@ export class TerrainField {
   readonly perpZ: number;
   private readonly noise: Noise2D;
   private readonly len2: number;
+  private readonly modifiers: HeightModifier[] = [];
 
   constructor(noise: Noise2D, seed: number) {
     this.noise = noise;
@@ -54,6 +61,14 @@ export class TerrainField {
     this.dirZ = sz / SHIP_DISTANCE;
     this.perpX = -this.dirZ;
     this.perpZ = this.dirX;
+  }
+
+  /**
+   * Adds a local change to `heightAt`/`groundAt`. Call it before the chunks are built. It never
+   * touches `rawHeight`, so the crash-site direction stays the same.
+   */
+  addModifier(m: HeightModifier): void {
+    this.modifiers.push(m);
   }
 
   rawHeight(x: number, z: number): number {
@@ -93,6 +108,7 @@ export class TerrainField {
     h = lerp(h, base, (1 - smoothstep(5, 14, tr.d)) * 0.95);
     h = lerp(h, CAMP_HEIGHT + det, 1 - smoothstep(12, 24, Math.hypot(x, z)));
     h = lerp(h, SHIP_HEIGHT + det, 1 - smoothstep(10, 22, Math.hypot(x - this.shipX, z - this.shipZ)));
+    for (const m of this.modifiers) h = m(x, z, h);
     return h;
   }
 

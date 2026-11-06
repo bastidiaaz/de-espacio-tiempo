@@ -45,6 +45,14 @@ describe('Progress', () => {
     expect(p.isFinished).toBe(false);
   });
 
+  it('completeAll goes straight into the free roam (debug)', () => {
+    const p = new Progress(MEMORIES, CHAPTERS.length, ['fire']);
+    p.completeAll();
+    expect(p.count).toBe(MEMORIES.length);
+    expect(p.isFinished).toBe(true);
+    expect(p.freeRoam).toBe(true);
+  });
+
   it('round-trips through storage and tolerates garbage', () => {
     const p = new Progress(MEMORIES, CHAPTERS.length, ['fire']);
     expect(Progress.parse(p.serialize())).toEqual(['fire']);

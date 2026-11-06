@@ -1,32 +1,38 @@
 import type * as THREE from 'three';
 import { STILLNESS_LINE } from '../../content/story';
 import { DWELL_SECONDS } from '../config';
-import type { Item, ItemSet } from '../story/items';
-import { Dwell, pickFocus, type Sighting } from './gaze';
+import { Dwell, pickFocus, type GazeTuning, type Sighting } from './gaze';
 import type { Narrative } from './narrative';
-import type { Progress } from './progress';
 
 export interface AttentionView {
   setReticle(near: boolean, focus: number): void;
 }
 
+/** Something that can be looked at right now. */
+export interface GazeCandidate<T> {
+  item: T;
+  /** World-space point to look at. May be a shared vector: it is read (and projected) before the next one. */
+  target: THREE.Vector3;
+  tuning: GazeTuning;
+}
+
 /**
  * The core verb: stand still and hold your gaze on an object; looking at it gives Isi the memory back.
- * Picks the available memory closest to screen center and fills a ring over DWELL_SECONDS.
+ * Picks the candidate closest to screen center and fills a ring over DWELL_SECONDS.
  * The selection and dwell rules live in `gaze.ts`; this class only projects through the camera.
+ * What can be looked at (memories of the current chapter, hidden objects of the free roam) is up to `candidates`.
  */
-export class Attention {
-  private readonly dwell = new Dwell<Item>(DWELL_SECONDS);
+export class Attention<T> {
+  private readonly dwell = new Dwell<T>(DWELL_SECONDS);
   private readonly deps: {
     camera: THREE.PerspectiveCamera;
-    items: ItemSet;
-    progress: Progress;
     narrative: Narrative;
     view: AttentionView;
-    onRemember: (it: Item) => void;
+    candidates: () => Iterable<GazeCandidate<T>>;
+    onRemember: (item: T) => void;
   };
 
-  constructor(deps: Attention['deps']) {
+  constructor(deps: Attention<T>['deps']) {
     this.deps = deps;
   }
 
@@ -39,16 +45,13 @@ export class Attention {
     if (r.completed) this.deps.onRemember(r.completed);
   }
 
-  private *sightings(): Generator<Sighting<Item>> {
-    const { camera, items, progress } = this.deps;
-    for (const it of items.items) {
-      if (!progress.isAvailable(it)) continue;
-      const wp = items.targetOf(it);
-      const distance = camera.position.distanceTo(wp);
-      if (distance > it.attention.range) continue; // skip the projection, as before
-      wp.project(camera);
-      // `wp` is shared by `targetOf`: safe because pickFocus reads each sighting before the next.
-      yield { item: it, tuning: it.attention, distance, ndc: wp };
+  private *sightings(): Generator<Sighting<T>> {
+    const { camera } = this.deps;
+    for (const { item, target, tuning } of this.deps.candidates()) {
+      const distance = camera.position.distanceTo(target);
+      if (distance > tuning.range) continue; // skip the projection, as before
+      target.project(camera);
+      yield { item, tuning, distance, ndc: target };
     }
   }
 }

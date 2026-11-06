@@ -48,6 +48,13 @@ export class Progress {
     this.freeRoam = false;
   }
 
+  /** Debug: everything remembered, straight into the free roam. */
+  completeAll(): void {
+    for (const it of this.items) this.remembered.add(it.id);
+    this.chapter = this.chapterCount;
+    this.freeRoam = true;
+  }
+
   serialize(): string {
     return JSON.stringify([...this.remembered]);
   }

@@ -28,7 +28,16 @@ export interface SkyUniforms {
   sunDir: THREE.IUniform<THREE.Vector3>;
 }
 
-/** Sky dome, stars, ringed giant, moon and the slow drifting star (`shipStar`). Follows the camera. */
+/** Horizontal direction of the star from the fire (rad, `atan2(z, x)`). Fixed: it no longer drifts. */
+export const STAR_ANGLE = 0.6;
+/** Unit direction of the star (`shipStar`), about 48° above the horizon. */
+export const STAR_DIRECTION: readonly [number, number, number] = (() => {
+  const [x, y, z] = [Math.cos(STAR_ANGLE) * 0.55, 0.62, Math.sin(STAR_ANGLE) * 0.55];
+  const l = Math.hypot(x, y, z);
+  return [x / l, y / l, z / l];
+})();
+
+/** Sky dome, stars, ringed giant, moon and the far planet Isi was heading to (`shipStar`). Follows the camera. */
 export class Sky {
   readonly group = new THREE.Group();
   readonly uniforms: SkyUniforms = {
@@ -118,10 +127,13 @@ export class Sky {
     moon.position.set(0.62, 0.5, -0.35).normalize().multiplyScalar(470);
     this.group.add(planet, ring, moon);
 
-    // A slow drifting star that fades in from chapter 4 (Atmosphere) and that Isi ends up holding
-    // the gaze on. The name is historical: in the original premise it was a colony ship arriving.
+    // The far planet Isi was heading to ("Un planeta lejano"): fades in from chapter 4 (Atmosphere)
+    // and she ends up holding the gaze on it. It stays put (author, 2026-11-06), so the hidden
+    // objects can be laid out around it. The name is historical: in the original premise it was a
+    // colony ship arriving.
     this.shipStar = additiveSprite(glowTexture, 0xfff1c0, 0, false);
     this.shipStar.scale.setScalar(18);
+    this.shipStar.position.set(...STAR_DIRECTION).multiplyScalar(560);
     this.group.add(this.shipStar);
   }
 }

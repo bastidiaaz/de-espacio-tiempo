@@ -1,11 +1,17 @@
+import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
+
 type AudioContextCtor = typeof AudioContext;
 
-/** Fully synthesized soundscape: pad, music-box drips, campfire crackle, memory chimes. */
+/** Fully synthesized soundscape: pad, music-box drips, campfire crackle, memory chimes, proximity arpeggio. */
 export class AudioEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   private echo: DelayNode | null = null;
   private fireBus: GainNode | null = null;
+  /** Proximity arpeggio of the hidden objects: its volume, and its pan towards them. */
+  private proxLevel: GainNode | null = null;
+  private proxPan: StereoPannerNode | null = null;
+  private proximity = 0;
   private enabled: boolean;
   private disposed = false;
   private readonly timers = new Set<number>();
@@ -109,6 +115,29 @@ export class AudioEngine {
         this.later(drip, 4000 + Math.random() * 6000);
       };
       drip();
+
+      // Proximity arpeggio (hidden objects): soft music-box notes on a fixed loop. Only the
+      // volume (proxLevel) follows the distance; notes and tempo never change.
+      const proxLevel = (this.proxLevel = actx.createGain());
+      proxLevel.gain.value = 0;
+      let out: AudioNode = proxLevel;
+      if (typeof actx.createStereoPanner === 'function') {
+        const pan = (this.proxPan = actx.createStereoPanner());
+        proxLevel.connect(pan);
+        out = pan;
+      }
+      out.connect(master);
+      out.connect(echo);
+      let step = 0;
+      const arp = () => {
+        if (this.proximity > 0.001) {
+          const f = ARP_NOTES[step % ARP_NOTES.length];
+          if (f) this.arpNote(f);
+          step++;
+        } else step = 0; // back in range, it starts again from the first note
+        this.later(arp, ARP_STEP_S * 1000);
+      };
+      arp();
     } catch {
       this.ctx = null;
     }
@@ -162,6 +191,18 @@ export class AudioEngine {
     master.gain.linearRampToValueAtTime(on ? 0.4 : 0, ctx.currentTime + 0.4);
   }
 
+  /**
+   * How close the nearest hidden object not found yet is (0 silent .. 1 right there, see
+   * `proximity.ts`), and on which side (-1 left .. 1 right).
+   */
+  setProximity(level: number, pan: number): void {
+    const { ctx, proxLevel, proxPan } = this;
+    if (!ctx || !proxLevel) return;
+    this.proximity = level;
+    proxLevel.gain.setTargetAtTime(cueGain(level), ctx.currentTime, 0.25);
+    proxPan?.pan.setTargetAtTime(pan, ctx.currentTime, 0.15);
+  }
+
   /** 0..1, how loud the campfire is (by distance). */
   setFireLevel(level: number): void {
     if (this.ctx && this.fireBus) this.fireBus.gain.value = level;
@@ -174,6 +215,29 @@ export class AudioEngine {
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.ctx?.close();
     this.ctx = null;
+  }
+
+  /** One note of the arpeggio: a soft sine with a faint octave, gentle attack and a long tail. */
+  private arpNote(freq: number): void {
+    const { ctx, proxLevel } = this;
+    if (!ctx || !proxLevel) return;
+    const t = ctx.currentTime;
+    [
+      [freq, 1],
+      [freq * 2, 0.18],
+    ].forEach(([f, g0]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(g0, t + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
+      o.connect(g);
+      g.connect(proxLevel);
+      o.start(t);
+      o.stop(t + 1.9);
+    });
   }
 
   private later(fn: () => void, ms: number): void {

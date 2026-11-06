@@ -11,6 +11,7 @@
 - **2026-11-05: borde (DIS-06).** Antes del tope, el mundo se apaga: se oscurece, la música se desvanece, crece el viento e Isi camina más lento, como empujada. El paseo libre tiene el mismo borde a los 400 m, salvo en el mirador, y una frase propia. Ver "Borde".
 - **2026-11-05: cierre (DIS-07).** Capítulo nuevo entre la nave y la estrella: Isi vuelve a la fogata, recupera convicción y se sienta (11 recuerdos, 6 capítulos). Sentada mira la estrella; tras la cita suena el coro de "Astronauta" una vez mientras la cámara da una vuelta de 360° por el cielo, y aparece la pantalla final «Te sientas junto al fuego» con la invitación a ffm.to. Resuelve D6. Ver "Cierre".
 - **2026-11-05: revelación de la nave (DIS-08).** Al acercarse, la niebla esconde la nave y la música se apaga; a 30 m el juego toma la cámara unos 10 s (no se puede saltar), la niebla se abre y la nave aparece enorme y estrellada, del tamaño de un bus, con un acorde grave y crujidos del casco. Después se le sostiene la mirada como siempre. Ver "Revelación de la nave".
+- **2026-11-06: la estrella queda fija (decisión del autor, ENG-13).** La estrella es el planeta lejano al que iba Isi («Un planeta lejano») y ya no se mueve por el cielo: queda siempre en la misma dirección. Así se cumplen «ningún oculto en la dirección de la estrella» y «la foto del campanil mira hacia la estrella». El aspecto de planeta llega con ART-06.
 
 ## Contexto
 
@@ -256,7 +257,114 @@ revelación**.
 - **Señal de cercanía:** un destello leve, como algo que refleja la luz, visible
   a unos 30 m. No se ve desde lejos; cuando aparece, el jugador sabe que
   encontró algo. Sin pistas de texto.
+- **Sonido de cercanía (decisión del autor, 2026-11-06, al probar ENG-13):**
+  los ocultos eran demasiado difíciles. Desde unos **70 m** del oculto no
+  encontrado más cercano suena un **arpegio tierno y calmo**, en bucle: notas
+  suaves, como de cajita de música, que suben y bajan por La mayor con novena
+  (La4, Do#5, Mi5, Si5, Mi5, Do#5) y una pausa, una nota cada 0,5 s. **Solo
+  crece el volumen** al acercarse; las notas y el tempo no cambian. Se escucha
+  hacia el lado donde está el objeto, calla mientras hay una tarjeta abierta y
+  se apaga al encontrarlo. Vale también para la carta: el mirador sigue sin
+  nada que lo señale desde lejos, pero ya en la ladera la carta suena como los
+  demás. Lógica en `src/game/systems/proximity.ts`.
 - El mirador es la excepción: es un lugar y se descubre como lo defina DIS-05.
+
+### Lugares de los ocultos (decisión del autor, 2026-11-06)
+
+**La idea.** Los ocultos seguían siendo difíciles de encontrar. Alrededor de
+cada uno, el terreno cambia: un pedazo de bioma que **no aparece en ninguna
+otra parte del planeta**, para que el jugador piense "esto no lo había visto"
+y vaya a mirar. No es una flecha ni un cartel; la curiosidad la pone el
+lugar. El orden de las pistas al acercarse es: **el lugar raro** (visible a
+unos 100 m, con la niebla) → **el arpegio** (desde 70 m) → **el destello**
+(desde 30 m) → el objeto en su escondite.
+
+**Reglas del autor:**
+
+- Cada oculto tiene **su propio lugar**. Uno es muy distinto; los otros
+  bastan con un cambio claro (color de la tierra, árboles con otra forma,
+  terreno más puntiagudo, una isla).
+- Los elementos van **cerca del objeto, pero no al lado**: el escondite de
+  cada uno no cambia.
+
+**Los cinco (aprobados por el autor el 2026-11-06):**
+
+| Oculto | Su lugar |
+|---|---|
+| `guitar` (el muy distinto) | Un **bosquecillo de árboles de madera**: troncos claros, delgados y algo curvos, con copas redondas, y el suelo en un tono arena cálido. En el planeta no hay árboles (hay hongos, tallos con bulbos y cristales), así que la madera se nota. La guitarra es de madera: el lugar rima con el objeto sin explicarlo. |
+| `insulin` | **Terreno puntiagudo**: agujas altas de roca y cristal que salen del suelo, con la tierra teñida de un azul frío. Amplía el "entre cristales" de su escondite. |
+| `campanil` | **Una isla**: un estanque en anillo y la foto en el islote. Se llega nadando, como en el resto del mapa. |
+| `earring` | **Tierra rojiza, color cobre**, entre los tallos con bulbos de su escondite. Tierra y no hojas: un bosque otoñal contradiría «no parece haber otoños en este planeta». |
+| `letter` | Nada extra: su lugar es la montaña del mirador (ART-08), que nada señala desde lejos. |
+
+**Más marcados, con una gran estructura (decisión del autor, 2026-11-06).**
+Tras la primera prueba, el autor pidió biomas más marcados y una gran
+estructura en cada uno, propia del planeta (natural, no hecha por nadie):
+
+| Bioma | Estructura |
+|---|---|
+| Bosquecillo de madera (`guitar`) | Un **árbol madre** enorme: tronco ancho, raíces que se arquean sobre el suelo y una copa gigante; los árboles chicos parecen sus hijos. |
+| Agujas azules (`insulin`) | Una **catedral de cristal**: cristales gigantes que se inclinan hacia un mismo punto, con un brillo tenue propio. |
+| Isla (`campanil`) | Una **roca flotante** enorme suspendida sobre la isla, con raíces y tallos colgando. Hay islotes flotantes en el planeta, pero ninguno tan grande ni tan bajo. |
+| Tierra cobriza (`earring`) | Un **arco de roca cobriza** gigante y natural, bajo el que se puede pasar. |
+| Carta (`letter`) | Ninguna: su estructura es la montaña del mirador (ART-08). |
+
+- **Colosales (decisión del autor, 2026-11-06):** miden de **60 a 100 m**
+  (unas cuatro veces su primera versión) y van a unos **40–55 m** del objeto,
+  para que su base no caiga sobre el escondite; la roca flotante cuelga a
+  ~48 m sobre la isla.
+- **Siempre en la niebla (decisión del autor, 2026-11-06):** como todo lo
+  demás, también en el paseo libre. Se probó sacarlas de la niebla para verlas
+  a lo lejos como siluetas y el autor prefirió que no: se descubren al
+  acercarse, igual que el resto del planeta.
+- **Siluetas desde la fogata (decisión del autor, 2026-11-06):** desde la
+  fogata, las cuatro estructuras se ven como siluetas en la niebla. Más allá
+  del final de la niebla todo toma el color del horizonte, así que una
+  estructura solo se distingue donde asoma contra el cielo más oscuro de
+  arriba. Por eso cada una se coloca del lado de su bioma que mira a la
+  fogata y se agranda lo necesario para que su cima suba al menos **14°**
+  sobre el horizonte y **8°** por encima de cualquier loma en el camino (la
+  roca flotante, además, asoma entera sobre la loma). Tope: 12 veces su
+  primer tamaño; detrás de una loma muy grande junto al campamento, asoma
+  menos.
+- **Rastros desde la fogata (decisión del autor, 2026-11-06):** desde unos
+  28 m de la fogata hasta cerca de cada estructura hay pistas sueltas de su
+  bioma: arbolitos de madera hacia el árbol madre, cristales azules hacia la
+  catedral, pequeñas rocas flotantes con un tallo brillante colgando hacia la
+  isla y rocas cobrizas hacia el arco. Van cada 18–28 m y se desvían hasta
+  8 m a los lados, para que no se lean como un camino; si caen en un lago,
+  se corren hasta 12 m buscando tierra o asoman del agua, para que el rastro
+  no se corte. **Solo existen en el paseo libre**, para no invitar a salir
+  del radio durante la historia. La carta no tiene rastro: al mirador no lo
+  señala nada.
+- Más marcados: el bioma llega a unos **55 m** del objeto (la tierra teñida, a
+  ~60 m), con el doble de elementos, más detalle a ras de suelo y la tierra a
+  casi plena intensidad. Dentro del bioma no aparecen los hongos, tallos ni
+  cristales comunes del resto del planeta.
+
+**Decisiones de Claude (revisables):**
+
+- **Tamaño.** El lugar ocupa un anillo de unos **10 a 55 m** alrededor del
+  objeto. Lo bastante grande para verse entre la niebla y sin tocar el
+  escondite (5 m).
+- **Siempre presentes.** Los lugares existen desde el principio, igual que
+  los escondites; solo los objetos aparecen en el paseo libre. Durante la
+  historia (150 m) el borde de un bioma puede quedar a unos 15 m del límite
+  caminable, pero la niebla del capítulo lo esconde.
+- **Determinismo.** Cada lugar usa el generador propio de los ocultos,
+  derivado de la semilla. El color de la tierra se calcula por posición, sin
+  azar. Los árboles y las agujas no tocan el terreno.
+- **La isla sí cambia el terreno**, solo ahí: un anillo de unos 7 a 15 m
+  alrededor de la foto se hunde bajo el agua y el islote (5 m) queda seco.
+  Es un ajuste local de `TerrainField`, nulo a menos de 200 m del fuego, así
+  que el fixture de `terrain.test.ts` (puntos a menos de 150 m) no cambia;
+  las semillas existentes solo cambian en esa isla. La foto se ubica
+  primero con el terreno original y después se hunde el anillo.
+- **Colisiones.** Los árboles y las agujas tienen collider; Isi los rodea.
+- **Móvil primero.** Cada lugar son una o dos mallas instanciadas (pocas
+  draw calls), sin sombras, con el Lambert flat de siempre.
+- **Mientras no exista ART-11,** los árboles y las agujas son formas
+  procedurales low-poly del mismo estilo que el resto del mundo.
 
 ### Decisiones de Claude (revisables)
 
@@ -406,9 +514,13 @@ De pie en la cima, mirando hacia fuera:
   distancia, sin llamadas nuevas a `rng()`.
 - **Móvil primero.** El cielo del mirador son pocos meshes y sprites, sin
   sombras. Las siluetas de cristal son capas planas o low-poly.
-- **La estrella se mueve** (`atmosphere.ts` la hace girar lento), así que
-  "no en la dirección de la estrella" se mide contra su dirección al empezar
-  el paseo libre, con el mismo criterio que use ENG-13 para los ocultos.
+- **La estrella no se mueve** (decisión del autor, 2026-11-06): está en una
+  dirección fija (`STAR_ANGLE` en `sky.ts`), y "no en la dirección de la
+  estrella" se mide contra esa dirección, igual que en los ocultos (ENG-13).
+- **Dirección del mirador:** ya la fija ENG-13 (`miradorAngle` en
+  `hiddenLayout.ts`, la de la carta, que está a 390 m), con un sector de
+  ±0,3 rad (`MIRADOR_HALF_WIDTH`). ART-08 construye la cordillera ahí y
+  ENG-14 usa el mismo sector.
 - **Modo debug:** un salto "ir al mirador" en el panel, para revisar el
   encuadre.
 
@@ -728,7 +840,7 @@ mirar hacia arriba con convicción.
   los colliders del casco y el set de mate, mirando hacia el fuego. Al
   sentarse, la cámara se desliza hasta ahí desde donde estaba. El mismo punto
   sirve para reanudar sentada y para que el plano del coro sea siempre igual.
-  No se alinea con la estrella (deriva) ni depende de ART-06.
+  No se alinea con la estrella ni depende de ART-06.
 - **Cuándo se da por terminado el acto:** `star` y la marca de acto completado
   (`onComplete`, `lvr-acts-done`) se guardan **cuando aparece la pantalla
   final**, no al recordar la estrella. Si alguien recarga a mitad de las

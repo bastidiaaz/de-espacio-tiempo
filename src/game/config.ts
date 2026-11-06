@@ -22,6 +22,8 @@ export const STORAGE_KEYS = {
   retro: 'lvr-retro',
   sound: 'lvr-sound',
   memory: (seed: number) => `lvr-mem-${seed}`,
+  /** JSON array of the hidden objects found in Act I's free roam (ENG-13), same shape as `memory`. */
+  hidden: (seed: number) => `lvr-a1-hidden-${seed}`,
   /** JSON array of finished act numbers, e.g. `[1]`. Owned by the shell. */
   actsDone: 'lvr-acts-done',
   /** Camera sensitivity multiplier (ENG-09), one of `LOOK_LEVELS`. Owned by the shell. */

@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import { CHAPTERS, MEMORIES } from '../../content/story';
+import { CHAPTERS, HIDDEN, MEMORIES } from '../../content/story';
 import { useGameActions, useGameState } from '../GameContext';
 import './DebugPanel.css';
 
@@ -14,7 +14,9 @@ export function DebugPanel() {
   const chapter = useGameState((s) => s.debugChapter);
   const radius = useGameState((s) => s.debugRadius);
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll } = useGameActions();
+  const found = useGameState((s) => s.hiddenFound);
+  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden } =
+    useGameActions();
   return (
     <details id="debug">
       <summary>
@@ -60,6 +62,30 @@ export function DebugPanel() {
         }}
       >
         Marcar todo → final
+      </button>
+      <h3>Ocultos (paseo libre)</h3>
+      <ul>
+        {HIDDEN.map((h) => (
+          <li key={h.id}>
+            <button
+              onClick={(e) => {
+                blur(e);
+                debugJumpToHidden(h.id);
+              }}
+            >
+              <span className="chap">{found.includes(h.id) ? '✓' : '·'}</span> {h.title}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button
+        className="all"
+        onClick={(e) => {
+          blur(e);
+          debugResetHidden();
+        }}
+      >
+        Olvidar ocultos ({found.length}/{HIDDEN.length})
       </button>
     </details>
   );
