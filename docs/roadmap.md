@@ -153,7 +153,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** un guion con tiempos y estados de UI.
 - **Hecho cuando:** el autor lo aprueba, y queda implementado mediante ART-09, AUD-01 y UI-03.
 
-**DIS-08 · La nave como momento "wow"** · S · P1
+**DIS-08 · La nave como momento "wow"** · S · P1 · guion ✅ aprobado (2026-11-05): sección "Revelación de la nave" del brief del Acto I. Nave del tamaño de un bus, enorme y ya estrellada; la niebla la esconde al acercarse, a 30 m el juego toma la cámara ~10 s sin poder saltarla (baja a ras de suelo y la recorre subiendo), con acorde grave y crujidos, sin la melodía de "Astronauta". Después se le sostiene la mirada como siempre. Falta implementarlo (ART-05, AUD-03)
 - **Secuencia:** silencio con viento antes de verla (AUD-03) → revelación con cámara guiada y apertura de niebla → escala y detalle (ART-05).
 - **Output:** un guion con tiempos.
 - **Hecho cuando:** el autor lo aprueba.

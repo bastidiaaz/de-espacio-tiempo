@@ -10,6 +10,7 @@
 - **2026-11-05: decisiones del autor para los textos de los ocultos (DIS-12).** Títulos con artículo indefinido, el reverso de la foto del campanil, la voz de la carta y un dato de canon nuevo: Isi vive mucho después de 2025. Ver "Textos: decisiones del autor".
 - **2026-11-05: borde (DIS-06).** Antes del tope, el mundo se apaga: se oscurece, la música se desvanece, crece el viento e Isi camina más lento, como empujada. El paseo libre tiene el mismo borde a los 400 m, salvo en el mirador, y una frase propia. Ver "Borde".
 - **2026-11-05: cierre (DIS-07).** Capítulo nuevo entre la nave y la estrella: Isi vuelve a la fogata, recupera convicción y se sienta (11 recuerdos, 6 capítulos). Sentada mira la estrella; tras la cita suena el coro de "Astronauta" una vez mientras la cámara da una vuelta de 360° por el cielo, y aparece la pantalla final «Te sientas junto al fuego» con la invitación a ffm.to. Resuelve D6. Ver "Cierre".
+- **2026-11-05: revelación de la nave (DIS-08).** Al acercarse, la niebla esconde la nave y la música se apaga; a 30 m el juego toma la cámara unos 10 s (no se puede saltar), la niebla se abre y la nave aparece enorme y estrellada, del tamaño de un bus, con un acorde grave y crujidos del casco. Después se le sostiene la mirada como siempre. Ver "Revelación de la nave".
 
 ## Contexto
 
@@ -527,6 +528,99 @@ Isi se queda sola.
 
 El jugador nota el borde antes de chocar con él, porque todo se apaga y queda
 solo el viento, y al frenarse ya no se siente una pared invisible abrupta.
+
+## Revelación de la nave (DIS-08)
+
+### La idea
+
+La nave es el momento **"wow"** del acto: tiene que verse en todo su esplendor
+y ser **sobrecogedora**. El esplendor es el de una nave **enorme e imponente,
+ya estrellada**: el daño se ve desde el primer instante. La revelación es solo
+el **encuentro**; recordar sigue siendo sostenerle la mirada, como con
+cualquier otro objeto.
+
+### Decisiones del autor (2026-11-05)
+
+- **El juego toma el control por un momento** para mostrarla, y después lo
+  devuelve.
+- **La toma no es el recuerdo.** Al terminar, quien juega le sostiene la
+  mirada con la mecánica normal y aparece la tarjeta de `ship` de siempre.
+- **No se puede saltar.**
+- **Tamaño: como un bus** (unos 12 m de largo y 3–4 m de alto, el doble de la
+  actual). Lo imponente lo dan la cámara baja y la niebla, no el tamaño bruto.
+- **Cámara:** baja casi al suelo detrás de Isi, mirando hacia arriba; mientras
+  la niebla se abre, avanza y sube en diagonal recorriendo la nave de un
+  extremo al otro, y vuelve a la vista normal de Isi, mirándola de frente.
+- **Sonido:** no se usa la melodía de "Astronauta" (el coro queda para el
+  cierre, DIS-07). Solo viento al acercarse; en la toma el viento baja, entra
+  un **acorde grave y largo** con la tónica de "Astronauta" (sacada de la
+  partitura) que crece despacio, y un **crujido metálico** lejano del casco.
+  Lo sobrecogedor sale del tamaño del sonido, no de una melodía.
+
+### Secuencia
+
+Los tiempos son de la toma, desde que el juego toma el control.
+
+| # | Momento | Jugador | Cámara | Sonido | Niebla / escena |
+|---|---|---|---|---|---|
+| 1 | Cap. 3, caminando hacia la nave | camina | libre | normal | más densa cuanto más cerca de la nave; la oculta del todo |
+| 2 | A ~60 m de la nave | camina | libre | la música se apaga en 3 s; queda el viento (AUD-03) | igual |
+| 3 | A ~30 m: **0–1,5 s** | sin control; Isi se detiene | baja casi al suelo detrás de Isi y mira hacia arriba | el viento baja, como si contuviera el aire | igual |
+| 4 | **1,5–4 s** | sin control | empieza a avanzar | entra el acorde grave y crece despacio | la niebla se abre hacia la nave |
+| 5 | **3–8 s** | sin control | avanza y sube en diagonal, recorriendo la nave de un extremo al otro | a los ~5 s, crujido metálico del casco | la luz roja parpadea |
+| 6 | **8–10 s** | sin control | vuelve a la vista normal de Isi, mirando la nave de frente | el acorde empieza a apagarse | niebla abierta |
+| 7 | Después | camina y mira | libre | el acorde se apaga en ~4 s; viento y algún crujido suelto | niebla abierta |
+| 8 | Sostiene la mirada en la nave | — | — | `swell` de siempre | tarjeta de `ship` |
+
+### Decisiones de Claude (revisables)
+
+- **Numeración:** capítulos de 0 a 5, como en "Cierre"; la nave es el
+  capítulo 3 (`capitulo4` en el JSON, "cap. 4" en "Borde").
+- **Distancias:** la música se apaga a 60 m del centro de la nave y la toma se
+  dispara a 30 m, en cualquier dirección de llegada. La cámara se arma sobre la
+  línea Isi → nave, así que el plano funciona venga de donde venga.
+- **Rango de la mirada de `ship`:** sube de 24 a ~32 m, acorde al tamaño
+  nuevo, para que se pueda sostener la mirada desde donde la toma deja a Isi
+  sin obligarla a caminar. El cono se revisa al probar.
+- **Cómo se esconde:** hoy, al pasar al capítulo 3, la niebla se abre a ~150 m
+  y la nave (a 110 m del fuego) se vería desde lejos. Mientras la nave no se ha
+  revelado, `fog.far` se limita a la distancia hasta la nave menos ~8 m (con un
+  mínimo de ~22 m), así que el mundo se cierra a medida que Isi se acerca.
+  En la toma, la niebla vuelve a su valor normal en ~2,5 s. Es la misma
+  `THREE.Fog` de siempre: no hace falta niebla direccional.
+- **Cuándo se dispara:** solo en el capítulo 3, mientras `ship` no está
+  recordada, sin tarjeta ni frase en pantalla (si hay una, espera a que se
+  cierre) y con el acto sin pausa. Si se recarga antes de recordarla, la toma
+  vuelve a pasar; después de recordarla, nunca más. No hay clave nueva de
+  `localStorage`.
+- **Durante la toma:** no hay movimiento ni mirada del jugador, el joystick se
+  oculta, la atención no carga sobre la nave y no corre el aviso de pista de
+  45 s. Escape u Opciones pausan la toma, y al volver sigue desde donde quedó.
+  El estado (por ejemplo una fase `reveal`) se publica en el store solo cuando
+  cambia.
+- **Cámara a ras de suelo:** nunca baja de ~0,4 m sobre el terreno en
+  cualquier punto del recorrido, ni atraviesa la nave.
+- **Reduced motion:** la cámara no se mueve. La toma pasa desde la vista
+  normal de Isi, con la niebla abriéndose y el mismo sonido, y dura lo mismo.
+- **Se publica por partes**, como el cierre. La toma (cámara, niebla, bloqueo)
+  puede salir con la nave actual; mientras no existan el viento (AUD-03) ni el
+  acorde, la música se apaga igual y la toma pasa en silencio. El modelo nuevo
+  (ART-05) entra cuando esté listo.
+- **Debug:** un botón "Repetir revelación" en el panel; "saltar al cap. 3" deja
+  a Isi a más de 60 m de la nave para poder vivir la llegada completa.
+
+### Lo que queda para quien lo construya
+
+- Las curvas finas de la cámara y de la niebla; el autor las aprueba jugando.
+- El modelo de la nave (ART-05: tamaño de bus, rota, presupuesto `hero`), el
+  viento (AUD-03), el acorde y el crujido.
+- El extremo por el que empieza el recorrido de la cámara, según cómo quede el
+  modelo (la nariz apunta al campamento).
+
+### Hecho cuando
+
+El autor llega a la nave caminando desde el capítulo 2, vive la toma completa y
+la aprueba como sobrecogedora; y queda implementada junto con ART-05 y AUD-03.
 
 ## Cierre (DIS-07)
 
