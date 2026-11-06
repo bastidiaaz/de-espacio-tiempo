@@ -37,6 +37,8 @@ export interface GameUiState {
   seated: boolean;
   /** Short black fade, used instead of camera motion with reduced motion. */
   fade: boolean;
+  /** 0..1 how deep into the dark band before the edge (ENG-14), in steps of 0.05: drives the vignette. */
+  edge: number;
   stick: StickState;
   /** `#debug` in the URL (ENG-03). Everything below is only published while it is on. */
   debug: boolean;
@@ -44,6 +46,8 @@ export interface GameUiState {
   /** Walkable radius around camp right now, and where it is heading (metres, rounded). */
   debugRadius: number;
   debugRadiusTarget: number;
+  /** Width of the dark band before the edge (metres, rounded). */
+  debugBand: number;
 }
 
 export type GameStore = StoreApi<GameUiState>;
@@ -64,11 +68,13 @@ export const createGameStore = (): GameStore =>
     endingVisible: false,
     seated: false,
     fade: false,
+    edge: 0,
     stick: { active: false, x: 0, y: 0, dx: 0, dy: 0 },
     debug: false,
     debugChapter: 0,
     debugRadius: 0,
     debugRadiusTarget: 0,
+    debugBand: 0,
   }));
 
 /** Commands the UI can send to the engine. */

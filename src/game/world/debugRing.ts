@@ -6,19 +6,19 @@ const SEGMENTS = 180;
 /** Metres above the ground, so the line doesn't z-fight with the terrain. */
 const LIFT = 0.15;
 
-/** Debug only: a line on the ground where the player can no longer walk. */
+/** Debug only: a line on the ground, where the player can no longer walk or where the dark band starts. */
 export class DebugRing {
   readonly line: THREE.LineLoop;
   private readonly field: TerrainField;
   private readonly positions: Float32Array;
   private lastRadius = -1;
 
-  constructor(field: TerrainField) {
+  constructor(field: TerrainField, color = 0xffb070) {
     this.field = field;
     this.positions = new Float32Array(SEGMENTS * 3);
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
-    const material = new THREE.LineBasicMaterial({ color: 0xffb070, transparent: true, opacity: 0.75, fog: false });
+    const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.75, fog: false });
     this.line = new THREE.LineLoop(geometry, material);
     this.line.frustumCulled = false;
   }

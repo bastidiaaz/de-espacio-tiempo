@@ -546,6 +546,11 @@ Isi se queda sola.
 - **El viento se escucha más fuerte** a medida que se acerca.
 - **Al final de la oscuridad, se frena igual que hoy**, con el mismo margen y
   la misma frase de `al_llegar_al_borde` (y su espera de 7 s).
+  *Cambiado por el autor (2026-11-06):* el tope no se siente como una pared
+  rígida sino como un **rebote**: al tocarlo, algo empuja a Isi levemente
+  hacia atrás (unos 0,4 m, en menos de medio segundo). Mientras dura el empuje,
+  no puede avanzar hacia fuera; si insiste, vuelve a rebotar. La frase sigue
+  igual.
 - **El paseo libre tiene el mismo borde**, a los 400 m (`FREE_ROAM_RADIUS`).
   Hoy el código no lo frena en el paseo libre (`!progress.freeRoam`); eso
   cambia: el tope duro también vale ahí, y es el que hace coincidir el borde
@@ -592,9 +597,11 @@ Isi se queda sola.
   oscuridad. El rango de los ocultos no cambia.
 - **Orden de construcción.** La parte visual puede construirse ya. El sonido
   (AUD-05) espera a que exista el viento de AUD-03, para no hacer un viento
-  provisional que el autor apruebe dos veces. Mientras no exista el mirador
-  (ENG-13/ART-08), el borde del paseo libre se oscurece en todas las
-  direcciones; la excepción llega junto con la cordillera.
+  provisional que el autor apruebe dos veces. *Actualizado en ENG-14
+  (2026-11-06):* la excepción del mirador ya está activa con el sector de
+  ENG-13, aunque la cordillera (ART-08) no exista todavía, porque la carta
+  está a 390 m, dentro de la franja del paseo libre. Hasta ART-08, en ese
+  sector el tope es una pared invisible sin aviso.
 - **Curva suave** (por ejemplo `smoothstep`), para que el principio de la
   franja no se note como una línea.
 - **Intensidad en el tope:** la luz baja hasta cerca de un 35 % de la normal y
@@ -611,6 +618,12 @@ Isi se queda sola.
 - **Ningún ítem del capítulo actual puede quedar dentro de la franja.** Si
   alguno cae ahí, se achica la franja de ese capítulo, no se mueve el ítem. La
   nave (cap. 4) y la estrella (cap. 5, en el cielo) se revisan al probar.
+  *Resultado en ENG-14:* las distancias de los ítems no dependen de la
+  semilla, y dos capítulos caen en este caso: el transmisor (cap. 2, a 44 m
+  del fuego, con el tope a 46,5 m) y la pieza del motor (cap. 3, a 84 m, con el
+  tope a 88,5 m). La franja se calcula con los ítems **pendientes** y se ajusta
+  con suavidad, así que en esos capítulos casi no hay franja hasta recordar
+  ese ítem; después se abre hasta su ancho normal. La nave (110 m) no la toca.
 - **El sector del mirador** se define con la misma dirección y ancho angular
   que use ENG-13/ART-08 para la cordillera; fuera de ese sector, el borde del
   paseo libre se comporta como cualquier otro.

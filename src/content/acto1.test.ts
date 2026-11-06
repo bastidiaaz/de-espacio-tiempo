@@ -6,6 +6,7 @@ import {
   CHAPTERS,
   EDGE_LINES,
   EXPECTED_IDS,
+  FREE_EDGE_LINES,
   HIDDEN,
   MEMORIES,
   STILLNESS_LINE,
@@ -62,6 +63,16 @@ describe('acto1.json', () => {
     expect(p).toContain('Sobra "cohete" en "ocultos": el juego no sabe dónde usarlo.');
   });
 
+  it('exige la frase del borde del paseo libre, como lista con texto', () => {
+    const d = clone();
+    d.voz_de_isi.al_llegar_al_borde_libre = [];
+    expect(validateActo1(d, EXPECTED_IDS)).toEqual([
+      '"voz_de_isi.al_llegar_al_borde_libre" debe ser una lista [ ... ] con al menos un texto.',
+    ]);
+    delete d.voz_de_isi.al_llegar_al_borde_libre;
+    expect(validateActo1(d, EXPECTED_IDS)).toContain('Falta "al_llegar_al_borde_libre" en "voz_de_isi".');
+  });
+
   it('exige conservar {n} y {total} en el contador', () => {
     const d = clone();
     d.interfaz.hud.contador = 'mirados';
@@ -105,6 +116,7 @@ describe('textos cargados (cableados desde acto1.json)', () => {
   it('líneas sueltas', () => {
     expect(WAKE_LINES).toEqual(raw.voz_de_isi.al_despertar);
     expect(EDGE_LINES).toEqual(raw.voz_de_isi.al_llegar_al_borde);
+    expect(FREE_EDGE_LINES).toEqual(raw.voz_de_isi.al_llegar_al_borde_libre);
     expect(STILLNESS_LINE).toBe(raw.voz_de_isi.quedarse_quieta);
   });
 

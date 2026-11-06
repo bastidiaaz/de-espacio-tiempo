@@ -191,7 +191,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Ojo:** no tocar el orden de `rng()` (usar un generador propio derivado de la semilla), y correr un oculto al punto seco más cercano si cae en agua o dentro de un collider.
 - **Hecho cuando:** el autor encuentra los cinco sin debug, y le cuesta pero lo logra.
 
-**ENG-14 · El borde se apaga** · S · P1 · depende de DIS-06; la excepción del mirador, de ENG-13/ART-08
+**ENG-14 · El borde se apaga** · S · P1 · depende de DIS-06; la excepción del mirador, de ENG-13/ART-08 · ✅ implementado (2026-11-06), falta la prueba del autor: `systems/edge.ts` (lógica pura, testeada en `edge.test.ts`). La luz baja hacia un negro azulado (35 % en el tope) en `Atmosphere`, más una viñeta en React (`EdgeVignette`); la velocidad hacia fuera baja al 30 %. El tope y la frase `al_llegar_al_borde_libre` valen también en el paseo libre. La excepción del mirador ya usa el sector de ENG-13 (`miradorAngle` ± 0,3 rad, con un fundido de 0,06 rad), aunque la cordillera de ART-08 no exista todavía, porque la carta está a 390 m, dentro de la franja. La franja se achica sola mientras haya un ítem pendiente dentro: en el cap. 2 queda en ~1,4 m hasta recordar el transmisor (a 44 m) y en el cap. 3 en ~3,7 m hasta recordar la pieza del motor (a 84 m). Después, a pedido del autor, el tope rebota en vez de frenar en seco (`EdgeBounce`: ~0,4 m hacia el fuego, en menos de medio segundo, sin poder avanzar hacia fuera mientras dura). El sonido espera a AUD-05
 - **Inputs:** la sección "Borde" del brief del Acto I.
 - **Output:**
   - la franja antes del tope (25 % del radio, entre 4 y 25 m; 15 m en el paseo libre), donde la escena se oscurece con una viñeta suave;

@@ -14,6 +14,7 @@ export function DebugPanel() {
   const chapter = useGameState((s) => s.debugChapter);
   const radius = useGameState((s) => s.debugRadius);
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
+  const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
   const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden } =
     useGameActions();
@@ -24,6 +25,9 @@ export function DebugPanel() {
         {radius !== radiusTarget ? ` → ${radiusTarget}` : ''} m
       </summary>
       <p className="note">No se guarda nada en este modo.</p>
+      <p className="note">
+        Borde: tope en naranjo, franja oscura de {band} m desde el anillo azul.
+      </p>
       <h3>Capítulo</h3>
       <div className="row">
         {CHAPTERS.map((_, c) => (

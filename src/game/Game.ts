@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { COPY } from '../content/copy';
-import { CHAPTERS, EDGE_LINES, HIDDEN_IDS, MEMORIES, STAR_CHAPTER, WAKE_LINES } from '../content/story';
+import { CHAPTERS, EDGE_LINES, FREE_EDGE_LINES, HIDDEN_IDS, MEMORIES, STAR_CHAPTER, WAKE_LINES } from '../content/story';
 import type { GameActions, GameStore, Phase } from '../state/gameStore';
 import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, WATER, viewRadiusFor } from './config';
 import { facing, parseHash, standInFront } from './debug';
@@ -16,6 +16,7 @@ import { buildStoryWorld, type StoryWorld } from './story/storyWorld';
 import { HiddenSet, type HiddenItem } from './story/hidden';
 import { Attention, type GazeCandidate } from './systems/attention';
 import { AudioEngine } from './systems/audio';
+import { EDGE_MARGIN, EdgeBounce, bandWidth, edgeLevel, miradorWeight, nominalBand, slowOutward } from './systems/edge';
 import { Input } from './systems/input';
 import { Narrative } from './systems/narrative';
 import { Player } from './systems/player';
@@ -42,8 +43,6 @@ const TOTAL = MEMORIES.length;
 const PRE_DAWN = 0.12;
 /** Pixel height the retro mode renders at before upscaling. */
 const RETRO_HEIGHT = 460;
-/** The player stops this far (m) inside the remembered radius. */
-const EDGE_MARGIN = 1.5;
 const CHIME_ROOTS = [440, 554.37, 659.25, 880];
 /** Reduced motion: how long the screen stays black while Isi sits down or gets up (ms). */
 const FADE_MS = 400;
@@ -108,12 +107,18 @@ export class Game implements GameActions, ActEngine {
   /** `#debug` (ENG-03): debug panel on, nothing saved. */
   private readonly debug: boolean;
   private readonly debugRing: DebugRing | null = null;
+  /** Debug: where the dark band before the edge starts (ENG-14). */
+  private readonly debugBandRing: DebugRing | null = null;
 
   private phase: Phase = 'intro';
   private time = 0;
   private last = performance.now();
   private wakeT = 0;
   private edgeT = 0;
+  /** Width (m) of the dark band before the stop, eased; -1 snaps it on the next frame (ENG-14). */
+  private edgeWidth = -1;
+  /** Touching the stop pushes her gently back instead of a rigid wall (pedido del autor). */
+  private readonly bounce = new EdgeBounce();
   private lastProgress = 0;
   private retro: boolean;
   private sound: boolean;
@@ -227,7 +232,8 @@ export class Game implements GameActions, ActEngine {
     this.chunks.update(this.player.position.x, this.player.position.z, true);
     if (this.debug) {
       this.debugRing = new DebugRing(this.field);
-      this.scene.add(this.debugRing.line);
+      this.debugBandRing = new DebugRing(this.field, 0x7fb4ff);
+      this.scene.add(this.debugRing.line, this.debugBandRing.line);
       void this.placeTestModel();
     }
 
@@ -456,7 +462,10 @@ export class Game implements GameActions, ActEngine {
     } else {
       const pose = this.seat.update(dt);
       if (pose) this.applyPose(pose, dt);
-      else player.update(dt, this.input, this.field, this.resolvePlayer);
+      else {
+        player.update(dt, this.input, this.field, this.resolvePlayer);
+        this.applyBounce(dt);
+      }
       const stage = this.closing.update(dt);
       // AUD-01: aquí entra el coro (una vez) y baja el ambiente; sigue sonando tras la pantalla
       // final y aunque se apriete "Seguir explorando".
@@ -476,6 +485,7 @@ export class Game implements GameActions, ActEngine {
       }
     }
     this.edgeT -= dt;
+    this.updateEdge(dt);
     narrative.tickWhisper(dt);
     const seated = this.seat.locksMovement;
     if (this.store.getState().seated !== seated) this.store.setState({ seated });
@@ -612,22 +622,87 @@ export class Game implements GameActions, ActEngine {
     this.audio.setProximity(level, pan);
   }
 
-  /** Obstacles first, then the edge of what the player remembers. */
-  private resolvePlayer = (P: THREE.Vector3): void => {
+  /**
+   * The pull back near the edge, then obstacles, then the edge of what the player remembers
+   * (ENG-14: also in the free roam, at FREE_ROAM_RADIUS).
+   */
+  private resolvePlayer = (P: THREE.Vector3, fromX: number, fromZ: number): void => {
+    // While the bounce pushes, no step outwards at all; otherwise the dark band's slow-down.
+    const level = this.bounce.pushing ? 1 : this.edgeAt(fromX, fromZ);
+    if (level > 0) {
+      const s = slowOutward(fromX, fromZ, P.x, P.z, level, this.bounce.pushing ? 0 : undefined);
+      P.x = s.x;
+      P.z = s.z;
+    }
     pushOut(P, this.story.colliders);
     pushOut(P, this.hidden.colliders);
     pushOut(P, this.chunks.collidersNear(P.x, P.z));
     const lim = this.atmosphere.radiusCur - EDGE_MARGIN;
     const dc = Math.hypot(P.x, P.z);
-    if (!this.progress.freeRoam && dc > lim) {
+    if (dc > lim) {
       P.x *= lim / dc;
       P.z *= lim / dc;
-      if (this.edgeT <= 0) {
-        this.narrative.whisper(EDGE_LINES[(Math.random() * EDGE_LINES.length) | 0]);
+      this.bounce.hit();
+      // At the mirador the cliff already says it: no line there.
+      if (this.edgeT <= 0 && this.mirador(P.x, P.z) < 0.5) {
+        const lines = this.progress.freeRoam ? FREE_EDGE_LINES : EDGE_LINES;
+        this.narrative.whisper(lines[(Math.random() * lines.length) | 0]);
         this.edgeT = 7;
       }
     }
   };
+
+  /** After touching the stop: a short push back towards the fire, fading out (EdgeBounce). */
+  private applyBounce(dt: number): void {
+    const d = this.bounce.step(dt);
+    if (d <= 0) return;
+    const P = this.player.position;
+    const r = Math.hypot(P.x, P.z);
+    if (r < 1e-6) return;
+    P.x -= (P.x / r) * d;
+    P.z -= (P.z / r) * d;
+    pushOut(P, this.story.colliders);
+    pushOut(P, this.hidden.colliders);
+    pushOut(P, this.chunks.collidersNear(P.x, P.z));
+  }
+
+  /** 0..1 how far into the dark band (x, z) is; 0 at the mirador (ENG-14). */
+  private edgeAt(x: number, z: number): number {
+    if (this.edgeWidth <= 0) return 0;
+    const level = edgeLevel(Math.hypot(x, z), this.atmosphere.radiusCur - EDGE_MARGIN, this.edgeWidth);
+    return level * (1 - this.mirador(x, z));
+  }
+
+  /** 1 in the mirador's sector of the free roam, 0 elsewhere (and always 0 before the free roam). */
+  private mirador(x: number, z: number): number {
+    return this.progress.freeRoam ? miradorWeight(x, z, this.hidden.layout.miradorAngle) : 0;
+  }
+
+  /**
+   * The edge goes dark (ENG-14): eases the band's width (narrower while a pending item lies in
+   * it, so no memory waits in the dark) and hands the level to the light and the vignette.
+   */
+  private updateEdge(dt: number): void {
+    const { atmosphere, progress, player } = this;
+    const limit = atmosphere.radiusCur - EDGE_MARGIN;
+    const nominal = nominalBand(atmosphere.radiusCur, progress.freeRoam);
+    const target = progress.freeRoam ? nominal : bandWidth(limit, nominal, this.pendingItemDists());
+    if (this.edgeWidth < 0) this.edgeWidth = target;
+    else this.edgeWidth += (target - this.edgeWidth) * (1 - Math.exp(-dt * 0.5));
+    const level = this.edgeAt(player.position.x, player.position.z);
+    atmosphere.edge = level;
+    const shown = Math.round(level * 20) / 20;
+    if (this.store.getState().edge !== shown) this.store.setState({ edge: shown });
+  }
+
+  /** Distance to the fire of every memory that can be recalled now (the star lives in the sky). */
+  private *pendingItemDists(): Generator<number> {
+    for (const it of this.items.items) {
+      if (it.id === 'star' || !this.progress.isAvailable(it)) continue;
+      const t = this.items.targetOf(it);
+      yield Math.hypot(t.x, t.z);
+    }
+  }
 
   // ---------------------------------------------------------------- story
 
@@ -712,6 +787,7 @@ export class Game implements GameActions, ActEngine {
     atmosphere.kTarget = PRE_DAWN;
     atmosphere.radiusTarget = FREE_ROAM_RADIUS;
     atmosphere.snap(progress.chapter);
+    this.edgeWidth = -1;
   }
 
   /** Earlier chapters remembered, this one active, the world snapped to match. Never saved. */
@@ -735,12 +811,14 @@ export class Game implements GameActions, ActEngine {
     atmosphere.kTarget = (progress.count / TOTAL) * PRE_DAWN;
     atmosphere.radiusTarget = CHAPTERS[progress.chapter].radius;
     atmosphere.snap(progress.chapter);
+    this.edgeWidth = -1;
     this.lastProgress = this.time;
   }
 
   /** Teleport on the ground, out of any obstacle. */
   private moveTo(x: number, z: number): void {
     const P = this.player.position;
+    this.bounce.reset();
     this.chunks.update(x, z, true);
     P.set(x, 0, z);
     pushOut(P, this.story.colliders);
@@ -749,20 +827,24 @@ export class Game implements GameActions, ActEngine {
     P.y = Math.max(this.field.groundAt(P.x, P.z), WATER - 0.6);
   }
 
-  /** The edge line, plus chapter and radius for the panel (only when they change). */
+  /** The edge and band lines, plus chapter, radius and band for the panel (only when they change). */
   private updateDebug(): void {
     const { atmosphere, progress } = this;
-    this.debugRing?.update(atmosphere.radiusCur - EDGE_MARGIN, !progress.freeRoam);
+    const limit = atmosphere.radiusCur - EDGE_MARGIN;
+    this.debugRing?.update(limit, true);
+    this.debugBandRing?.update(limit - this.edgeWidth, this.edgeWidth > 0.2);
     const next = {
       debugChapter: progress.chapter,
       debugRadius: Math.round(atmosphere.radiusCur),
       debugRadiusTarget: Math.round(atmosphere.radiusTarget),
+      debugBand: Math.round(Math.max(0, this.edgeWidth)),
     };
     const s = this.store.getState();
     if (
       s.debugChapter !== next.debugChapter ||
       s.debugRadius !== next.debugRadius ||
-      s.debugRadiusTarget !== next.debugRadiusTarget
+      s.debugRadiusTarget !== next.debugRadiusTarget ||
+      s.debugBand !== next.debugBand
     )
       this.store.setState(next);
   }

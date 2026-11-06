@@ -1,0 +1,9 @@
+/* The engine publishes the level in steps of 0.05; the transition smooths those steps. */
+#edge-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(5, 6, 26, 0.55) 75%, rgba(5, 6, 26, 0.9) 100%);
+  opacity: 0;
+  transition: opacity 0.25s linear;
+}

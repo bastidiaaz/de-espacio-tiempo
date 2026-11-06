@@ -26,8 +26,16 @@ export class Player {
     this.pitch = Math.min(1.35, Math.max(-1.2, this.pitch - dy * k));
   }
 
-  /** `resolve` pushes the player out of obstacles and keeps them inside the remembered area. */
-  update(dt: number, input: Input, field: TerrainField, resolve: (p: THREE.Vector3) => void): void {
+  /**
+   * `resolve` gets the step already taken and where it started: it slows it near the edge, pushes
+   * the player out of obstacles and keeps them inside the remembered area.
+   */
+  update(
+    dt: number,
+    input: Input,
+    field: TerrainField,
+    resolve: (p: THREE.Vector3, fromX: number, fromZ: number) => void,
+  ): void {
     const P = this.position;
     let f = 0;
     let r = 0;
@@ -49,9 +57,11 @@ export class Player {
     this.moveAmount = len;
     const swim = field.groundAt(P.x, P.z) < WATER - 0.6;
     const speed = (swim ? 2.6 : 4.2) * (input.isDown('ShiftLeft', 'ShiftRight') ? 1.5 : 1);
+    const fromX = P.x;
+    const fromZ = P.z;
     P.x += mx * speed * dt;
     P.z += mz * speed * dt;
-    resolve(P);
+    resolve(P, fromX, fromZ);
     const floor = Math.max(field.groundAt(P.x, P.z), WATER - 0.6);
     P.y += (floor - P.y) * (1 - Math.exp(-dt * 14));
     this.walk += dt * len * speed * 2.2;

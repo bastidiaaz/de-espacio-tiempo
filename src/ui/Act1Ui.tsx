@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Blink } from './components/Blink';
 import { DebugPanel } from './components/DebugPanel';
+import { EdgeVignette } from './components/EdgeVignette';
 import { Ending } from './components/Ending';
 import { Fade } from './components/Fade';
 import { Hud } from './components/Hud';
@@ -19,6 +20,7 @@ export function Act1Ui() {
   // DOM order defines stacking (every layer is position: fixed).
   return (
     <>
+      <EdgeVignette />
       <Blink />
       <Fade />
       <Reticle />

@@ -131,4 +131,7 @@ export const WAKE_LINES: readonly string[] = ACTO1_TEXTS.voz_de_isi.al_despertar
 /** Whispered when the player walks into the edge of what she dares to look at. */
 export const EDGE_LINES: readonly string[] = ACTO1_TEXTS.voz_de_isi.al_llegar_al_borde;
 
+/** Same, in the free roam (ENG-14): the fear of the chapters is behind her by then. */
+export const FREE_EDGE_LINES: readonly string[] = ACTO1_TEXTS.voz_de_isi.al_llegar_al_borde_libre;
+
 export const STILLNESS_LINE: string = ACTO1_TEXTS.voz_de_isi.quedarse_quieta;

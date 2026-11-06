@@ -26,7 +26,7 @@ const UI_KEYS: Record<string, readonly string[]> = {
   diario: ['titulo', 'desconocido', 'volver', 'reiniciar'],
   final: ['titulo', 'cuerpo', 'seguir_caminando', 'reiniciar', 'invitacion', 'escuchar'],
 };
-const VOICE_KEYS = ['al_despertar', 'al_llegar_al_borde', 'quedarse_quieta'] as const;
+const VOICE_KEYS = ['al_despertar', 'al_llegar_al_borde', 'al_llegar_al_borde_libre', 'quedarse_quieta'] as const;
 const MEMORY_KEYS = ['titulo', 'texto'] as const;
 const CHAPTER_KEYS = ['pista', 'al_terminar'] as const;
 
@@ -92,6 +92,7 @@ export function validateActo1(data: unknown, ids: ExpectedIds): string[] {
   if (checkKeys(voice, VOICE_KEYS, 'voz_de_isi', out)) {
     checkList(voice.al_despertar, 'voz_de_isi.al_despertar', out);
     checkList(voice.al_llegar_al_borde, 'voz_de_isi.al_llegar_al_borde', out);
+    checkList(voice.al_llegar_al_borde_libre, 'voz_de_isi.al_llegar_al_borde_libre', out);
     checkText(voice.quedarse_quieta, 'voz_de_isi.quedarse_quieta', out);
   }
 

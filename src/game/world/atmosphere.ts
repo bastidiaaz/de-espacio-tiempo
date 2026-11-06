@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CHUNK_SIZE } from '../config';
 import { lerp } from '../math/util';
+import { EDGE_LIGHT } from '../systems/edge';
 import type { Sky } from './sky';
 import type { TerrainField } from './terrain';
 
@@ -30,6 +31,9 @@ const DAWN = palette({
   d: '#ffc89a',
 });
 
+/** What the light fades towards at the edge (ENG-14): a bluish black. */
+const EDGE_DARK = new THREE.Color('#05061a');
+
 export interface AtmosphereDeps {
   fog: THREE.Fog;
   sky: Sky;
@@ -44,12 +48,15 @@ export interface AtmosphereDeps {
  * Owns the two story-driven dials:
  *  - k: 0 (deep night) -> 1 (dawn); driven by how much Isi has remembered, capped by the act
  *  - radius: how far Isi dares to look for now (fog + walkable area); it grows as the fear eases
+ * plus `edge` (ENG-14): 0..1 how deep into the dark band before the stop the player is, set by the
+ * game each frame. It dims on top of k, never changes it.
  */
 export class Atmosphere {
   kTarget: number;
   kCur: number;
   radiusTarget: number;
   radiusCur: number;
+  edge = 0;
   private readonly d: AtmosphereDeps;
 
   constructor(deps: AtmosphereDeps, k: number, radius: number) {
@@ -84,6 +91,7 @@ export class Atmosphere {
     sun.position.copy(u.sunDir.value).multiplyScalar(100);
     sky.starMaterial.opacity = lerp(0.95, 0.12, k);
     motesMaterial.opacity = lerp(0.85, 0.4, k);
+    this.dimForEdge();
 
     this.radiusCur += (this.radiusTarget - this.radiusCur) * (1 - Math.exp(-dt * 0.5));
     fog.near = Math.min(this.radiusCur * 0.35, 28);
@@ -91,5 +99,17 @@ export class Atmosphere {
 
     const star = sky.shipStar.material;
     star.opacity += ((chapter >= 4 ? 1 : 0) - star.opacity) * dt * 0.5;
+  }
+
+  /** The world goes out near the edge: sky, fog and lights down towards EDGE_DARK, to EDGE_LIGHT at the stop. */
+  private dimForEdge(): void {
+    const dim = this.edge * (1 - EDGE_LIGHT);
+    if (dim <= 0) return;
+    const { fog, sky, hemi, sun } = this.d;
+    const u = sky.uniforms;
+    for (const c of [u.cH, u.cM, u.cT, u.cS]) c.value.lerp(EDGE_DARK, dim);
+    fog.color.copy(u.cH.value);
+    hemi.intensity *= 1 - dim;
+    sun.intensity *= 1 - dim;
   }
 }
