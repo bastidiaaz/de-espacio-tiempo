@@ -171,7 +171,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
   - eliminar el doc-comment duplicado en `Game.ts`;
   - actualizar la sección "Diferencias conocidas" de CLAUDE.md.
 
-**ENG-07 · Tests de la mirada** · M · P1
+**ENG-07 · Tests de la mirada** · M · P1 · ✅ hecho (2026-11-05): selección y dwell/drain extraídos a `systems/gaze.ts` (sin Three.js); `Attention` solo proyecta con la cámara. Tests en `gaze.test.ts`
 - **Inputs:** `systems/attention.ts`. Si hace falta, se extrae la lógica sin Three.js para poder testearla en Node.
 - **Output:** tests de dwell, drain, cono, rango y selección del ítem más central.
 
