@@ -24,4 +24,8 @@ export const STORAGE_KEYS = {
   memory: (seed: number) => `lvr-mem-${seed}`,
   /** JSON array of finished act numbers, e.g. `[1]`. Owned by the shell. */
   actsDone: 'lvr-acts-done',
+  /** Camera sensitivity multiplier (ENG-09), one of `LOOK_LEVELS`. Owned by the shell. */
+  lookSensitivity: 'lvr-look',
+  /** Text size scale (ENG-09), one of `TEXT_LEVELS`. Owned by the shell. */
+  textScale: 'lvr-text',
 } as const;

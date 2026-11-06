@@ -113,3 +113,29 @@ test('entrar y salir del Acto I varias veces no rompe nada (ADR 0001)', async ({
   }
   expect(errors).toEqual([]);
 });
+
+test('opciones de accesibilidad se aplican y se guardan (ENG-09)', async ({ page }) => {
+  const errors = watchErrors(page);
+  await enterActI(page);
+  await page.getByRole('button', { name: COPY.intro.start }).click();
+  await page.keyboard.press('Escape');
+
+  const rootFontSize = () => page.evaluate(() => getComputedStyle(document.documentElement).fontSize);
+  const base = parseFloat(await rootFontSize());
+  const largest = SHELL_COPY.textSizes[1.5];
+  await page.getByRole('button', { name: largest }).click();
+  await expect(page.getByRole('button', { name: largest })).toHaveAttribute('aria-pressed', 'true');
+  expect(parseFloat(await rootFontSize())).toBeCloseTo(base * 1.5, 1);
+
+  const slider = page.getByRole('slider', { name: SHELL_COPY.lookSensitivity });
+  await slider.fill('4');
+  await expect(slider).toHaveAttribute('aria-valuetext', SHELL_COPY.lookValue(2));
+
+  await page.reload();
+  expect(parseFloat(await rootFontSize())).toBeCloseTo(base * 1.5, 1);
+  expect(await page.evaluate(() => [localStorage.getItem('lvr-text'), localStorage.getItem('lvr-look')])).toEqual([
+    '1.5',
+    '2',
+  ]);
+  expect(errors).toEqual([]);
+});

@@ -8,5 +8,7 @@ describe('STORAGE_KEYS', () => {
     expect(STORAGE_KEYS.sound).toBe('lvr-sound');
     expect(STORAGE_KEYS.memory(12345)).toBe('lvr-mem-12345');
     expect(STORAGE_KEYS.actsDone).toBe('lvr-acts-done');
+    expect(STORAGE_KEYS.lookSensitivity).toBe('lvr-look');
+    expect(STORAGE_KEYS.textScale).toBe('lvr-text');
   });
 });

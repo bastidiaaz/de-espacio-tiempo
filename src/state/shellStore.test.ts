@@ -147,4 +147,34 @@ describe('shell store', () => {
     expect(reloads).toBe(1);
     expect(store.getState().screen).toBe('select');
   });
+
+  it('defaults the accessibility options to the original feel (ENG-09)', () => {
+    const s = createShellStore(memoryStorage()).getState();
+    expect(s.lookSensitivity).toBe(1);
+    expect(s.textScale).toBe(1);
+  });
+
+  it('reads saved accessibility options and ignores invalid ones', () => {
+    const read = (look: string, text: string) => {
+      const s = createShellStore(memoryStorage({ 'lvr-look': look, 'lvr-text': text })).getState();
+      return [s.lookSensitivity, s.textScale];
+    };
+    expect(read('1.5', '1.25')).toEqual([1.5, 1.25]);
+    expect(read('7', 'big')).toEqual([1, 1]);
+    expect(read('', '0')).toEqual([1, 1]);
+  });
+
+  it('persists accessibility options, snapped to a level', () => {
+    const storage = memoryStorage();
+    const store = createShellStore(storage);
+    store.getState().setLookSensitivity(2);
+    store.getState().setTextScale(1.5);
+    expect(store.getState().lookSensitivity).toBe(2);
+    expect(store.getState().textScale).toBe(1.5);
+    expect(storage.map.get('lvr-look')).toBe('2');
+    expect(storage.map.get('lvr-text')).toBe('1.5');
+    store.getState().setLookSensitivity(0.6);
+    expect(store.getState().lookSensitivity).toBe(0.5);
+    expect(storage.map.get('lvr-look')).toBe('0.5');
+  });
 });

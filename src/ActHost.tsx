@@ -27,7 +27,7 @@ export function ActHost({ number }: { number: number }) {
         if (cancelled || !hostRef.current) return;
         const s = store.getState();
         const mounted = act.mount(hostRef.current, {
-          settings: { sound: s.sound, retro: s.retro },
+          settings: { sound: s.sound, retro: s.retro, lookSensitivity: s.lookSensitivity },
           markCompleted: () => store.getState().markCompleted(number),
           exitToMenu: () => store.getState().exitToMenu(),
           restart: () => store.getState().restartAct(),
@@ -54,6 +54,8 @@ export function ActHost({ number }: { number: number }) {
   useEffect(() => engineRef.current?.setPaused(optionsOpen), [optionsOpen]);
   useEffect(() => engineRef.current?.setSound(sound), [sound]);
   useEffect(() => engineRef.current?.setRetro(retro), [retro]);
+  const lookSensitivity = useShell((s) => s.lookSensitivity);
+  useEffect(() => engineRef.current?.setLookSensitivity(lookSensitivity), [lookSensitivity]);
 
   return (
     <>

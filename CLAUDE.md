@@ -46,7 +46,7 @@
 ## Invariantes (no romper)
 
 - **Determinismo del mundo.** Una misma semilla debe generar el mismo mundo. No cambies `mulberry32`, `makeNoise`, `TerrainField`, ni **el orden de las llamadas a `rng()`** en `chunks.ts` / `storyWorld.ts` / `sky.ts`. `src/game/world/terrain.test.ts` compara contra valores generados por la versión original. Si un cambio intencional lo rompe, regenera el fixture y documenta que las semillas antiguas cambian.
-- **Claves de localStorage** (`lvr-seed`, `lvr-retro`, `lvr-sound`, `lvr-mem-<seed>`, `lvr-acts-done`): cambiarlas borra el progreso de los jugadores. Las claves de actos nuevos usan el prefijo `lvr-a<N>-`; `src/game/config.test.ts` fija las existentes.
+- **Claves de localStorage** (`lvr-seed`, `lvr-retro`, `lvr-sound`, `lvr-mem-<seed>`, `lvr-acts-done`, `lvr-look`, `lvr-text`): cambiarlas borra el progreso de los jugadores. Las claves de actos nuevos usan el prefijo `lvr-a<N>-`; `src/game/config.test.ts` fija las existentes.
 - **Three.js fijado en 0.160.0** (sin `^`). Subir de versión puede alterar luces, colorimetría o el shader del cielo (`#include <colorspace_fragment>`). Hazlo en un PR aparte, con comparación visual.
 - **Móvil primero:** sin sombras en tiempo real, instancing por chunk, radio de chunks 2 en pantallas táctiles, render retro a 460 px de alto.
 - `reference/lumen-vale-remember.html` es la versión original. Solo referencia; no la edites.

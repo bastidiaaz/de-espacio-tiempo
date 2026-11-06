@@ -178,7 +178,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 **ENG-08 · E2E con Playwright** · M · P1 · depende de ENG-03 · ✅ hecho (2026-11-05): `e2e/acto1.spec.ts` sobre el build de producción, Chromium + SwiftShader; job `e2e` en CI, del que depende el deploy. Suma el test de entrar y salir varias veces que pedía el ADR 0001
 - **Output:** un flujo intro → despertar → (debug) final → link de ffm.to, con WebGL vía SwiftShader, corriendo en CI.
 
-**ENG-09 · Opciones de accesibilidad** · S · P1
+**ENG-09 · Opciones de accesibilidad** · S · P1 · ✅ hecho (2026-11-06): en el panel de Opciones, sensibilidad de cámara (×0,5 a ×2, `lvr-look`) y tamaño de texto (Normal / Grande / Muy grande, `lvr-text`, escala la fuente raíz). Las tarjetas a pantalla completa y la de memoria hacen scroll si el texto grande no cabe. Etiquetas provisionales hasta UI-02
 - **Output:** sensibilidad de cámara y tamaño de texto, guardados en claves nuevas `lvr-*`. Las existentes no cambian.
 
 **ENG-13 · Objetos ocultos en el juego** · M · P1 · depende de DIS-04 y DIS-12; la carta, de DIS-05

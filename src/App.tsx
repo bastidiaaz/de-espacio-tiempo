@@ -22,6 +22,12 @@ function Shell() {
   const screen = useShell((s) => s.screen);
   const actNumber = useShell((s) => s.actNumber);
   const mountKey = useShell((s) => s.mountKey);
+  const textScale = useShell((s) => s.textScale);
+
+  // Every UI font size is in rem: scaling the root scales all text, on top of the browser's own setting.
+  useEffect(() => {
+    document.documentElement.style.fontSize = textScale === 1 ? '' : `${textScale * 100}%`;
+  }, [textScale]);
 
   // Bubble phase: an act's open overlay (e.g. Act I's journal) handles Escape first, in capture phase.
   useEffect(() => {

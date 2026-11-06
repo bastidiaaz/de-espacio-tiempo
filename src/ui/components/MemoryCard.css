@@ -4,6 +4,9 @@
   transform: translate(-50%, 12px);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
   width: min(92vw, 34rem);
+  /* Larger text (ENG-09): never taller than the screen. */
+  max-height: calc(100dvh - 96px);
+  overflow-y: auto;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 22px 22px 22px 6px;

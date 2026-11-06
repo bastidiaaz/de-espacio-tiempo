@@ -2,6 +2,7 @@ import { createStore, type StoreApi } from 'zustand/vanilla';
 import { actEvent, track } from '../analytics';
 import { STORAGE_KEYS } from '../game/config';
 import { storage as defaultStorage, type KeyValueStorage } from '../game/platform';
+import { DEFAULT_LOOK, DEFAULT_TEXT, LOOK_LEVELS, parseLevel, snapToLevel, TEXT_LEVELS } from './accessibility';
 
 export type Screen = 'menu' | 'select' | 'act';
 
@@ -17,6 +18,10 @@ export interface ShellState {
   optionsOpen: boolean;
   sound: boolean;
   retro: boolean;
+  /** Camera sensitivity multiplier, one of `LOOK_LEVELS` (ENG-09). */
+  lookSensitivity: number;
+  /** Text size scale, one of `TEXT_LEVELS` (ENG-09). */
+  textScale: number;
   actsDone: readonly number[];
   loadError: boolean;
   openSelect(): void;
@@ -29,6 +34,10 @@ export interface ShellState {
   restartAct(): void;
   toggleSound(): void;
   toggleRetro(): void;
+  /** Snaps to the nearest level and persists. */
+  setLookSensitivity(value: number): void;
+  /** Snaps to the nearest level and persists. */
+  setTextScale(value: number): void;
   markCompleted(n: number): void;
 }
 
@@ -66,6 +75,8 @@ export function createShellStore(
     optionsOpen: false,
     sound: storage.get(STORAGE_KEYS.sound) !== '0',
     retro: storage.get(STORAGE_KEYS.retro) !== '0',
+    lookSensitivity: parseLevel(storage.get(STORAGE_KEYS.lookSensitivity), LOOK_LEVELS, DEFAULT_LOOK),
+    textScale: parseLevel(storage.get(STORAGE_KEYS.textScale), TEXT_LEVELS, DEFAULT_TEXT),
     actsDone: parseActsDone(storage.get(STORAGE_KEYS.actsDone)),
     loadError: false,
 
@@ -97,6 +108,16 @@ export function createShellStore(
       const retro = !get().retro;
       storage.set(STORAGE_KEYS.retro, retro ? '1' : '0');
       set({ retro });
+    },
+    setLookSensitivity: (value) => {
+      const lookSensitivity = snapToLevel(value, LOOK_LEVELS);
+      storage.set(STORAGE_KEYS.lookSensitivity, String(lookSensitivity));
+      set({ lookSensitivity });
+    },
+    setTextScale: (value) => {
+      const textScale = snapToLevel(value, TEXT_LEVELS);
+      storage.set(STORAGE_KEYS.textScale, String(textScale));
+      set({ textScale });
     },
     markCompleted: (n) => {
       const first = !get().actsDone.includes(n);

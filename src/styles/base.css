@@ -76,6 +76,11 @@ button:focus-visible {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+/* Larger text (ENG-09) can outgrow a phone screen: scroll inside the card so its buttons stay reachable. */
+.veil > .card {
+  max-height: 100%;
+  overflow-y: auto;
+}
 h1 {
   font-weight: 600;
   font-size: clamp(2.4rem, 10vw, 3.3rem);

@@ -34,9 +34,52 @@
   display: flex;
   gap: 0.5rem;
 }
+.options-toggles button {
+  flex: 1 1 0;
+  min-width: 0;
+}
 .options-toggles button[aria-pressed='false'] {
   color: var(--ink-soft);
   text-decoration: line-through;
+}
+.options-field {
+  display: block;
+  margin: 1rem 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.options-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0;
+  margin-bottom: 0.35rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+.options-value {
+  color: var(--ink);
+}
+.options-field input[type='range'] {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.options-segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.options-segmented button {
+  flex: 1 1 0;
+  margin-top: 0;
+  padding: 0.6rem 0.5rem;
+}
+.options-segmented button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .options-button {
   position: fixed;

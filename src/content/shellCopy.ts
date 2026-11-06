@@ -12,4 +12,8 @@ export const SHELL_COPY = {
   sound: 'Sonido',
   pixels: 'Píxeles',
   toMenu: 'Volver al menú principal',
+  lookSensitivity: 'Sensibilidad de cámara',
+  lookValue: (x: number) => `×${String(x).replace('.', ',')}`,
+  textSize: 'Tamaño de texto',
+  textSizes: { 1: 'Normal', 1.25: 'Grande', 1.5: 'Muy grande' } as Record<number, string>,
 } as const;

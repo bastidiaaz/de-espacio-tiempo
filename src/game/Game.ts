@@ -103,6 +103,7 @@ export class Game implements GameActions, ActEngine {
   private lastProgress = 0;
   private retro: boolean;
   private sound: boolean;
+  private lookSensitivity: number;
   private paused = false;
   private raf = 0;
   private disposed = false;
@@ -136,6 +137,7 @@ export class Game implements GameActions, ActEngine {
     this.scene.fog = this.fog;
     this.retro = options.settings.retro;
     this.sound = options.settings.sound;
+    this.lookSensitivity = options.settings.lookSensitivity;
     this.resize();
     addEventListener('resize', this.resize);
 
@@ -240,7 +242,7 @@ export class Game implements GameActions, ActEngine {
     this.input = new Input(this.canvas, {
       enabled: () => this.phase === 'play' && !this.paused && !this.closing.locksLook,
       canMove: () => !this.seat.locksMovement,
-      onLook: (dx, dy, k) => this.player.look(dx, dy, k),
+      onLook: (dx, dy, k) => this.player.look(dx, dy, k * this.lookSensitivity),
       onKey: (code) => {
         if (this.paused) return;
         if ((code === 'Enter' || code === 'KeyE') && this.narrative.card) this.narrative.advance();
@@ -292,6 +294,11 @@ export class Game implements GameActions, ActEngine {
   setRetro(on: boolean): void {
     this.retro = on;
     this.resize();
+  }
+
+  /** Persisted by the shell. */
+  setLookSensitivity(multiplier: number): void {
+    this.lookSensitivity = multiplier;
   }
 
   keepWandering = (): void => {
