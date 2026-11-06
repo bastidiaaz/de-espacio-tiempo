@@ -160,7 +160,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **Ingeniería**
 
-**ENG-05 · Analítica privada** · S · P1 · código ✅ (2026-11-05): `src/analytics.ts` (GoatCounter, solo en producción y nunca con `#debug`); eventos `acto-N/inicio`, `acto-N/completado` (primera vez en ese navegador) y `acto-N/escuchar`. Sitio: `tiann-play.goatcounter.com`. Falta ver los eventos en el panel tras el deploy
+**ENG-05 · Analítica privada** · S · P1 · ✅ hecho (2026-11-05): `src/analytics.ts` (GoatCounter, solo en producción y nunca con `#debug`); eventos `acto-N/inicio`, `acto-N/completado` (primera vez en ese navegador) y `acto-N/escuchar`. Sitio: `tiann-play.goatcounter.com`; eventos verificados en el panel
 - **Output:** tres eventos anónimos: inicio, acto completado y clic en ffm.to. Sin cookies.
 - **Hecho cuando:** los eventos aparecen en el panel, y no hay banner de consentimiento porque no se necesita.
 
