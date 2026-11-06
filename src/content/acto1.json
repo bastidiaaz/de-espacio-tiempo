@@ -89,12 +89,12 @@
       "texto": "Siempre quise volar entre las estrellas. ¿Por qué me duele tanto mirarla ahora?"
     },
     "campfire": {
-      "titulo": "[PENDIENTE] La fogata",
-      "texto": "[PENDIENTE] Isi recupera convicción para poder mirar al cielo."
+      "titulo": "Un descanso junto al fuego",
+      "texto": "Me siento a descansar un momento. El fuego me da calor y me recuerda a casa."
     },
     "star": {
-      "titulo": "Una estrella lejana",
-      "texto": "Debo llegar a ella. Debo completar la misión. Aunque me asuste..."
+      "titulo": "Un planeta lejano",
+      "texto": "Esperé tanto para llegar hasta allá... y ahora me siento tan pequeña."
     }
   },
 
@@ -143,19 +143,19 @@
     "capitulo4": {
       "pista": "La nave debe estar por aquí...",
       "al_terminar": [
-        "Ya lo recuerdo... mi objetivo está arriba. Me preparé tanto, y casi llegando a mi destino, dudé. Eso fue suficiente para hacerme caer...",
         "Tengo mucho en mi cabeza. Necesito sentarme a reordenar mis ideas..."
       ]
     },
     "capitulo5": {
-      "pista": "[PENDIENTE] pista para volver a la fogata",
-      "al_terminar": []
+      "pista": "Necesito sentarme a reordenar mis ideas...",
+      "al_terminar": [
+        "Ya lo recuerdo... me preparé tanto, pero dudé en el último momento. Eso fue suficiente para hacerme caer. Mi destino está allá arriba..."
+      ]
     },
     "capitulo6": {
       "pista": "Mi destino está allá arriba...",
       "al_terminar": [
-        "La parte más fácil será arreglar la nave.",
-        "La más difícil, atreverme a salir.",
+        "Debo continuar mi viaje. No puedo quedarme aquí para siempre.",
         "Por alguna razón, viene a mi mente lo que escuché una vez en una canción...",
         "«Nadie puede ser astronauta con los pies en la Tierra»."
       ]

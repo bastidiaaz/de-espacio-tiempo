@@ -10,7 +10,7 @@ import { createHash2 } from './math/random';
 import { easeInOut, lerp, lerpAngle } from './math/util';
 import { isCoarsePointer, prefersReducedMotion, storage } from './platform';
 import { ItemSet, type Item } from './story/items';
-import { Closing, guidedLook } from './story/closing';
+import { Closing, panLook } from './story/closing';
 import { migrateSave } from './story/saveMigration';
 import { buildStoryWorld, type StoryWorld } from './story/storyWorld';
 import { Attention } from './systems/attention';
@@ -492,17 +492,12 @@ export class Game implements GameActions, ActEngine {
     }, FADE_MS);
   }
 
-  /** Guided camera of the closing: star → fire → star; held on the star with reduced motion. */
+  /** Guided camera of the closing: a slow 360 at the star's height; held on the star with reduced motion. */
   private guideCamera(dt: number): void {
     const { player } = this;
     // The star sprite lives in the sky group, centred on the camera: its position is a direction.
     const star = facing({ x: 0, y: 0, z: 0 }, this.sky.shipStar.position);
-    let look = star;
-    if (!prefersReducedMotion) {
-      const campfire = this.items.items.find((x) => x.id === 'campfire')!;
-      const eye = { x: player.position.x, y: player.position.y + player.eye, z: player.position.z };
-      look = guidedLook(this.closing.cameraU, star, facing(eye, this.items.targetOf(campfire)));
-    }
+    const look = prefersReducedMotion ? star : panLook(this.closing.cameraU, star);
     // Follow with a little lag: no snap when the camera takes over, and the drifting star stays framed.
     const k = Math.min(1, dt * 3);
     player.yaw = lerpAngle(player.yaw, look.yaw, k);

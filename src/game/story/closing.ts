@@ -1,14 +1,10 @@
-import { easeInOut, lerp, lerpAngle } from '../math/util';
+import { TAU, easeInOut } from '../math/util';
 
 /**
  * Closing sequence of Act I (DIS-07), after the quote card. Seconds. The ending screen follows
  * the guided camera, not the chorus: the chorus (AUD-01) keeps playing behind it.
  */
-export const CLOSING = { leadIn: 1.5, camera: 18, holdBeforeEnding: 1 } as const;
-
-/** Guided camera, in seconds of `CLOSING.camera`: down to the fire, rest there, back up. */
-const DOWN = 5;
-const REST = 7;
+export const CLOSING = { leadIn: 1.5, camera: 30, holdBeforeEnding: 1 } as const;
 
 export type ClosingStage = 'idle' | 'leadIn' | 'camera' | 'hold' | 'ending';
 
@@ -75,12 +71,10 @@ export class Closing {
   }
 }
 
-/** Where the guided camera looks at `u` (0..1): star → fire → rest → star. */
-export function guidedLook(u: number, star: Look, fire: Look): Look {
-  const s = u * CLOSING.camera;
-  let k: number;
-  if (s <= DOWN) k = easeInOut(s / DOWN);
-  else if (s <= DOWN + REST) k = 1;
-  else k = 1 - easeInOut(Math.min(1, (s - DOWN - REST) / (CLOSING.camera - DOWN - REST)));
-  return { yaw: lerpAngle(star.yaw, fire.yaw, k), pitch: lerp(star.pitch, fire.pitch, k) };
+/**
+ * Where the guided camera looks at `u` (0..1): one slow full turn at the star's height, eased in
+ * and out, starting and ending on the star. She is already looking at it after the quote.
+ */
+export function panLook(u: number, star: Look): Look {
+  return { yaw: star.yaw + TAU * easeInOut(Math.min(1, Math.max(0, u))), pitch: star.pitch };
 }

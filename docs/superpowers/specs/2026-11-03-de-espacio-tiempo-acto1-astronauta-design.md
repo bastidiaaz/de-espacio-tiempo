@@ -9,7 +9,7 @@
 - **2026-11-05: mirador (DIS-05).** Una cordillera en el borde del mundo que, al escalarla, revela un cielo que solo existe ahí: un planeta anillado gigante y una galaxia. La carta está en la cima. El planeta del cielo normal se achica. Ver "Mirador".
 - **2026-11-05: decisiones del autor para los textos de los ocultos (DIS-12).** Títulos con artículo indefinido, el reverso de la foto del campanil, la voz de la carta y un dato de canon nuevo: Isi vive mucho después de 2025. Ver "Textos: decisiones del autor".
 - **2026-11-05: borde (DIS-06).** Antes del tope, el mundo se apaga: se oscurece, la música se desvanece, crece el viento e Isi camina más lento, como empujada. El paseo libre tiene el mismo borde a los 400 m, salvo en el mirador, y una frase propia. Ver "Borde".
-- **2026-11-05: cierre (DIS-07).** Capítulo nuevo entre la nave y la estrella: Isi vuelve a la fogata, recupera convicción y se sienta (11 recuerdos, 6 capítulos). Sentada mira la estrella; tras la cita suena el coro de "Astronauta" una vez, con la cámara guiada, y aparece la pantalla final «Te sientas junto al fuego» con la invitación a ffm.to. Resuelve D6. Ver "Cierre".
+- **2026-11-05: cierre (DIS-07).** Capítulo nuevo entre la nave y la estrella: Isi vuelve a la fogata, recupera convicción y se sienta (11 recuerdos, 6 capítulos). Sentada mira la estrella; tras la cita suena el coro de "Astronauta" una vez mientras la cámara da una vuelta de 360° por el cielo, y aparece la pantalla final «Te sientas junto al fuego» con la invitación a ffm.to. Resuelve D6. Ver "Cierre".
 
 ## Contexto
 
@@ -557,7 +557,10 @@ mirar hacia arriba con convicción.
   **«Nadie puede ser astronauta con los pies en la Tierra»**, entera → recién
   entonces entra **el coro de "Astronauta" (B1) desde el principio, una sola
   vez**. Texto y música no se sincronizan.
-- **Durante el coro, la cámara va sola.**
+- **Durante el coro, la cámara va sola: da una vuelta de 360° lenta a la
+  altura de la estrella** (revisado 2026-11-05). Después de la cita el
+  jugador ya está mirando la estrella, así que no vuelve al fuego: gira
+  mirando el cielo y termina otra vez en la estrella.
 - **La pantalla final aparece cuando la cámara guiada termina su recorrido**
   y vuelve a la estrella (revisado 2026-11-05). La cámara se queda mirando la
   estrella y **el coro sigue sonando detrás** de la pantalla final hasta
@@ -584,8 +587,8 @@ mirar hacia arriba con convicción.
 | 4 | Isi se sienta | **no puede caminar desde aquí** | baja al sentarse; luego mirar libre | — | — |
 | 5 | Cap. 5: busca la estrella, sentada | solo mirar | libre | ambiente normal | pista del cap. 5 |
 | 6 | Sostiene la mirada en la estrella | solo mirar | libre | campanilla | tarjeta de `star` y las 4 frases |
-| 7 | Termina la cita | sin control | va sola: baja al fuego, vuelve a la estrella | entra el coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
-| 8 | La cámara vuelve a la estrella | sin control | fija en la estrella | el coro sigue hasta terminar; luego vuelve el ambiente | pantalla final + invitación |
+| 7 | Termina la cita | sin control | va sola: una vuelta de 360° lenta a la altura de la estrella | entra el coro B1, una vez; el ambiente baja (AUD-01) | sin texto |
+| 8 | La vuelta termina en la estrella | sin control | fija en la estrella | el coro sigue hasta terminar; luego vuelve el ambiente | pantalla final + invitación |
 | 9 | "Seguir explorando" | camina | se pone de pie | ambiente normal | paseo libre |
 
 ### Decisiones de Claude (revisables)
@@ -606,15 +609,15 @@ mirar hacia arriba con convicción.
   junto al fuego, mirando hacia él. Sentada, el jugador mueve la mirada
   igual que de pie (ratón/arrastre), sin caminar. Con *reduced motion*: un
   fundido corto en vez del movimiento, igual al levantarse.
-- **Cámara del coro:** desde la estrella, baja despacio al fuego, se queda ahí
-  y sube de vuelta a la estrella. Dura **~18 s** (unos 5 s bajando, 7 s en el
-  fuego, 6 s subiendo), independiente del largo del coro. Con *reduced
-  motion*, la cámara no se mueve (queda mirando la estrella), pero la pantalla
-  final espera lo mismo.
+- **Cámara del coro:** desde la estrella, una vuelta completa de 360° en
+  **~30 s**, con la mirada a la altura de la estrella (cielo), acelerando y
+  frenando suave, y termina en la estrella. Independiente del largo del coro.
+  Con *reduced motion*, la cámara no se mueve (queda mirando la estrella), pero
+  la pantalla final espera lo mismo.
 - **Tiempos:** el coro y la cámara arrancan juntos ~1,5 s después de que se
   cierra la tarjeta de la cita (reemplaza los 3,5 s actuales de
-  `afterCards`); la pantalla final aparece ~1 s después de que la cámara llega
-  a la estrella.
+  `afterCards`); la pantalla final aparece ~1 s después de que la vuelta
+  termina en la estrella.
 - **Si el jugador aprieta "Seguir explorando" antes de que acabe el coro**, el
   coro sigue hasta su final (no se corta) y no se repite.
 - **Mientras no exista AUD-01** (falta la partitura), el coro no suena: la
