@@ -35,7 +35,7 @@ No es una historia de amnesia. Isi recuerda perfectamente lo que pasó; lo que n
 - Cámara en primera persona pura. Isi no se ve nunca.
 - Idioma in-game: español.
 - Hilos reservados, que no se resuelven antes de su acto: "¿volverá a volar?" (Acto 6); a quién le habla Isi cuando transmite (sin acto asignado).
-- Abierto: arquitectura multi-acto (ADR ENG-01), proveedor de analítica sin cookies, hosting, tipografía manuscrita (ver decisiones D1–D7 en el roadmap).
+- Tipografía: Caveat como letra manuscrita (D7), con Belleza y Glacial Indifference del Tiann Design System. Las decisiones D1–D7 están resueltas en el roadmap.
 
 ## Brand Commitments
 

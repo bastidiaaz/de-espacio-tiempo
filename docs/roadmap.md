@@ -44,7 +44,7 @@
 | ~~D4~~ | ~~GitHub Pages o Vercel~~ — **resuelta (2026-11-04): GitHub Pages**, publicado desde el workflow de CI | Autor | — |
 | ~~D5~~ | ~~Conexión del MCP polyfork y licencias de sus assets~~ — **resuelta (2026-11-04):** conectado (plan gratis); los modelos low-poly se pueden incluir en el juego sin atribución; las ediciones HD no. Ver `docs/assets.md` | Autor conecta → Claude verifica | — |
 | ~~D6~~ | ~~Al cierre, ¿canción completa o un fragmento? ¿Se repite en el paseo libre?~~ — **resuelta (2026-11-05): solo el coro (B1), una vez, junto al fuego; no se repite en el paseo libre.** Ver "Cierre" en el brief del Acto I | Autor | — |
-| D7 | Tipografía manuscrita (licencia OFL, o letras dibujadas por el autor) | Autor | ART-01 |
+| ~~D7~~ | ~~Tipografía manuscrita (licencia OFL, o letras dibujadas por el autor)~~ — **resuelta (2026-11-11): Caveat** (OFL, Google Fonts, variable 400–700) como acento manuscrito: lo que Isi escribe a mano (carta, registro de vuelo, bitácora) y el acto en la intro. Títulos en Belleza y texto en Glacial Indifference, según el Tiann Design System. Muestra comparada: https://claude.ai/artifact/2KSCPpJ1fq8W6uwNpNU2Pt | Autor | — |
 
 ## Tareas
 
@@ -204,11 +204,11 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **Arte y animación**
 
-**ART-01 · Dirección de arte de la UI, estilo sketch** · M · P1 · depende de D7
+**ART-01 · Dirección de arte de la UI, estilo sketch** · M · P1 · D7 resuelta: Caveat
 - **Inputs:** la portada de "Astronauta": línea blanca a mano sobre negro, letras manuscritas, estrellas en cruz.
 - **Output:**
   - tokens en `src/styles/tokens.css`;
-  - una tipografía manuscrita;
+  - las tipografías: Caveat (manuscrita, D7), Belleza (títulos) y Glacial Indifference (texto), empaquetadas en el build con su licencia en `CREDITS.md`; falta conseguir la cursiva real de Glacial Indifference;
   - un filtro de *boiling line* (SVG `feTurbulence` + `feDisplacementMap` a pocos fps, desactivado con *reduced motion*);
   - una página de prueba.
 - **Hecho cuando:** el autor aprueba el prototipo en el teléfono.
@@ -324,7 +324,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - [x] Letra completa de "Astronauta" (para DIS-01 y DIS-03): está en el brief del Acto I.
 - [ ] Partitura de la voz principal de "Astronauta" (para AUD-01).
 - [x] Conectar el MCP polyfork en Claude Code (D5).
-- [ ] Decisiones D3 y D7.
+- [x] Decisiones D3 y D7.
 - [ ] Reescritura de textos (DIS-02).
 - [ ] Letra y partitura de "Despacio", y portada (para la Fase 2).
 
