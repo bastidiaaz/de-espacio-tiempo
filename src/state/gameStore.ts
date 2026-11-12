@@ -92,6 +92,8 @@ export interface GameActions {
   debugCompleteAll(): void;
   /** Debug only: straight into the free roam, standing where the hidden object can be looked at. */
   debugJumpToHidden(id: string): void;
+  /** Debug only: straight into the free roam, at the foot of the mirador's ramp or on its summit (ART-08). */
+  debugJumpToMirador(where: 'foot' | 'summit'): void;
   /** Debug only: forget the hidden objects found (in memory; nothing is saved in debug). */
   debugResetHidden(): void;
   /** Debug only: force these values of the audio mix (silence, chapter layers, wind, edge), replacing earlier ones; `null` clears it. */

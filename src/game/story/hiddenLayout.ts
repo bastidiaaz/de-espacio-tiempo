@@ -3,8 +3,8 @@
  * Pure (no Three.js), testable in Node.
  *
  * Each one in its own direction from the fire, away from the ship, the star and each other. The
- * letter goes at the top of the mirador (DIS-05), so its direction is the mirador's: ART-08 builds
- * the ridge around that spot and ENG-14 uses the same sector for the edge exception.
+ * letter goes at the top of the mirador (DIS-05), so its direction is the mirador's: the ridge
+ * (mirador.ts, ART-08) is built around that spot and ENG-14 uses the same sector for the edge exception.
  *
  * Determinism: everything comes from a generator of its own, derived from the seed. Never the
  * `rng()` of `chunks.ts`, `storyWorld.ts` or `sky.ts`.
@@ -16,8 +16,11 @@ import { TAU } from '../math/util';
 /** Ring (m from the fire) of the four hidden objects in the open: past the story (150), inside the free roam (400). */
 export const HIDDEN_MIN_DIST = 220;
 export const HIDDEN_MAX_DIST = 380;
-/** The letter, at the mirador's summit: on the cliff edge, just inside the free-roam limit (400). */
-export const LETTER_DIST = 390;
+/**
+ * The letter, at the mirador's summit: by the cliff edge, just inside the free-roam limit (400).
+ * Always exactly here: the mountain is built under it, so it is never moved to drier ground.
+ */
+export const LETTER_DIST = 394;
 export const LETTER_MIN_DIST = 380;
 export const LETTER_MAX_DIST = 395;
 /** Minimum angle between two directions (hidden objects, ship, star): ~34°, about 130 m apart at 220 m. */
@@ -69,8 +72,11 @@ export function layoutHidden({ seed, shipAngle, starAngle, isDry }: LayoutInput)
     const angle = angles[i];
     const letter = id === 'letter';
     const dist = letter ? LETTER_DIST : HIDDEN_MIN_DIST + rng() * (HIDDEN_MAX_DIST - HIDDEN_MIN_DIST);
-    const [lo, hi] = letter ? [LETTER_MIN_DIST, LETTER_MAX_DIST] : [HIDDEN_MIN_DIST, HIDDEN_MAX_DIST];
-    spots[id] = { ...nearestDry(Math.cos(angle) * dist, Math.sin(angle) * dist, lo, hi, isDry), angle };
+    const x = Math.cos(angle) * dist;
+    const z = Math.sin(angle) * dist;
+    spots[id] = letter
+      ? { x, z, angle }
+      : { ...nearestDry(x, z, HIDDEN_MIN_DIST, HIDDEN_MAX_DIST, isDry), angle };
   });
   return { spots, miradorAngle: spots.letter.angle };
 }

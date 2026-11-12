@@ -17,7 +17,7 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden, debugAudio, debugPlayChorus } =
+  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugJumpToMirador, debugResetHidden, debugAudio, debugPlayChorus } =
     useGameActions();
   // What the panel forces on the audio mix (AUD-03, AUD-06). Local: the engine only needs the result.
   const [mix, setMix] = useState<Partial<MixState>>({});
@@ -165,6 +165,25 @@ export function DebugPanel() {
       >
         Olvidar ocultos ({found.length}/{HIDDEN.length})
       </button>
+      <h3>Mirador (paseo libre)</h3>
+      <div className="row">
+        <button
+          onClick={(e) => {
+            blur(e);
+            debugJumpToMirador('foot');
+          }}
+        >
+          Al pie
+        </button>
+        <button
+          onClick={(e) => {
+            blur(e);
+            debugJumpToMirador('summit');
+          }}
+        >
+          A la cima
+        </button>
+      </div>
       <h3>Sonido</h3>
       <button
         className="all"
