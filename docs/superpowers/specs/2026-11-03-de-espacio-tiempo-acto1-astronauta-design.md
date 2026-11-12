@@ -532,6 +532,17 @@ fondo: su disco, el anillo de luz curvada y la sombra. Revisables: el lado de
 la cascada, cuánto se despeja la niebla, posición y tamaño de los planetas y
 del agujero negro.
 
+**Segunda vuelta (2026-11-12):** el mar tiene **espuma**: crestas que nacen,
+se estiran y se deshacen mar adentro mientras avanzan hacia el acantilado;
+rompiente al pie del acantilado (no se ve desde la meseta, que la tapa: sí
+desde la rampa); anillos alrededor de las rocas que asoman del agua y ondas
+que se abren donde cae la cascada. La **cascada** fluye: vetas de espuma que
+bajan aceleradas como cae el agua, un velo de rocío más ancho alrededor, un
+leve vaivén, gotas que saltan y bruma que sube en la base. Hay **rocas**
+alrededor: a las orillas del arroyo (dos dentro del agua), dos más grandes
+enmarcando el borde, otras saliendo de la pared junto a la caída y peñascos en
+el mar alrededor de donde cae y a lo largo del pie del acantilado.
+
 **Al construirlo (ART-08, 2026-11-12), también revisables:**
 
 - **Dónde empieza y termina la montaña.** No toca el terreno a menos de

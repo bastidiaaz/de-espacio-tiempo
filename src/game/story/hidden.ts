@@ -141,6 +141,7 @@ export class HiddenSet {
     this.clearings.push(...places.clearings, ...this.mirador.clearings());
     this.miradorWorld = buildMiradorWorld(field, kit, this.mirador, seed);
     this.group.add(this.miradorWorld.group);
+    this.colliders.push(...this.miradorWorld.colliders);
     this.tints = places.tints;
     this.structures = places.structures;
   }
