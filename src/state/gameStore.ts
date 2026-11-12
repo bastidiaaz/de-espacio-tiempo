@@ -93,4 +93,6 @@ export interface GameActions {
   debugJumpToHidden(id: string): void;
   /** Debug only: forget the hidden objects found (in memory; nothing is saved in debug). */
   debugResetHidden(): void;
+  /** Debug only: play the chorus of "Astronauta" from the top (AUD-01). */
+  debugPlayChorus(): void;
 }

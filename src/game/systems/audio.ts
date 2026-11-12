@@ -1,3 +1,5 @@
+import { ASTRONAUTA_CHORUS } from '../../content/astronautaCoro';
+import { ChorusVoice } from './chorusVoice';
 import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
 
 type AudioContextCtor = typeof AudioContext;
@@ -12,6 +14,8 @@ export class AudioEngine {
   private proxLevel: GainNode | null = null;
   private proxPan: StereoPannerNode | null = null;
   private proximity = 0;
+  /** Chorus of "Astronauta" (AUD-01). It also owns the gain that ducks everything else. */
+  private chorus: ChorusVoice | null = null;
   private enabled: boolean;
   private disposed = false;
   private readonly timers = new Set<number>();
@@ -23,13 +27,16 @@ export class AudioEngine {
 
   /** Must be called from a user gesture. */
   start(): void {
+    if (this.ctx) return;
     try {
       const Ctor: AudioContextCtor =
         window.AudioContext || (window as unknown as { webkitAudioContext: AudioContextCtor }).webkitAudioContext;
       const actx = (this.ctx = new Ctor());
       const master = (this.master = actx.createGain());
       master.gain.value = 0;
-      master.connect(actx.destination);
+      // Everything hangs from `master`, and `master` goes out through the chorus' ducking gain.
+      this.chorus = new ChorusVoice(actx, ASTRONAUTA_CHORUS, this.enabled);
+      master.connect(this.chorus.ambient);
       master.gain.linearRampToValueAtTime(this.enabled ? 0.4 : 0, actx.currentTime + 5);
 
       // Pad: A-major-ish chord through a slowly breathing low-pass.
@@ -189,6 +196,21 @@ export class AudioEngine {
     ctx.resume();
     master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.linearRampToValueAtTime(on ? 0.4 : 0, ctx.currentTime + 0.4);
+    this.chorus?.setEnabled(on);
+  }
+
+  /**
+   * The chorus of "Astronauta", once, with the ambience lowered while it plays (AUD-01). A call
+   * while it is already playing is ignored, unless `restart` (debug) cuts it and starts over.
+   */
+  playChorus(restart = false): void {
+    if (restart) this.chorus?.stop();
+    this.chorus?.play();
+  }
+
+  /** Debug only: in the game the chorus always plays to its end. */
+  stopChorus(): void {
+    this.chorus?.stop();
   }
 
   /**
@@ -215,6 +237,7 @@ export class AudioEngine {
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.ctx?.close();
     this.ctx = null;
+    this.chorus = null;
   }
 
   /** One note of the arpeggio: a soft sine with a faint octave, gentle attack and a long tail. */

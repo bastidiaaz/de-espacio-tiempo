@@ -16,8 +16,14 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden } =
-    useGameActions();
+  const {
+    debugJumpToChapter,
+    debugJumpToItem,
+    debugCompleteAll,
+    debugJumpToHidden,
+    debugResetHidden,
+    debugPlayChorus,
+  } = useGameActions();
   return (
     <details id="debug">
       <summary>
@@ -90,6 +96,16 @@ export function DebugPanel() {
         }}
       >
         Olvidar ocultos ({found.length}/{HIDDEN.length})
+      </button>
+      <h3>Sonido</h3>
+      <button
+        className="all"
+        onClick={(e) => {
+          blur(e);
+          debugPlayChorus();
+        }}
+      >
+        Escuchar el coro (AUD-01)
       </button>
     </details>
   );

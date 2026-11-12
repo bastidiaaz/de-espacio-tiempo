@@ -258,7 +258,8 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **Audio y sonido**
 
-**AUD-01 · "Astronauta", versión juego** · L · P1 · depende de D6
+**AUD-01 · "Astronauta", versión juego** · L · P1 · depende de D6 · 🟡 implementado (2026-11-11); falta que el autor valide la transcripción y apruebe la versión
+- **Estado:** el coro B1 (compases 17 a 34 de la partitura) está transcrito en `src/content/astronauta-coro.json` y suena una vez, como cajita musical, cuando arranca la cámara guiada del cierre; el ambiente baja al 30 % mientras suena. Se escucha sin jugar el acto con el botón "Escuchar el coro" del panel `#debug`. Las dudas de transcripción (el tempo no viene en la partitura, entre otras) y las decisiones de arreglo revisables (sube una octava y un semitono) están en `docs/aud01-transcripcion.md`.
 - **Inputs:** la partitura de la voz principal, en MIDI, MusicXML o una imagen que Claude transcribe y el autor valida.
 - **Output:**
   - los datos de la melodía en `src/content/`;
@@ -322,7 +323,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 ## Inputs que dependen del autor
 
 - [x] Letra completa de "Astronauta" (para DIS-01 y DIS-03): está en el brief del Acto I.
-- [ ] Partitura de la voz principal de "Astronauta" (para AUD-01).
+- [x] Partitura de la voz principal de "Astronauta" (para AUD-01): recibida (`reference/partitura-astronauta.pdf`, fuera del repo). Falta que el autor valide la transcripción (`docs/aud01-transcripcion.md`) y diga el tempo.
 - [x] Conectar el MCP polyfork en Claude Code (D5).
 - [x] Decisiones D3 y D7.
 - [ ] Reescritura de textos (DIS-02).
