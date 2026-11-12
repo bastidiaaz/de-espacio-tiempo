@@ -22,6 +22,7 @@ export const act1: ActModule = {
       debugJumpToItem: game.debugJumpToItem,
       debugCompleteAll: game.debugCompleteAll,
       debugJumpToHidden: game.debugJumpToHidden,
+      debugJumpToMirador: game.debugJumpToMirador,
       debugResetHidden: game.debugResetHidden,
     };
     return {

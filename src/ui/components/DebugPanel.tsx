@@ -16,8 +16,14 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden } =
-    useGameActions();
+  const {
+    debugJumpToChapter,
+    debugJumpToItem,
+    debugCompleteAll,
+    debugJumpToHidden,
+    debugJumpToMirador,
+    debugResetHidden,
+  } = useGameActions();
   return (
     <details id="debug">
       <summary>
@@ -91,6 +97,25 @@ export function DebugPanel() {
       >
         Olvidar ocultos ({found.length}/{HIDDEN.length})
       </button>
+      <h3>Mirador (paseo libre)</h3>
+      <div className="row">
+        <button
+          onClick={(e) => {
+            blur(e);
+            debugJumpToMirador('foot');
+          }}
+        >
+          Al pie
+        </button>
+        <button
+          onClick={(e) => {
+            blur(e);
+            debugJumpToMirador('summit');
+          }}
+        >
+          A la cima
+        </button>
+      </div>
     </details>
   );
 }

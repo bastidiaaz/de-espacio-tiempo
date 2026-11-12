@@ -21,6 +21,8 @@ import type { TerrainField } from '../world/terrain';
 import type { TintZone } from '../world/palette';
 import { facesAlong, layoutHidden, type HiddenLayout } from './hiddenLayout';
 import { buildPlaces, islandModifier, type Structure } from './hiddenPlaces';
+import { Mirador } from './mirador';
+import { buildMiradorWorld } from './miradorWorld';
 
 /** A hidden object placed in the world (ENG-13). */
 export interface HiddenItem extends HiddenDef {
@@ -54,7 +56,8 @@ const _v = new THREE.Vector3();
  * (hiddenPlaces.ts), built with the world. Isi doesn't recognise them; they don't count in the
  * counter. Placeholder shapes until ART-11.
  *
- * Build it before the chunks: it adds the campanil's island to `field`, and the chunks need its
+ * Build it before the chunks: it adds the campanil's island and the mirador's mountain to `field`,
+ * and the chunks need its
  * `clearings` and `tints`.
  */
 export class HiddenSet {
@@ -69,6 +72,8 @@ export class HiddenSet {
   readonly tints: TintZone[];
   /** The colossal structure of each place (the letter has none). */
   readonly structures: Partial<Record<HiddenId, Structure>>;
+  /** The mountain the letter sits on (ART-08). */
+  readonly mirador: Mirador;
 
   constructor(field: TerrainField, kit: PropKit, glow: THREE.Texture, seed: number) {
     this.layout = layoutHidden({
@@ -79,7 +84,12 @@ export class HiddenSet {
     });
     const { spots } = this.layout;
     // The spots were chosen on the original terrain; now the island is carved around the campanil.
+    // The mountain's base height is read before anything changes the terrain.
+    const { miradorAngle } = this.layout;
+    const baseY = Mirador.baseHeight((x, z) => field.heightAt(x, z), miradorAngle);
+    this.mirador = new Mirador(miradorAngle, baseY, seed);
     field.addModifier(islandModifier(spots.campanil.x, spots.campanil.z));
+    field.addModifier(this.mirador.modifier);
     this.clearings = HIDDEN.map(({ id }) => ({ x: spots[id].x, z: spots[id].z, r: CLEARING }));
 
     const lists = {
@@ -126,7 +136,8 @@ export class HiddenSet {
     );
     this.group.add(places.group);
     this.colliders.push(...places.colliders);
-    this.clearings.push(...places.clearings);
+    this.clearings.push(...places.clearings, ...this.mirador.clearings());
+    this.group.add(buildMiradorWorld(field, kit, this.mirador, seed));
     this.tints = places.tints;
     this.structures = places.structures;
   }
@@ -342,8 +353,8 @@ const BUILD: Record<HiddenId, Build> = {
   },
 
   /**
-   * On a rock at the mirador's summit, facing the view beyond the cliff: looking at it, you are
-   * already looking at the landscape. The mountain around it comes with ART-08.
+   * On a rock at the mirador's summit (mirador.ts), facing the view beyond the cliff: looking at
+   * it, you are already looking at the landscape.
    */
   letter(c) {
     const view = c.mirador;

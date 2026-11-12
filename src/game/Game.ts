@@ -31,6 +31,7 @@ import { TerrainPalette } from './world/palette';
 import { Bursts, Embers, Motes } from './world/particles';
 import { createPropKit } from './world/props';
 import { resolveSeed } from './world/seed';
+import { MiradorSky } from './world/miradorSky';
 import { Sky } from './world/sky';
 import { TerrainField } from './world/terrain';
 import { Water } from './world/water';
@@ -77,6 +78,8 @@ export class Game implements GameActions, ActEngine {
   private readonly chunks: ChunkManager;
   private readonly water: Water;
   private readonly sky: Sky;
+  /** The sky that only shows from the mirador's peak (ART-08). */
+  private readonly miradorSky: MiradorSky;
   private readonly story: StoryWorld;
   private readonly items: ItemSet;
   /** The five hidden objects of the free roam (ENG-13). */
@@ -173,6 +176,8 @@ export class Game implements GameActions, ActEngine {
     // Before the chunks: they keep the hideouts clear of scattered props.
     this.hidden = new HiddenSet(this.field, kit, glow, seed);
     this.scene.add(this.hidden.group);
+    this.miradorSky = new MiradorSky(seed, glow, this.hidden.mirador.angle);
+    this.scene.add(this.miradorSky.group);
     this.found = new Set(
       Progress.parse(storage.get(this.hiddenKey)).filter((id) => (HIDDEN_IDS as readonly string[]).includes(id)),
     );
@@ -395,6 +400,19 @@ export class Game implements GameActions, ActEngine {
     player.pitch = f.pitch;
   };
 
+  /** Straight into the free roam: where the ramp starts, facing it, or on the plateau, facing outwards. */
+  debugJumpToMirador = (where: 'foot' | 'summit'): void => {
+    if (!this.debug) return;
+    this.debugFreeRoam();
+    const { player } = this;
+    const m = this.hidden.mirador;
+    const spot = where === 'foot' ? m.foot : m.summit;
+    this.moveTo(spot.x, spot.z);
+    const to = where === 'foot' ? m.pathStart : { x: spot.x * 2, z: spot.z * 2 };
+    player.yaw = facing({ x: player.position.x, y: 0, z: player.position.z }, { x: to.x, y: 0, z: to.z }).yaw;
+    player.pitch = where === 'foot' ? 0.2 : 0.3;
+  };
+
   debugResetHidden = (): void => {
     if (!this.debug) return;
     this.found.clear();
@@ -499,6 +517,16 @@ export class Game implements GameActions, ActEngine {
     this.water.update(this.time, player.position.x, player.position.z);
     this.updateEffects(dt);
     this.sky.group.position.copy(this.camera.position);
+    // The mirador's sky rises with the climb (ART-08). AUD-03: the wind can follow `miradorSky.reveal`.
+    const P = player.position;
+    this.miradorSky.update(
+      dt,
+      this.time,
+      this.hidden.mirador.reveal(P.x, P.z, P.y),
+      this.canvas.height,
+      prefersReducedMotion,
+    );
+    this.miradorSky.group.position.copy(this.camera.position);
 
     this.renderer.render(this.scene, this.camera);
     this.raf = requestAnimationFrame(this.frame);
@@ -637,6 +665,10 @@ export class Game implements GameActions, ActEngine {
     pushOut(P, this.story.colliders);
     pushOut(P, this.hidden.colliders);
     pushOut(P, this.chunks.collidersNear(P.x, P.z));
+    // The mirador's ridge is too steep everywhere but on its ramp (ART-08).
+    const step = this.hidden.mirador.resolveStep(fromX, fromZ, P.x, P.z);
+    P.x = step.x;
+    P.z = step.z;
     const lim = this.atmosphere.radiusCur - EDGE_MARGIN;
     const dc = Math.hypot(P.x, P.z);
     if (dc > lim) {

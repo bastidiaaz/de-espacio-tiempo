@@ -89,7 +89,9 @@ describe('layoutHidden', () => {
         starAngle: 0.6,
         isDry,
       });
-      for (const id of HIDDEN_IDS) expect(isDry(spots[id].x, spots[id].z), `${seed} ${id}`).toBe(true);
+      // The letter is not moved: the mirador's mountain is built under it (mirador.test.ts).
+      for (const id of HIDDEN_IDS)
+        if (id !== 'letter') expect(isDry(spots[id].x, spots[id].z), `${seed} ${id}`).toBe(true);
     }
   });
 });

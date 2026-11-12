@@ -37,6 +37,13 @@ export const STAR_DIRECTION: readonly [number, number, number] = (() => {
   return [x / l, y / l, z / l];
 })();
 
+/**
+ * The ringed giant of the ordinary sky, smaller and farther than it used to be (DIS-05): a distant
+ * echo of the one waiting behind the mirador's ridge. Same direction and bands, no new `rng()` calls.
+ */
+const GIANT_SCALE = 0.5;
+const GIANT_DISTANCE = 560;
+
 /** Sky dome, stars, ringed giant, moon and the far planet Isi was heading to (`shipStar`). Follows the camera. */
 export class Sky {
   readonly group = new THREE.Group();
@@ -105,8 +112,9 @@ export class Sky {
       g,
       new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false, emissive: 0x2a2050 }),
     );
-    const dir = new THREE.Vector3(-0.55, 0.42, -0.72).normalize().multiplyScalar(440);
+    const dir = new THREE.Vector3(-0.55, 0.42, -0.72).normalize().multiplyScalar(GIANT_DISTANCE);
     planet.position.copy(dir);
+    planet.scale.setScalar(GIANT_SCALE);
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(95, 140, 48, 1),
       new THREE.MeshBasicMaterial({
@@ -119,6 +127,7 @@ export class Sky {
       }),
     );
     ring.position.copy(dir);
+    ring.scale.setScalar(GIANT_SCALE);
     ring.rotation.set(1.15, 0.2, 0.35);
     const moon = new THREE.Mesh(
       new THREE.IcosahedronGeometry(14, 1),
