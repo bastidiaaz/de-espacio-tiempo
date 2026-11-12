@@ -24,6 +24,7 @@ export const act1: ActModule = {
       debugJumpToHidden: game.debugJumpToHidden,
       debugResetHidden: game.debugResetHidden,
       debugAudio: game.debugAudio,
+      debugPlayChorus: game.debugPlayChorus,
     };
     return {
       engine: game,

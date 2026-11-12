@@ -1,0 +1,193 @@
+{
+  "titulo": "Astronauta",
+  "seccion": "B1 (coro)",
+  "fuente": "reference/partitura-astronauta.pdf, compases 17 a 34 (voz principal)",
+  "tonalidad": "Eb",
+  "compas": [4, 4],
+  "tempo": 96,
+  "arreglo": {
+    "transponer": 1,
+    "octava": 1
+  },
+  "compases": [
+    {
+      "numero": 17,
+      "notas": [
+        { "nota": null, "pulsos": 2 },
+        { "nota": "Eb4", "pulsos": 1, "silaba": "As-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "tro-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "na-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 18,
+      "notas": [
+        { "nota": "F4", "pulsos": 0.5, "silaba": "-au-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "ta" },
+        { "nota": null, "pulsos": 0.5 },
+        { "nota": null, "pulsos": 1 },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "a-" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "tra-" }
+      ]
+    },
+    {
+      "numero": 19,
+      "notas": [
+        { "nota": "Bb4", "pulsos": 1, "silaba": "ve-" },
+        { "nota": "Ab4", "pulsos": 1, "silaba": "san-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "do el" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "si-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "le-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 20,
+      "notas": [
+        { "nota": "F4", "pulsos": 0.5, "silaba": "-en-" },
+        { "nota": "Eb4", "pulsos": 1, "silaba": "cio" },
+        { "nota": null, "pulsos": 0.5 },
+        { "nota": null, "pulsos": 2 }
+      ]
+    },
+    {
+      "numero": 21,
+      "notas": [
+        { "nota": "Ab4", "pulsos": 1, "silaba": "cá-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "li-" },
+        { "nota": "F4", "pulsos": 1, "silaba": "do es" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "el" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "so-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 22,
+      "notas": [
+        { "nota": "F4", "pulsos": 1, "silaba": "-ol" },
+        { "nota": "D4", "pulsos": 0.5, "silaba": "que" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "te a-", "ligada": true },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "-a-" },
+        { "nota": "D4", "pulsos": 1, "silaba": "com-" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "pa-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 23,
+      "notas": [
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "-a-" },
+        { "nota": "D4", "pulsos": 1, "silaba": "ña" },
+        { "nota": "C4", "pulsos": 0.5, "silaba": "e-" },
+        { "nota": "Bb3", "pulsos": 1, "silaba": "-en" },
+        { "nota": null, "pulsos": 0.5 },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "tu" }
+      ]
+    },
+    {
+      "numero": 24,
+      "notas": [
+        { "nota": "Ab4", "pulsos": 1, "silaba": "frí-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "a" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "so-" },
+        { "nota": "Eb4", "pulsos": 1, "silaba": "le-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "da-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 25,
+      "notas": [
+        { "nota": "F4", "pulsos": 1, "silaba": "-ad" },
+        { "nota": null, "pulsos": 1 },
+        { "nota": "Eb4", "pulsos": 1, "silaba": "As-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "tro-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "na-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 26,
+      "notas": [
+        { "nota": "F4", "pulsos": 0.5, "silaba": "-au-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "ta" },
+        { "nota": null, "pulsos": 0.5 },
+        { "nota": null, "pulsos": 1 },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "tan" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "pe-" }
+      ]
+    },
+    {
+      "numero": 27,
+      "notas": [
+        { "nota": "Bb4", "pulsos": 1, "silaba": "que-" },
+        { "nota": "Ab4", "pulsos": 1, "silaba": "ño y" },
+        { "nota": "G4", "pulsos": 1, "silaba": "tan" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "dis-" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "ta-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 28,
+      "notas": [
+        { "nota": "F4", "pulsos": 0.5, "silaba": "-an-" },
+        { "nota": "Eb4", "pulsos": 1, "silaba": "te" },
+        { "nota": null, "pulsos": 0.5 },
+        { "nota": null, "pulsos": 2 }
+      ]
+    },
+    {
+      "numero": 29,
+      "notas": [
+        { "nota": "Ab4", "pulsos": 1, "silaba": "sa-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "bes" },
+        { "nota": "F4", "pulsos": 1, "silaba": "bien" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "que" },
+        { "nota": "Ab4", "pulsos": 0.5, "silaba": "na-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 30,
+      "notas": [
+        { "nota": "Ab4", "pulsos": 1, "silaba": "-a-" },
+        { "nota": "G4", "pulsos": 0.5, "silaba": "die" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "pue-", "ligada": true },
+        { "nota": "F4", "pulsos": 1, "silaba": "-e-" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "de" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "se-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 31,
+      "notas": [
+        { "nota": "Eb4", "pulsos": 1, "silaba": "-er" },
+        { "nota": null, "pulsos": 1 },
+        { "nota": null, "pulsos": 1 },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "As-" },
+        { "nota": "Eb4", "pulsos": 0.5, "silaba": "tro-" }
+      ]
+    },
+    {
+      "numero": 32,
+      "notas": [
+        { "nota": "Ab4", "pulsos": 1, "silaba": "nau-" },
+        { "nota": "G4", "pulsos": 1, "silaba": "ta" },
+        { "nota": "F4", "pulsos": 1, "silaba": "con" },
+        { "nota": "Eb4", "pulsos": 1, "silaba": "los" }
+      ]
+    },
+    {
+      "numero": 33,
+      "notas": [
+        { "nota": "F4", "pulsos": 1, "silaba": "pies" },
+        { "nota": null, "pulsos": 1 },
+        { "nota": "G4", "pulsos": 1, "silaba": "en" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "la" },
+        { "nota": "F4", "pulsos": 0.5, "silaba": "tie-", "ligada": true }
+      ]
+    },
+    {
+      "numero": 34,
+      "notas": [
+        { "nota": "F4", "pulsos": 1, "silaba": "-e-" },
+        { "nota": "Eb4", "pulsos": 2, "silaba": "rra" },
+        { "nota": null, "pulsos": 1 }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,11 @@
 import { Ambience } from './ambience';
 import { DEFAULT_MIX_STATE, fadeSeconds, mixFor, type MixState } from './mix';
+import { ASTRONAUTA_CHORUS } from '../../content/astronautaCoro';
+import { ChorusVoice, type ChorusSeam } from './chorusVoice';
 import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
 
 type AudioContextCtor = typeof AudioContext;
+
 
 /** Fully synthesized soundscape: pad, music-box drips, campfire crackle, memory chimes, proximity arpeggio. */
 export class AudioEngine {
@@ -17,6 +20,8 @@ export class AudioEngine {
   /** Wind, chapter layers and song bus (AUD-03, AUD-06), and the state their mix follows. */
   private ambience: Ambience | null = null;
   private mixState: MixState = DEFAULT_MIX_STATE;
+  /** Chorus of "Astronauta" (AUD-01); it plays through the song bus of the mix. */
+  private chorus: ChorusVoice | null = null;
   private enabled: boolean;
   private disposed = false;
   private readonly timers = new Set<number>();
@@ -28,6 +33,7 @@ export class AudioEngine {
 
   /** Must be called from a user gesture. */
   start(): void {
+    if (this.ctx) return;
     try {
       const Ctor: AudioContextCtor =
         window.AudioContext || (window as unknown as { webkitAudioContext: AudioContextCtor }).webkitAudioContext;
@@ -153,6 +159,7 @@ export class AudioEngine {
 
       this.ambience = new Ambience(actx, { master, echo, pad: padBus, box: boxBus }, (fn, ms) => this.later(fn, ms));
       this.ambience.apply(mixFor(this.mixState), 0);
+      this.chorus = new ChorusVoice(actx, ASTRONAUTA_CHORUS, this.chorusSeam(this.ambience.song));
     } catch {
       this.ctx = null;
     }
@@ -237,6 +244,20 @@ export class AudioEngine {
   }
 
   /**
+   * The chorus of "Astronauta", once, with the ambience lowered while it plays (AUD-01). A call
+   * while it is already playing is ignored, unless `restart` (debug) cuts it and starts over.
+   */
+  playChorus(restart = false): void {
+    if (restart) this.chorus?.stop();
+    this.chorus?.play();
+  }
+
+  /** Debug only: in the game the chorus always plays to its end. */
+  stopChorus(): void {
+    this.chorus?.stop();
+  }
+
+  /**
    * How close the nearest hidden object not found yet is (0 silent .. 1 right there, see
    * `proximity.ts`), and on which side (-1 left .. 1 right).
    */
@@ -260,6 +281,15 @@ export class AudioEngine {
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.ctx?.close();
     this.ctx = null;
+    this.chorus = null;
+  }
+
+  /**
+   * Where the chorus goes out and how the ambience makes room for it (AUD-01): the song bus of
+   * the mix, which follows the sound toggle, the silence and the edge, and the mix's `duck`.
+   */
+  private chorusSeam(songBus: GainNode): ChorusSeam {
+    return { output: songBus, duck: (on) => this.setMix({ duck: on ? 1 : 0 }) };
   }
 
   /** One note of the arpeggio: a soft sine with a faint octave, gentle attack and a long tail. */

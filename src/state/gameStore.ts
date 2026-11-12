@@ -96,4 +96,6 @@ export interface GameActions {
   debugResetHidden(): void;
   /** Debug only: force these values of the audio mix (silence, chapter layers, wind, edge), replacing earlier ones; `null` clears it. */
   debugAudio(patch: Partial<MixState> | null): void;
+  /** Debug only: play the chorus of "Astronauta" from the top (AUD-01). */
+  debugPlayChorus(): void;
 }

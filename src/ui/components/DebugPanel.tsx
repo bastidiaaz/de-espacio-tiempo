@@ -17,7 +17,7 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden, debugAudio } =
+  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden, debugAudio, debugPlayChorus } =
     useGameActions();
   // What the panel forces on the audio mix (AUD-03, AUD-06). Local: the engine only needs the result.
   const [mix, setMix] = useState<Partial<MixState>>({});
@@ -164,6 +164,16 @@ export function DebugPanel() {
         }}
       >
         Olvidar ocultos ({found.length}/{HIDDEN.length})
+      </button>
+      <h3>Sonido</h3>
+      <button
+        className="all"
+        onClick={(e) => {
+          blur(e);
+          debugPlayChorus();
+        }}
+      >
+        Escuchar el coro (AUD-01)
       </button>
     </details>
   );

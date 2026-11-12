@@ -402,6 +402,13 @@ export class Game implements GameActions, ActEngine {
     player.pitch = f.pitch;
   };
 
+  /** AUD-01: hear the chorus (from the top, every time) without playing the whole act. */
+  debugPlayChorus = (): void => {
+    if (!this.debug) return;
+    this.audio.start(); // no-op once started; the click is the user gesture it needs
+    this.audio.playChorus(true);
+  };
+
   debugResetHidden = (): void => {
     if (!this.debug) return;
     this.found.clear();
@@ -483,8 +490,9 @@ export class Game implements GameActions, ActEngine {
         this.applyBounce(dt);
       }
       const stage = this.closing.update(dt);
-      // AUD-01: aquí entra el coro (una vez) y baja el ambiente; sigue sonando tras la pantalla
-      // final y aunque se apriete "Seguir explorando".
+      // AUD-01: the chorus comes in with the guided camera, once. It keeps playing behind the
+      // ending screen and after "Seguir explorando"; nothing here ever cuts it.
+      if (stage === 'camera') this.audio.playChorus();
       if (stage === 'ending') this.showEnding();
       if (this.closing.locksLook) this.guideCamera(dt);
       // Note: the `chapter < length` guard is the one intentional fix vs. the single-file version,
@@ -841,6 +849,7 @@ export class Game implements GameActions, ActEngine {
     this.timers.clear();
     progress.jumpToChapter(chapter);
     this.closing.reset();
+    this.audio.stopChorus();
     this.narrative.clear();
     this.store.setState({ remembered: [...progress.remembered], endingVisible: false, fade: false });
     if (progress.chapter === STAR_CHAPTER) this.seat.snapSeated();
