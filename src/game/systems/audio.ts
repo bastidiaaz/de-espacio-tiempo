@@ -1,3 +1,5 @@
+import { Ambience } from './ambience';
+import { DEFAULT_MIX_STATE, fadeSeconds, mixFor, type MixState } from './mix';
 import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
 
 type AudioContextCtor = typeof AudioContext;
@@ -12,6 +14,9 @@ export class AudioEngine {
   private proxLevel: GainNode | null = null;
   private proxPan: StereoPannerNode | null = null;
   private proximity = 0;
+  /** Wind, chapter layers and song bus (AUD-03, AUD-06), and the state their mix follows. */
+  private ambience: Ambience | null = null;
+  private mixState: MixState = DEFAULT_MIX_STATE;
   private enabled: boolean;
   private disposed = false;
   private readonly timers = new Set<number>();
@@ -36,7 +41,10 @@ export class AudioEngine {
       const lp = actx.createBiquadFilter();
       lp.type = 'lowpass';
       lp.frequency.value = 700;
-      lp.connect(master);
+      // The mix (silence, edge, song) only turns the pad down through this gain; at 1 it is the original.
+      const padBus = actx.createGain();
+      padBus.connect(master);
+      lp.connect(padBus);
       const lfo = actx.createOscillator();
       const lg = actx.createGain();
       lfo.frequency.value = 0.05;
@@ -110,8 +118,12 @@ export class AudioEngine {
       crackle();
 
       const pent = [440, 493.88, 554.37, 659.25, 739.99, 880];
+      // Same for the drips: same notes, same echo, through a gain the mix can turn down.
+      const boxBus = actx.createGain();
+      boxBus.connect(master);
+      boxBus.connect(echo);
       const drip = () => {
-        this.chime(pent[(Math.random() * pent.length) | 0], 0.025);
+        this.chime(pent[(Math.random() * pent.length) | 0], 0.025, 0, 2.2, boxBus);
         this.later(drip, 4000 + Math.random() * 6000);
       };
       drip();
@@ -138,12 +150,16 @@ export class AudioEngine {
         this.later(arp, ARP_STEP_S * 1000);
       };
       arp();
+
+      this.ambience = new Ambience(actx, { master, echo, pad: padBus, box: boxBus }, (fn, ms) => this.later(fn, ms));
+      this.ambience.apply(mixFor(this.mixState), 0);
     } catch {
       this.ctx = null;
     }
   }
 
-  chime(freq: number, gain = 0.06, when = 0, dur = 2.2): void {
+  /** `out`: a bus already wired to master and echo (the drips); memory chimes go straight to both. */
+  chime(freq: number, gain = 0.06, when = 0, dur = 2.2, out?: AudioNode): void {
     const { ctx, master, echo } = this;
     if (!ctx || !master || !echo) return;
     const t = ctx.currentTime + when;
@@ -155,10 +171,39 @@ export class AudioEngine {
     g.gain.linearRampToValueAtTime(gain, t + 0.01);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g);
-    g.connect(master);
-    g.connect(echo);
+    if (out) g.connect(out);
+    else {
+      g.connect(master);
+      g.connect(echo);
+    }
     o.start(t);
     o.stop(t + dur + 0.1);
+  }
+
+  /**
+   * The mix of wind, music layers and song (AUD-03, AUD-06; see `mix.ts`). Pass only what
+   * changed; safe to call every frame and before `start()`:
+   * - `{ silence: 'wind' }` the music goes quiet in 3 s and the wind stays; `'hush'` drops the wind too; `'off'` brings it back.
+   * - `{ windZone: 0..1 }` wind of the place (the mirador).
+   * - `{ edge: 0..1 }` the dark band before the edge (AUD-05): wind up, music down.
+   * - `{ duck: 0..1 }` the ambience steps back for the song (AUD-01).
+   * - `{ chapter, freeRoam }` which chapter layers sound.
+   */
+  setMix(patch: Partial<MixState>): void {
+    const next = { ...this.mixState, ...patch };
+    // Continuous values arrive every frame: in steps of 1 %, so the gains are not rescheduled for nothing.
+    next.windZone = Math.round(next.windZone * 100) / 100;
+    next.edge = Math.round(next.edge * 100) / 100;
+    next.cue = Math.round(next.cue * 100) / 100;
+    const prev = this.mixState;
+    if ((Object.keys(next) as (keyof MixState)[]).every((k) => next[k] === prev[k])) return;
+    this.mixState = next;
+    this.ambience?.apply(mixFor(next), fadeSeconds(prev, next));
+  }
+
+  /** Where the song (AUD-01) connects: it follows the silence and the edge. Null until `start()`. */
+  get songBus(): GainNode | null {
+    return this.ambience?.song ?? null;
   }
 
   /** Warm chord when a chapter completes. */

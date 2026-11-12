@@ -1,5 +1,6 @@
-import type { MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { CHAPTERS, HIDDEN, MEMORIES } from '../../content/story';
+import type { MixState } from '../../game/systems/mix';
 import { useGameActions, useGameState } from '../GameContext';
 import './DebugPanel.css';
 
@@ -16,8 +17,21 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden } =
+  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden, debugAudio } =
     useGameActions();
+  // What the panel forces on the audio mix (AUD-03, AUD-06). Local: the engine only needs the result.
+  const [mix, setMix] = useState<Partial<MixState>>({});
+  const force = (next: Partial<MixState>) => {
+    setMix(next);
+    debugAudio(Object.keys(next).length ? next : null);
+  };
+  /** Sets `patch` on top of what is forced, or takes those keys back out if `on` is false. */
+  const toggle = (patch: Partial<MixState>, on: boolean) => {
+    const next = { ...mix, ...patch };
+    if (!on) for (const k of Object.keys(patch) as (keyof MixState)[]) delete next[k];
+    force(next);
+  };
+  const layers = mix.freeRoam ? 'libre' : (mix.chapter ?? 'auto');
   return (
     <details id="debug">
       <summary>
@@ -67,6 +81,66 @@ export function DebugPanel() {
       >
         Marcar todo → final
       </button>
+      <h3>Audio: capas del capítulo</h3>
+      <div className="row">
+        <button
+          aria-pressed={layers === 'auto'}
+          onClick={(e) => {
+            blur(e);
+            toggle({ chapter: 0, freeRoam: false }, false);
+          }}
+        >
+          auto
+        </button>
+        {CHAPTERS.map((_, c) => (
+          <button
+            key={c}
+            aria-pressed={layers === c}
+            onClick={(e) => {
+              blur(e);
+              toggle({ chapter: c, freeRoam: false }, true);
+            }}
+          >
+            {c + 1}
+          </button>
+        ))}
+        <button
+          aria-pressed={layers === 'libre'}
+          onClick={(e) => {
+            blur(e);
+            toggle({ chapter: CHAPTERS.length, freeRoam: true }, true);
+          }}
+        >
+          libre
+        </button>
+      </div>
+      <h3>Audio: viento y silencio</h3>
+      <div className="row">
+        {(
+          [
+            ['silencio', { silence: 'wind' }],
+            ['contenido', { silence: 'hush' }],
+            ['mirador', { windZone: 1 }],
+            ['borde', { edge: 1 }],
+          ] as const
+        ).map(([label, patch]) => {
+          const on = (Object.keys(patch) as (keyof MixState)[]).every(
+            (k) => mix[k] === (patch as Partial<MixState>)[k],
+          );
+          return (
+            <button
+              key={label}
+              aria-pressed={on}
+              onClick={(e) => {
+                blur(e);
+                toggle(patch, !on);
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
       <h3>Ocultos (paseo libre)</h3>
       <ul>
         {HIDDEN.map((h) => (
