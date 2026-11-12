@@ -1,8 +1,11 @@
 import { ASTRONAUTA_CHORUS } from '../../content/astronautaCoro';
-import { ChorusVoice } from './chorusVoice';
+import { ChorusVoice, type ChorusSeam } from './chorusVoice';
 import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
 
 type AudioContextCtor = typeof AudioContext;
+
+/** How much of the ambience is left while the chorus plays, and how it leaves and comes back (s). */
+const CHORUS_DUCK = { level: 0.3, fadeOut: 1.5, fadeIn: 4 } as const;
 
 /** Fully synthesized soundscape: pad, music-box drips, campfire crackle, memory chimes, proximity arpeggio. */
 export class AudioEngine {
@@ -14,8 +17,9 @@ export class AudioEngine {
   private proxLevel: GainNode | null = null;
   private proxPan: StereoPannerNode | null = null;
   private proximity = 0;
-  /** Chorus of "Astronauta" (AUD-01). It also owns the gain that ducks everything else. */
+  /** Chorus of "Astronauta" (AUD-01), and the gain its melody goes out through. */
   private chorus: ChorusVoice | null = null;
+  private chorusOut: GainNode | null = null;
   private enabled: boolean;
   private disposed = false;
   private readonly timers = new Set<number>();
@@ -34,9 +38,7 @@ export class AudioEngine {
       const actx = (this.ctx = new Ctor());
       const master = (this.master = actx.createGain());
       master.gain.value = 0;
-      // Everything hangs from `master`, and `master` goes out through the chorus' ducking gain.
-      this.chorus = new ChorusVoice(actx, ASTRONAUTA_CHORUS, this.enabled);
-      master.connect(this.chorus.ambient);
+      this.chorus = new ChorusVoice(actx, ASTRONAUTA_CHORUS, this.chorusSeam(actx, master));
       master.gain.linearRampToValueAtTime(this.enabled ? 0.4 : 0, actx.currentTime + 5);
 
       // Pad: A-major-ish chord through a slowly breathing low-pass.
@@ -196,7 +198,12 @@ export class AudioEngine {
     ctx.resume();
     master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.linearRampToValueAtTime(on ? 0.4 : 0, ctx.currentTime + 0.4);
-    this.chorus?.setEnabled(on);
+    if (this.chorusOut) {
+      const g = this.chorusOut.gain;
+      g.cancelScheduledValues(ctx.currentTime);
+      g.setValueAtTime(g.value, ctx.currentTime);
+      g.linearRampToValueAtTime(on ? 1 : 0, ctx.currentTime + 0.4);
+    }
   }
 
   /**
@@ -238,6 +245,35 @@ export class AudioEngine {
     this.ctx?.close();
     this.ctx = null;
     this.chorus = null;
+    this.chorusOut = null;
+  }
+
+  /**
+   * The one place that decides where the chorus goes out and how the ambience makes room for it
+   * (AUD-01). Also sends `master` on its way out. Today: the melody has its own gain, which
+   * follows the sound toggle, and `master` passes through a gain that is lowered while it plays.
+   * With a song bus and a mixer (AUD-03/AUD-06) this becomes `master.connect(actx.destination)`
+   * and `return { output: songBus, duck: (on) => this.setMix({ duck: on ? 1 : 0 }) }`.
+   */
+  private chorusSeam(actx: AudioContext, master: GainNode): ChorusSeam {
+    const ambient = actx.createGain();
+    master.connect(ambient);
+    ambient.connect(actx.destination);
+    const output = (this.chorusOut = actx.createGain());
+    output.gain.value = this.enabled ? 1 : 0;
+    output.connect(actx.destination);
+    return {
+      output,
+      duck: (on) => {
+        const now = actx.currentTime;
+        ambient.gain.cancelScheduledValues(now);
+        ambient.gain.setValueAtTime(ambient.gain.value, now);
+        ambient.gain.linearRampToValueAtTime(
+          on ? CHORUS_DUCK.level : 1,
+          now + (on ? CHORUS_DUCK.fadeOut : CHORUS_DUCK.fadeIn),
+        );
+      },
+    };
   }
 
   /** One note of the arpeggio: a soft sine with a faint octave, gentle attack and a long tail. */

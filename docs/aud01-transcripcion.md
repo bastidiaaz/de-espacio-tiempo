@@ -69,7 +69,7 @@ decisiones de interpretación o cosas que la partitura no dice.
 6. **Tonalidad real.** Se asume que la partitura está en el tono de la grabación (Mi♭ mayor).
    Ver la decisión de transposición más abajo.
 
-## Decisiones de arreglo (revisables, todas en el JSON o en `chorusVoice.ts`)
+## Decisiones de arreglo (revisables, en el JSON, `chorusVoice.ts` o `audio.ts`)
 
 - **Timbre: cajita musical** (seno con dos parciales agudos, ataque seco y cola larga con un eco
   corto), coherente con las campanitas que ya existen. Una sola voz, sin acompañamiento.
@@ -81,7 +81,7 @@ decisiones de interpretación o cosas que la partitura no dice.
   nota un semitono de diferencia al reconocer la canción. Si el autor prefiere el tono original,
   basta poner `"transponer": 0` (el ambiente igual baja mientras suena).
 - **El ambiente baja al 30 %** en 1,5 s cuando entra el coro y vuelve en 4 s cuando se apaga la
-  última nota (`DUCK` en `src/game/systems/chorusVoice.ts`). Baja todo lo demás: pad, fuego,
+  última nota (`CHORUS_DUCK` en `src/game/systems/audio.ts`). Baja todo lo demás: pad, fuego,
   campanitas y arpegio de los ocultos.
 - **Acentos:** el primer pulso de cada compás suena un poco más fuerte; las corcheas a
   contratiempo, un poco menos.
