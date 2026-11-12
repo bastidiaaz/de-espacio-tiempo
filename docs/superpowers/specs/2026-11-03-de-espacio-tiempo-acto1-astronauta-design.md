@@ -727,6 +727,52 @@ Los tiempos son de la toma, desde que el juego toma el control.
 - **Debug:** un botón "Repetir revelación" en el panel; "saltar al cap. 3" deja
   a Isi a más de 60 m de la nave para poder vivir la llegada completa.
 
+#### Implementación (ART-05, 2026-11-12), también revisable
+
+- **El modelo es procedural**, no un `.glb`: polyfork no tiene una nave
+  estrellada que calce con la paleta crema y naranja de la actual. Vive en
+  `game/story/ship.ts`, horneado en una sola malla con colores por vértice
+  (unos 2.600 triángulos; el presupuesto `hero` es 8.000) más la luz roja y su
+  halo. Mide unos 12,6 m de largo y 3,8 m de casco: partida en dos, con las
+  costillas a la vista, un ala arrancada y clavada en el suelo, un propulsor
+  suelto, placas repartidas y la tierra que levantó al caer.
+- **La nave quedó girada unos 29°** respecto de la línea al campamento
+  (`SHIP_SKEW`), como si hubiera derrapado al final del surco. Vista de punta
+  desde 30 m se leía como un bulto; de tres cuartos se entiende que es una
+  nave. La nariz sigue apuntando hacia el lado del campamento.
+- **Recorrido de la cámara:** empieza por el extremo más cercano a Isi (la
+  nariz, si viene del campamento), por el costado en que ella está, y termina
+  alto pasada la mitad del casco. Entre los 8 y los 10 s vuelve a sus ojos: son
+  unos 30 m en 2 s, un retroceso rápido que hay que juzgar jugando.
+- **La niebla también la esconde antes del capítulo 3.** Desde el borde del
+  capítulo 2 (cerca de la baliza) la nave vieja ya se veía.
+- **Después de la toma** Isi queda mirando el punto de la mirada de la nave
+  (rango 32 m, altura 2,2 m): si quien juega no se mueve, el anillo se llena
+  solo en 1,7 s y aparece la tarjeta. Es la mecánica normal, pero no exige
+  ningún gesto.
+- **Reduced motion:** la cámara no se desplaza; solo gira en ~1,3 s hasta
+  mirar la nave, igual que en el cierre.
+- **Debug:** "Repetir revelación" deja a Isi a 29,5 m de la nave, de espaldas
+  a medias, y dispara la toma de inmediato. "Ítem → Mi nave" la deja a 20 m con
+  la revelación ya vista, para probar solo la mirada.
+- **Sonido:** no se tocó `audio.ts`. La toma avisa cada momento una vez
+  (`approach`, `retreat`, `start`, `chord`, `creak`, `release`, `end`) en
+  `Game.onRevealCue`, y `Reveal.phase` (`idle`, `hush`, `reveal`, `done`) sirve
+  para una mezcla que se fija en cada frame. Mientras nadie los use, la toma
+  pasa en silencio y la música **no** se apaga a los 60 m.
+
+**Problemas vistos al implementar, para que decida el autor:**
+
+- **La baliza está a ~27 m de la nave.** Quien la recuerda queda casi siempre
+  a menos de 35 m, así que la toma se dispara apenas se cierran las tarjetas
+  del capítulo 2, o a los pocos pasos. El tramo "a 60 m se apaga la música y
+  queda el viento" casi no se vive en una partida normal. Salidas posibles:
+  mover la baliza más cerca del campamento, o bajar el radio de disparo.
+- **A 30 m la nave se ve chica** en la vista final de Isi (un bus a 30 m ocupa
+  poco de la pantalla). La toma la muestra de cerca, pero al volver hay que
+  caminar para sentirla grande otra vez. Se puede terminar la toma más cerca
+  (por ejemplo dejando a Isi a 18–20 m) si el autor lo prefiere.
+
 ### Lo que queda para quien lo construya
 
 - Las curvas finas de la cámara y de la niebla; el autor las aprueba jugando.

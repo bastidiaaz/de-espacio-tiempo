@@ -223,7 +223,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Output:** bloom suave, viñeta y grano, compatibles con el render retro de 460 px.
 - **Hecho cuando:** mantiene 60 fps en el teléfono del autor, con un comparativo antes/después aprobado.
 
-**ART-05 · Nave nueva** · L · P1 · depende de ENG-10, DIS-08
+**ART-05 · Nave nueva** · L · P1 · depende de ENG-10, DIS-08 · implementado (2026-11-12), falta la prueba del autor: nave procedural del tamaño de un bus, partida en dos y con restos alrededor (`game/story/ship.ts`, una sola malla de ~2.600 triángulos); la niebla la esconde hasta los 30 m y ahí corre la toma de 10 s (`game/systems/reveal.ts`, orquestada desde `Game.ts`). Se prueba con `#debug` → "Repetir revelación". El sonido de la toma no está: queda el enganche `Game.onRevealCue` / `Reveal.phase`. Decisiones revisables y un problema de distancias con la baliza, en "Implementación (ART-05)" del brief
 - **Output:** un modelo más grande, más roto y más detallado (vía polyfork, o mixto con procedural) y la revelación de cámara implementada.
 - **Hecho cuando:** el momento se siente "wow" en la prueba del autor.
 
