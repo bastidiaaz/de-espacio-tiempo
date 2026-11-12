@@ -204,13 +204,15 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 
 **Arte y animación**
 
-**ART-01 · Dirección de arte de la UI, estilo sketch** · M · P1 · D7 resuelta: Caveat
+**ART-01 · Dirección de arte de la UI, estilo sketch** · M · P1 · D7 resuelta: Caveat · **prototipo listo, falta la aprobación del autor en el teléfono**
 - **Inputs:** la portada de "Astronauta": línea blanca a mano sobre negro, letras manuscritas, estrellas en cruz.
-- **Output:**
-  - tokens en `src/styles/tokens.css`;
-  - las tipografías: Caveat (manuscrita, D7), Belleza (títulos) y Glacial Indifference (texto), empaquetadas en el build con su licencia en `CREDITS.md`; falta conseguir la cursiva real de Glacial Indifference;
-  - un filtro de *boiling line* (SVG `feTurbulence` + `feDisplacementMap` a pocos fps, desactivado con *reduced motion*);
-  - una página de prueba.
+- **Output (hecho):**
+  - tokens `--sk-*`, de tipografía, espaciado y trazo en `src/styles/tokens.css`, junto a los provisorios del MVP, que se van con UI-02 y UI-03;
+  - las tipografías: Caveat (manuscrita, D7), Belleza (títulos) y Glacial Indifference (texto, con cursiva real), empaquetadas en el build desde `public/fonts/` (`src/styles/fonts.css`), con su licencia en `CREDITS.md`;
+  - la *boiling line*: `BoilFilters` (`src/ui/sketch/`) y las clases `sk-boil` y `sk-boil-soft` (`src/styles/sketch.css`). SVG `feTurbulence` + `feDisplacementMap`, 4 dibujos a ~6 fps; con *reduced motion* queda quieta en el primer dibujo;
+  - piezas dibujadas a mano para UI-02 y UI-03: `SketchPanel`, `SketchButton`, `SketchStar` y `SketchRule`;
+  - la página de prueba: `/estilo.html` (`https://play.tiannmusica.com/estilo.html` una vez publicada). No tiene enlaces desde el juego.
+- **Falta:** probarla en el teléfono del autor, sobre todo la fluidez del trazo y cómo se ve en Safari de iOS, que no se pudo probar.
 - **Hecho cuando:** el autor aprueba el prototipo en el teléfono.
 
 **UI-02 · Intro y título** · M · P1 · depende de ART-01

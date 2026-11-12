@@ -1,0 +1,216 @@
+/*
+ * Sketch UI base (ART-01): type roles, the hand-drawn stroke layer and the boiling line.
+ * Everything is prefixed `sk-` so it can live next to the provisional MVP styles until UI-02/UI-03.
+ * Tokens: tokens.css. Faces: fonts.css. Components: src/ui/sketch/.
+ */
+
+/* --- Type roles ---------------------------------------------------------------------------- */
+.sk-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: var(--title-md);
+  line-height: var(--leading-tight);
+  letter-spacing: 0.01em;
+  color: var(--sk-line);
+  text-wrap: balance;
+}
+.sk-title--lg {
+  font-size: var(--title-lg);
+}
+.sk-title--sm {
+  font-size: var(--title-sm);
+}
+/* What Isi writes by hand, and the act under the title. Never for running UI text. */
+.sk-hand {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: var(--hand-md);
+  line-height: var(--leading-hand);
+  color: var(--sk-line);
+}
+.sk-hand--lg {
+  font-size: var(--hand-lg);
+}
+.sk-hand--sm {
+  font-size: var(--hand-sm);
+}
+.sk-text {
+  margin: 0;
+  max-width: var(--measure);
+  font-family: var(--font-text);
+  font-size: var(--text-md);
+  line-height: var(--leading-text);
+  color: var(--sk-line);
+}
+.sk-text--soft {
+  color: var(--sk-line-soft);
+}
+.sk-text--sm {
+  font-size: var(--text-sm);
+}
+.sk-label {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--sk-line-soft);
+}
+
+/* --- Boiling line --------------------------------------------------------------------------
+ * The keyframes come from <BoilFilters /> (they reference its filters). `step-end` holds each
+ * drawing until the next one, so the line jumps instead of sliding. */
+.sk-boil {
+  animation: sk-boil var(--boil-cycle) step-end infinite;
+}
+.sk-boil-soft {
+  animation: sk-boil-soft var(--boil-cycle) step-end infinite;
+}
+/* A paused animation still applies its first keyframe: the wobble stays, the motion goes. */
+@media (prefers-reduced-motion: reduce) {
+  .sk-boil,
+  .sk-boil-soft {
+    animation-play-state: paused;
+  }
+}
+/* Kill switch for the whole page (used by the test page to compare). */
+:root[data-boil='still'] .sk-boil,
+:root[data-boil='still'] .sk-boil-soft {
+  animation-play-state: paused;
+}
+:root[data-boil='off'] .sk-boil,
+:root[data-boil='off'] .sk-boil-soft {
+  animation: none;
+}
+
+/* --- Stroke layer (SketchStroke) -----------------------------------------------------------
+ * An SVG stretched over its parent. The parent needs `position: relative; isolation: isolate`
+ * so the layer can sit behind the content. */
+.sk-stroke {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--stroke);
+  stroke-linecap: round;
+  color: var(--sk-line);
+}
+.sk-stroke__retrace {
+  stroke-width: var(--stroke-thin);
+  opacity: 0.5;
+}
+.sk-stroke__fill {
+  stroke: none;
+}
+.sk-stroke__fill--ink {
+  fill: currentColor;
+}
+.sk-stroke__fill--panel {
+  fill: var(--sk-panel);
+}
+
+/* --- Panel --------------------------------------------------------------------------------- */
+.sk-panel {
+  position: relative;
+  isolation: isolate;
+  padding: var(--space-5);
+  color: var(--sk-line);
+}
+
+/* --- Buttons ------------------------------------------------------------------------------- */
+.sk-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: var(--space-2) var(--space-5);
+  border: 0;
+  background: none;
+  font-family: var(--font-text);
+  font-size: var(--text-md);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--sk-line);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease-out;
+}
+.sk-button--block {
+  display: flex;
+  width: 100%;
+}
+.sk-button--solid {
+  color: var(--sk-black);
+  font-weight: 700;
+}
+.sk-button--bare {
+  padding-inline: var(--space-2);
+  color: var(--sk-line-soft);
+}
+/* The bare button is only a word with a hand-drawn underline. */
+.sk-button--bare > .sk-rule {
+  position: absolute;
+  left: var(--space-2);
+  bottom: 0.45rem;
+  /* An SVG is a replaced element: left + right alone would leave it at its intrinsic width. */
+  width: calc(100% - 2 * var(--space-2));
+  color: var(--sk-line-faint);
+}
+.sk-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+.sk-button:focus-visible {
+  outline: var(--stroke) dashed var(--sk-gaze);
+  outline-offset: 5px;
+}
+.sk-button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+@media (hover: hover) {
+  .sk-button--outline:hover:not(:disabled) > .sk-stroke {
+    stroke-width: var(--stroke-bold);
+  }
+  .sk-button--bare:hover:not(:disabled) {
+    color: var(--sk-line);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-button {
+    transition: none;
+  }
+}
+
+/* --- Small drawings ------------------------------------------------------------------------ */
+.sk-star {
+  display: inline-block;
+  height: var(--star, 1.75rem);
+  width: auto;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--stroke-thin);
+  stroke-linecap: round;
+  color: var(--sk-line);
+}
+.sk-rule {
+  display: block;
+  width: 100%;
+  height: 0.625rem;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--stroke);
+  stroke-linecap: round;
+  color: var(--sk-line);
+}

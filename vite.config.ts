@@ -12,7 +12,11 @@ export default defineConfig({
     cssCodeSplit: false,
     sourcemap: true,
     // Split vendors so game updates don't bust the cached engine.
-    rollupOptions: { output: { manualChunks: { three: ['three'], react: ['react', 'react-dom', 'zustand'] } } },
+    rollupOptions: {
+      // estilo.html is the test page of the sketch UI (ART-01): built and deployed, linked from nowhere.
+      input: { main: 'index.html', estilo: 'estilo.html' },
+      output: { manualChunks: { three: ['three'], react: ['react', 'react-dom', 'zustand'] } },
+    },
   },
   test: { environment: 'node', include: ['src/**/*.test.ts'] },
 });

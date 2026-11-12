@@ -1,0 +1,40 @@
+/*
+ * The three typefaces of the sketch UI (ART-01, D7), bundled with the build: no CDN at runtime.
+ * Files and licenses live in public/fonts/ (see CREDITS.md). A browser only downloads a face once
+ * some text actually uses it, so declaring them here costs nothing on screens that don't.
+ */
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/caveat/Caveat-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Belleza';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/belleza/Belleza-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Glacial Indifference';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/glacial-indifference/GlacialIndifference-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Glacial Indifference';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/glacial-indifference/GlacialIndifference-Italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Glacial Indifference';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/glacial-indifference/GlacialIndifference-Bold.woff2') format('woff2');
+}

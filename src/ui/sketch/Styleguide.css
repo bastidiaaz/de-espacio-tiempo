@@ -1,0 +1,163 @@
+/*
+ * Layout of the test page only (estilo.html). The build ships a single stylesheet, so these rules
+ * also reach the game: they are all scoped under `.sg-root` / `.sg`, and the first block undoes the
+ * game's full-screen, no-scroll, no-select body for this page.
+ */
+html.sg-root,
+html.sg-root body {
+  height: auto;
+  min-height: 100%;
+  margin: 0;
+  overflow: visible;
+  overflow-x: hidden;
+  background: var(--sk-black);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.sg,
+.sg * {
+  box-sizing: border-box;
+}
+.sg {
+  max-width: 27rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  font-family: var(--font-text);
+  color: var(--sk-line);
+}
+
+.sg-cover {
+  position: relative;
+  padding: var(--space-8) 0 var(--space-7);
+}
+.sg-cover > .sk-hand {
+  margin-top: var(--space-2);
+}
+.sg-cover > .sk-label {
+  margin-top: var(--space-5);
+}
+.sg-cover-rule {
+  width: 72%;
+  margin-top: var(--space-2);
+}
+.sg-star {
+  position: absolute;
+}
+.sg-star--a {
+  --star: 2.6rem;
+  top: 0.5rem;
+  left: 4%;
+  transform: rotate(5deg);
+}
+.sg-star--b {
+  --star: 1.3rem;
+  top: 2.4rem;
+  right: 18%;
+  transform: rotate(-8deg);
+}
+.sg-star--c {
+  --star: 3.2rem;
+  right: 0;
+  bottom: 2.2rem;
+  transform: rotate(3deg);
+}
+.sg-star--d {
+  --star: 1rem;
+  left: 46%;
+  top: 0.9rem;
+  transform: rotate(12deg);
+}
+
+.sg-section {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
+}
+.sg-section > h2 {
+  margin: 0 0 var(--space-1);
+}
+.sg-row {
+  display: flex;
+  gap: var(--space-3);
+}
+.sg-row > .sk-button {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: var(--space-2);
+}
+.sg-specimen {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-4);
+}
+.sg-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sg-code {
+  font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  font-size: var(--text-xs);
+  color: var(--sk-line);
+}
+.sg-block {
+  display: block;
+}
+.sg-swatch {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  gap: var(--space-3);
+  align-items: center;
+}
+.sg-chip {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--sk-line-faint);
+}
+.sg-stroke,
+.sg-space {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: var(--space-3);
+  align-items: center;
+}
+.sg-stroke > span {
+  display: block;
+}
+.sg-bar {
+  height: 0.75rem;
+  background: var(--sk-line);
+}
+.sg-stars {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+  padding-top: var(--space-3);
+}
+.sg-card {
+  display: grid;
+  gap: var(--space-3);
+}
+.sg-card > .sk-button {
+  margin-top: var(--space-2);
+}
+/* Stand-in for the night valley (DESIGN.md: noche-cenit → noche-horizonte), to judge the panel fill. */
+.sg-world {
+  margin-top: var(--space-6);
+}
+.sg-section > .sk-button--bare {
+  justify-self: start;
+}
+.sg-world::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--space-4) * -1);
+  z-index: -2;
+  background: linear-gradient(to bottom, #0f1233, #2b2c66 55%, #3d3a78);
+}
+.sg-short-rule {
+  width: 40%;
+}
