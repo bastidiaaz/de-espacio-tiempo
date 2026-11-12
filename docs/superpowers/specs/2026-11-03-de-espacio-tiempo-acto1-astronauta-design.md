@@ -932,8 +932,8 @@ mirar hacia arriba con convicción.
   aparece 0,5 s después de que la vuelta termina en la estrella.
 - **Si el jugador aprieta "Seguir explorando" antes de que acabe el coro**, el
   coro sigue hasta su final (no se corta) y no se repite.
-- **Mientras no exista AUD-01** (falta la partitura), el coro no suena: la
-  cámara y la pantalla final funcionan igual, en silencio. La secuencia no
+- **El coro (AUD-01)** está transcrito de la partitura y suena como cajita
+  musical, pendiente de que el autor valide la transcripción. La secuencia no
   depende de la duración del coro.
 - **La invitación**: una línea de texto y un enlace/botón que abre
   `https://ffm.to/tiann-astronauta` en una pestaña nueva, debajo de los
