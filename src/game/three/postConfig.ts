@@ -19,13 +19,19 @@ export const POST = {
   quality: { fine: 'full', coarse: 'full' } as Record<'fine' | 'coarse', PostQuality>,
   bloom: {
     /** Brightness (max channel) from which a pixel starts to glow. */
-    threshold: 0.6,
+    threshold: 0.5,
     /** Soft transition below the threshold, so the glow doesn't pop in and out. */
     knee: 0.3,
+    /**
+     * Boost on what passes the threshold, before blurring. The image tops out at white, so small
+     * lights (the star, motes, glints) would otherwise leave no halo; big ones (the fire) saturate
+     * and barely change.
+     */
+    gain: 1.8,
     /** How much of the blurred light is laid back over the image. */
-    intensity: 0.5,
+    intensity: 0.7,
     /** 0..1 weight of each wider blur level over the tighter one: higher is a broader, hazier glow. */
-    spread: 0.6,
+    spread: 0.65,
     /**
      * Height in pixels of the smallest blur level. The number of levels follows the render height,
      * so the glow covers the same share of the screen in retro (460 px) and at full resolution.
@@ -43,7 +49,7 @@ export const POST = {
   },
   grain: {
     /** Peak-to-peak amplitude over the image. One grain per rendered pixel, so it is chunky in retro. */
-    amount: 0.05,
+    amount: 0.04,
     /** The grain pattern changes this many times per second (film-like, not per frame). */
     fps: 12,
     /** With `prefers-reduced-motion` the grain stands still, and is turned down by this factor. */

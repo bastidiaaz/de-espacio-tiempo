@@ -16,9 +16,11 @@ import { POST, bloomLevels, grainFrame, type PostQuality } from './postConfig';
  * bit-identical to the render without post-processing (same output encoding, same blending of the
  * additive glows, sky shader untouched). Three.js 0.160 always renders linear into a render target
  * unless it is flagged as an XR target, in which case it uses the target's own colour space; that
- * flag plus an explicit `RGBA8` internal format (so WebGL doesn't encode a second time) is the
- * whole trick. It leans on 0.160 internals: re-check it (zeroed `POST` must match `off` pixel for
- * pixel) if Three.js is ever upgraded.
+ * flag plus an explicit `RGBA8` internal format (so WebGL doesn't encode a second time) covers the
+ * materials. The fog colour is the one thing 0.160 still treats differently off-screen (see
+ * `getUnlitUniformColorSpace`), so `render` swaps it for its display-encoded value while the scene
+ * is drawn. All of this leans on 0.160 internals: if Three.js is ever upgraded, re-check that a
+ * zeroed `POST` matches `off` pixel for pixel (it did on 2026-11-12, retro and full resolution).
  */
 
 const VERTEX = /* glsl */ `
@@ -27,7 +29,7 @@ void main(){ vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.0,
 
 /** 4-tap box downsample; with `uThreshold` >= 0 it also keeps only the bright part (soft knee). */
 const DOWN = /* glsl */ `
-uniform sampler2D tMap; uniform vec2 uTexel; uniform float uThreshold; uniform float uKnee;
+uniform sampler2D tMap; uniform vec2 uTexel; uniform float uThreshold; uniform float uKnee; uniform float uGain;
 varying vec2 vUv;
 void main(){
   vec3 c = (texture2D(tMap, vUv + uTexel * vec2(-1.0, -1.0)).rgb + texture2D(tMap, vUv + uTexel * vec2(1.0, -1.0)).rgb
@@ -36,7 +38,7 @@ void main(){
     float br = max(c.r, max(c.g, c.b));
     float soft = clamp(br - uThreshold + uKnee, 0.0, 2.0 * uKnee);
     soft = soft * soft / (4.0 * uKnee + 1e-4);
-    c *= max(soft, br - uThreshold) / max(br, 1e-4);
+    c *= uGain * max(soft, br - uThreshold) / max(br, 1e-4);
   }
   gl_FragColor = vec4(c, 1.0);
 }`;
@@ -110,6 +112,7 @@ export class PostFx {
   private readonly mips: THREE.WebGLRenderTarget[] = [];
   private levels = 0;
   private readonly size = new THREE.Vector2();
+  private readonly fogColor = new THREE.Color();
 
   private readonly quadScene = new THREE.Scene();
   private readonly quadCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -119,6 +122,7 @@ export class PostFx {
     uTexel: { value: new THREE.Vector2() },
     uThreshold: { value: -1 },
     uKnee: { value: POST.bloom.knee },
+    uGain: { value: POST.bloom.gain },
   });
   private readonly up = pass(
     UP,
@@ -177,7 +181,13 @@ export class PostFx {
       return;
     }
     renderer.setRenderTarget(this.sceneTarget);
+    const fog = scene.fog;
+    if (fog) {
+      this.fogColor.copy(fog.color);
+      fog.color.convertLinearToSRGB();
+    }
     renderer.render(scene, camera);
+    if (fog) fog.color.copy(this.fogColor);
 
     // The quads cover every pixel: no clears needed from here on.
     const autoClear = renderer.autoClear;

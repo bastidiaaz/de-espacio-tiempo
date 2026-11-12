@@ -219,7 +219,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 **UI-03 · Tarjetas, diario, final e invitación** · M · P1 · depende de ART-01
 - **Output:** los componentes `MemoryCard`, `Journal` y `Ending` rediseñados, más la tarjeta de invitación a ffm.to. Sin cambiar el comportamiento de las tarjetas.
 
-**ART-04 · Post-procesado** · M · P1
+**ART-04 · Post-procesado** · M · P1 · ✅ implementado (2026-11-12), falta el comparativo aprobado y la prueba de fps en el teléfono del autor: `game/three/postFx.ts` (pasadas) y `game/three/postConfig.ts` (todos los parámetros y la calidad por tipo de puntero). La escena se dibuja en un *render target* que se comporta como la pantalla (con todo en cero, la imagen es idéntica píxel a píxel a la de sin post-procesado); el bloom usa una cadena de niveles a la mitad (3 en retro) y la viñeta y el grano van en la pasada final. Todo corre a la resolución del render, así que en retro se pixela junto con la imagen. El grano cambia 12 veces por segundo y queda quieto con *reduced motion*. El panel de debug cambia entre "completo", "sin bloom" y "apagado" y muestra los fps. Si el teléfono no llega a 60 fps, `POST.quality.coarse` pasa a `lite` u `off`
 - **Output:** bloom suave, viñeta y grano, compatibles con el render retro de 460 px.
 - **Hecho cuando:** mantiene 60 fps en el teléfono del autor, con un comparativo antes/después aprobado.
 
