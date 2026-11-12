@@ -599,6 +599,7 @@ export class Game implements GameActions, ActEngine {
   private startShot(): void {
     const { player, field } = this;
     const P = player.position;
+    const shipYaw = this.story.objects.ship.rotation.y;
     for (const k in this.input.keys) this.input.keys[k] = false;
     player.moveAmount = 0;
     this.bounce.reset();
@@ -607,8 +608,8 @@ export class Game implements GameActions, ActEngine {
       yaw: player.yaw,
       pitch: player.pitch,
       ship: { x: field.shipX, y: this.story.objects.ship.position.y, z: field.shipZ },
-      // The nose points at camp.
-      axis: { x: -field.dirX, z: -field.dirZ },
+      // Local +X of the ship is its nose.
+      axis: { x: Math.cos(shipYaw), z: -Math.sin(shipYaw) },
       halfLength: SHIP.halfLength,
       lookHeight: this.items.items.find((it) => it.id === 'ship')!.attention.offsetY,
       groundAt: (x, z) => Math.max(field.groundAt(x, z), WATER),

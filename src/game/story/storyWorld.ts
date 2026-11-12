@@ -6,7 +6,7 @@ import type { Collider } from '../world/collision';
 import type { PropKit } from '../world/props';
 import type { TerrainField } from '../world/terrain';
 import { Campfire } from './campfire';
-import { buildShip } from './ship';
+import { SHIP_SKEW, buildShip } from './ship';
 
 /** Every story object that can be remembered, except the sky "star" (owned by Sky). */
 export type StoryObjects = Record<Exclude<ItemId, 'star'>, THREE.Object3D>;
@@ -72,7 +72,8 @@ export function buildStoryWorld(field: TerrainField, kit: PropKit, glow: THREE.T
   colliders.push({ x: lx, z: lz, r: 0.7 });
 
   // --- the ship, nose toward camp (ART-05: the model and its own colliders live in ship.ts) ---
-  const shipYaw = Math.atan2(SDz, -SDx);
+  // It slewed round at the end of the furrow: walking up from camp shows its side, not just the nose.
+  const shipYaw = Math.atan2(SDz, -SDx) + SHIP_SKEW;
   const ship = placed(SX, SZ, shipYaw);
   const shipCos = Math.cos(shipYaw);
   const shipSin = Math.sin(shipYaw);

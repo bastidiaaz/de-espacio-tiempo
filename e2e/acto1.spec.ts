@@ -97,6 +97,28 @@ test('intro → despertar → final (debug) → link de ffm.to', async ({ page, 
   expect(errors).toEqual([]);
 });
 
+test('la revelación de la nave toma la cámara y la devuelve (DIS-08)', async ({ page }) => {
+  const errors = watchErrors(page);
+  await enterActI(page);
+  await page.getByRole('button', { name: COPY.intro.start }).click();
+  await expect(page.locator('#intro')).toHaveClass(/gone/);
+  const debug = page.locator('#debug');
+  await debug.locator('summary').click();
+  await expect(debug.locator('summary')).toContainText('cap. 1');
+
+  // The debug button puts Isi 30 m from the ship and starts the take: it cannot be skipped...
+  await debug.getByRole('button', { name: 'Repetir revelación' }).click();
+  const running = debug.getByRole('button', { name: /Revelación en curso/ });
+  await expect(running).toBeDisabled();
+  await expect(debug.locator('summary')).toContainText('cap. 4');
+  await page.keyboard.press('Enter');
+  await expect(running).toBeDisabled();
+  // ...and after its 10 s (longer under SwiftShader) the game hands the camera back.
+  await expect(debug.getByRole('button', { name: 'Repetir revelación' })).toBeEnabled({ timeout: 90_000 });
+  await expectWorldRendering(page);
+  expect(errors).toEqual([]);
+});
+
 test('entrar y salir del Acto I varias veces no rompe nada (ADR 0001)', async ({ page }) => {
   const errors = watchErrors(page);
   for (let i = 0; i < 3; i++) {

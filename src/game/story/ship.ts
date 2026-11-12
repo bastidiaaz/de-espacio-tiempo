@@ -21,6 +21,9 @@ export const SHIP = {
   radius: 1.9,
 } as const;
 
+/** How far the hull is turned away from the line to camp (rad). */
+export const SHIP_SKEW = 0.5;
+
 const C = {
   cream: 0xfff0dc,
   /** Scorched, dusty hull plates. */
@@ -34,7 +37,7 @@ const C = {
   visor: 0x35577a,
   grey: 0x9a93b0,
   /** Ploughed-up ground, from the terrain palette (scorch / rock). */
-  dirt: 0x4a3d62,
+  dirt: 0x5f5480,
   stone: 0x8b78ad,
 } as const;
 
@@ -284,21 +287,21 @@ export function buildShip(glow: THREE.Texture, groundAt: (x: number, z: number) 
     b.within(transform(x, groundAt(x, z) + up, z, 0, ry, 0), fn);
   const lump = (color: number, x: number, z: number, sx: number, sy: number, sz: number, ry: number) =>
     onGround(x, z, sy * 0.15, ry, () =>
-      b.add(new THREE.IcosahedronGeometry(1, 1), color, 0, 0, 0, 0.2, 0, 0.15, sx, sy, sz),
+      b.add(new THREE.IcosahedronGeometry(1, 0), color, 0, 0, 0, 0.2, 0, 0.15, sx, sy, sz),
     );
 
   // Earth ploughed up around the nose and along both sides of the furrow it came down (+X, towards camp).
-  lump(C.dirt, 6.4, 0.2, 2.5, 1.25, 2.9, 0.4);
-  lump(C.stone, 5.4, 2.5, 1.9, 0.95, 1.6, 1.1);
-  lump(C.dirt, 5.2, -2.6, 2.1, 1.1, 1.7, 2.3);
+  lump(C.dirt, 6.5, 0.2, 1.7, 0.85, 2.3, 0.4);
+  lump(C.stone, 5.6, 2.4, 1.4, 0.7, 1.2, 1.1);
+  lump(C.dirt, 5.4, -2.5, 1.5, 0.8, 1.3, 2.3);
   lump(C.stone, 7.6, -1.6, 1.3, 0.6, 1.5, 0.2);
-  lump(C.dirt, 3.0, 2.9, 1.7, 0.6, 1.2, 0.7);
-  lump(C.dirt, 2.6, -3.0, 1.9, 0.65, 1.2, 2.9);
-  lump(C.dirt, -0.5, -2.9, 1.5, 0.5, 1.1, 1.9);
+  lump(C.dirt, 3.0, 2.9, 1.3, 0.45, 0.9, 0.7);
+  lump(C.dirt, 2.6, -3.0, 1.4, 0.5, 0.9, 2.9);
+  lump(C.dirt, -0.5, -2.9, 1.1, 0.4, 0.8, 1.9);
   for (let i = 0; i < 4; i++) {
     const x = 8.6 + i * 2.1;
-    lump(i % 2 ? C.stone : C.dirt, x, 3.1 + (i % 2) * 0.5, 1.5 - i * 0.2, 0.62 - i * 0.1, 1.0, i * 1.3);
-    lump(i % 2 ? C.dirt : C.stone, x + 0.9, -3.2 - (i % 2) * 0.4, 1.4 - i * 0.2, 0.58 - i * 0.1, 0.95, i * 2.1 + 1);
+    lump(i % 2 ? C.stone : C.dirt, x, 3.1 + (i % 2) * 0.5, 1.2 - i * 0.15, 0.5 - i * 0.08, 0.8, i * 1.3);
+    lump(i % 2 ? C.dirt : C.stone, x + 0.9, -3.2 - (i % 2) * 0.4, 1.1 - i * 0.15, 0.46 - i * 0.08, 0.75, i * 2.1 + 1);
   }
 
   // The booster that tore off, half buried behind the stub wing.
@@ -370,7 +373,7 @@ export function buildShip(glow: THREE.Texture, groundAt: (x: number, z: number) 
       const blink = Math.sin(time * 4) > 0.6 ? 1 : 0.2;
       lampMaterial.color.setRGB(blink, blink * 0.35, blink * 0.35);
       halo.material.opacity = blink * 0.75;
-      halo.scale.setScalar(1.2 + blink * 2.2);
+      halo.scale.setScalar(1 + blink * 1.6);
     },
   };
 }
