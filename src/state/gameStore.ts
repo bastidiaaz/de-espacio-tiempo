@@ -1,6 +1,7 @@
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { CardKind } from '../game/systems/narrative';
 import type { StickState } from '../game/systems/input';
+import type { PostQuality } from '../game/three/postConfig';
 
 export type Phase = 'intro' | 'waking' | 'play';
 
@@ -48,6 +49,10 @@ export interface GameUiState {
   debugRadiusTarget: number;
   /** Width of the dark band before the edge (metres, rounded). */
   debugBand: number;
+  /** Post-processing quality in use (ART-04); the panel switches it to compare before/after. */
+  debugPost: PostQuality;
+  /** Frames per second, averaged over the last second. */
+  debugFps: number;
 }
 
 export type GameStore = StoreApi<GameUiState>;
@@ -75,6 +80,8 @@ export const createGameStore = (): GameStore =>
     debugRadius: 0,
     debugRadiusTarget: 0,
     debugBand: 0,
+    debugPost: 'full',
+    debugFps: 0,
   }));
 
 /** Commands the UI can send to the engine. */
@@ -93,4 +100,6 @@ export interface GameActions {
   debugJumpToHidden(id: string): void;
   /** Debug only: forget the hidden objects found (in memory; nothing is saved in debug). */
   debugResetHidden(): void;
+  /** Debug only: switch the post-processing (ART-04) to compare before/after. */
+  debugSetPost(quality: PostQuality): void;
 }
