@@ -52,7 +52,9 @@ def outer_is_positive(glyph_set):
 def add_glyph(font, name, codepoint, width, draw):
     top = font["CFF "].cff.topDictIndex[0]
     glyph_set = font.getGlyphSet()
-    pen = T2CharStringPen(width, glyph_set)
+    # A CFF charstring stores its width as the difference from nominalWidthX, not the advance.
+    # Chrome on Windows reads it from there rather than from hmtx: a raw advance shows up as a gap.
+    pen = T2CharStringPen(width - top.Private.nominalWidthX, glyph_set)
     draw(pen, glyph_set)
     charstring = pen.getCharString(private=top.Private, globalSubrs=font["CFF "].cff.GlobalSubrs)
     char_strings = top.CharStrings
