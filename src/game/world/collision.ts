@@ -4,6 +4,11 @@ export interface Collider {
   r: number;
 }
 
+/** A circle kept free of scattered props; `floats`: of floating islets too. */
+export interface Clearing extends Collider {
+  floats?: boolean;
+}
+
 /** Player body radius added to every collider. */
 const PLAYER_RADIUS = 0.35;
 

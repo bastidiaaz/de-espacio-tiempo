@@ -10,7 +10,11 @@
  * `renderOrder`, blending on), so the terrain simply paints over it; nothing depends on the fog.
  * Only the planet writes depth, which hides the ordinary stars and the far side of the rings.
  *
- * Mobile first: one low-poly sphere, one ring mesh, one `Points` and a dozen sprites.
+ * Far behind them: a few small planets, distinguishable but tiny, and a black hole very deep in
+ * the background (its disc, the ring of bent light around it and the black shadow, as flat
+ * shapes facing the viewer).
+ *
+ * Mobile first: a few low-poly spheres, a handful of flat meshes, one `Points` and ~20 sprites.
  * Determinism: its own generator, derived from the seed.
  */
 import * as THREE from 'three';
@@ -27,7 +31,7 @@ const ELEVATION_HIDDEN = -24;
 const ELEVATION_SHOWN = 21;
 const RING_INNER = 1.22;
 const RING_OUTER = 1.62;
-const STARS = 520;
+const STARS = 820;
 const DEG = Math.PI / 180;
 /** The retro mode's height: point sizes are given for it and scaled to the real one. */
 const REFERENCE_HEIGHT = 460;
@@ -109,9 +113,12 @@ varying vec4 vColor;
 ${HAZE}
 void main(){
   vec4 wp = modelMatrix * vec4(position, 1.0);
-  float twinkle = 0.62 + 0.38 * sin(uTime * (0.35 + aPhase * 0.9) + aPhase * 40.0);
-  vColor = vec4(aColor, uAlpha * twinkle * haze(wp.xyz - cameraPosition));
-  gl_PointSize = aSize * uScale;
+  // Twinkle: each star its own rhythm, dipping well down and flaring now and then.
+  float s = 0.5 + 0.5 * sin(uTime * (1.1 + aPhase * 2.6) + aPhase * 40.0);
+  float flare = pow(0.5 + 0.5 * sin(uTime * (0.37 + aPhase * 0.5) + aPhase * 17.0), 8.0);
+  float twinkle = 0.25 + 0.75 * s * s + 0.6 * flare;
+  vColor = vec4(aColor, uAlpha * min(1.0, twinkle) * haze(wp.xyz - cameraPosition));
+  gl_PointSize = aSize * uScale * (0.8 + 0.35 * s + 0.5 * flare);
   gl_Position = projectionMatrix * viewMatrix * wp;
 }`;
 
@@ -136,6 +143,9 @@ export class MiradorSky {
   private readonly planetUniforms = { uLight: { value: new THREE.Vector3() }, uAlpha: { value: 0 } };
   private readonly ringUniforms = { uAlpha: { value: 0 } };
   private readonly starUniforms = { uTime: { value: 0 }, uAlpha: { value: 0 }, uScale: { value: 1 } };
+  /** The far planets (shaded like the big one) and the black hole's flat shapes. */
+  private readonly farPlanetUniforms = { uLight: { value: new THREE.Vector3() }, uAlpha: { value: 0 } };
+  private readonly farUniforms = { uAlpha: { value: 0 } };
   private readonly nebulae: Nebula[] = [];
 
   /** `angle`: the mirador's direction from the fire (rad, `atan2(z, x)`): where "outwards" is. */
@@ -146,9 +156,14 @@ export class MiradorSky {
     this.group.visible = false;
     this.planetUniforms.uLight.value.set(-0.85, 0.42, 0.18).normalize().applyEuler(this.group.rotation);
 
+    // The far planets are lit from behind the viewer: small as they are, a dark side would hide them.
+    this.farPlanetUniforms.uLight.value.set(0.25, 0.45, 1).normalize().applyEuler(this.group.rotation);
+
     this.buildGalaxy(rng, glow);
     this.buildPlanet(rng);
     this.group.add(this.body);
+    this.buildFarPlanets(rng);
+    this.buildBlackHole(glow);
   }
 
   /**
@@ -177,9 +192,11 @@ export class MiradorSky {
     const t = still ? 0 : time;
     this.starUniforms.uTime.value = t;
     this.starUniforms.uAlpha.value = galaxy;
+    this.farPlanetUniforms.uAlpha.value = galaxy;
+    this.farUniforms.uAlpha.value = galaxy;
     this.starUniforms.uScale.value = Math.max(1, drawHeight / REFERENCE_HEIGHT);
     for (const n of this.nebulae)
-      n.sprite.material.opacity = n.opacity * galaxy * (0.78 + 0.22 * Math.sin(t * 0.21 + n.phase));
+      n.sprite.material.opacity = n.opacity * galaxy * (0.72 + 0.28 * Math.sin(t * 0.21 + n.phase));
   }
 
   private buildPlanet(rng: Rng): void {
@@ -336,13 +353,234 @@ export class MiradorSky {
       this.group.add(sprite);
       this.nebulae.push({ sprite, opacity, phase: rng() * TAU });
     };
-    for (let i = 0; i < 11; i++) {
-      onBand((i / 10 - 0.5) * 2.3 + gauss() * 0.1, gauss() * 0.1);
+    // Clouds of color along the band, layered: big soft ones, then smaller, brighter cores.
+    for (let i = 0; i < 18; i++) {
+      const core = i >= 11;
+      onBand(((i % 11) / 10 - 0.5) * 2.3 + gauss() * (core ? 0.25 : 0.1), gauss() * (core ? 0.07 : 0.1));
       if (dir.y < 0.16) continue;
-      const s = 170 + rng() * 190;
-      nebula(dir, s, s * (0.6 + rng() * 0.4), NEBULA_COLORS[i % NEBULA_COLORS.length], 0.16 + rng() * 0.14);
+      const s = core ? 90 + rng() * 110 : 200 + rng() * 220;
+      const opacity = core ? 0.38 + rng() * 0.2 : 0.3 + rng() * 0.18;
+      nebula(dir, s, s * (0.55 + rng() * 0.45), NEBULA_COLORS[(i * 5) % NEBULA_COLORS.length], opacity);
     }
     // A glow along the horizon, under the planet.
     nebula(dir.set(0.05, 0.13, -1).normalize(), 760, 150, '#ff6ad5', 0.3);
   }
+
+  /** Small planets far behind the big one: a few pixels each, but with their own colors and rings. */
+  private buildFarPlanets(rng: Rng): void {
+    const c = new THREE.Color();
+    for (const p of FAR_PLANETS) {
+      const geo = new THREE.IcosahedronGeometry(p.radius, 2);
+      geo.computeVertexNormals();
+      const pos = geo.attributes.position;
+      const colors = new Float32Array(pos.count * 3);
+      const bands = hex(p.bands);
+      const phase = rng() * TAU;
+      for (let i = 0; i < pos.count; i += 3) {
+        const lat = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / (3 * p.radius);
+        const k = Math.min(0.999, Math.max(0, 0.5 + 0.5 * Math.sin(lat * p.stripes + phase)));
+        c.copy(bands[Math.floor(k * bands.length)]);
+        for (let v = 0; v < 3; v++) c.toArray(colors, (i + v) * 3);
+      }
+      geo.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+      const mesh = new THREE.Mesh(
+        geo,
+        new THREE.ShaderMaterial({
+          uniforms: this.farPlanetUniforms,
+          vertexShader: planetVertex,
+          fragmentShader: planetFragment,
+          blending: THREE.CustomBlending,
+          depthFunc: THREE.AlwaysDepth,
+          fog: false,
+        }),
+      );
+      mesh.renderOrder = -8.9;
+      const at = skyDir(p.az, p.el).multiplyScalar(FAR_DISTANCE);
+      mesh.position.copy(at);
+      mesh.rotation.set(rng() * 0.6 - 0.3, rng() * TAU, rng() * 0.6 - 0.3);
+      this.group.add(mesh);
+      if (p.ring) {
+        const tone = hexRgb(p.ring);
+        const ring = flat(
+          annulus(p.radius * 1.45, p.radius * 2.1, 0, TAU, 32, (t) => [...tone, 0.75 * (1 - t * 0.5)]),
+          this.farUniforms,
+          THREE.CustomBlending,
+          -8.85,
+        );
+        ring.position.copy(at);
+        ring.quaternion
+          .copy(facing(at))
+          .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -1.15));
+        ring.rotateZ(rng() * 0.8 - 0.4);
+        this.group.add(ring);
+      }
+    }
+  }
+
+  /**
+   * A black hole very deep in the background: the far half of its disc, the ring of bent light,
+   * the shadow, and the near half of the disc over it, all flat and facing the viewer.
+   */
+  private buildBlackHole(glow: THREE.Texture): void {
+    const at = skyDir(BLACK_HOLE.az, BLACK_HOLE.el).multiplyScalar(FAR_DISTANCE + 20);
+    const q = facing(at).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), BLACK_HOLE.roll));
+    const R = BLACK_HOLE.radius;
+    const hot = hexRgb('#fff1cf');
+    const warm = hexRgb('#ff8a3c');
+    const deep = hexRgb('#c2341c');
+    const disc = (t: number): number[] => {
+      const c = t < 0.4 ? mix3(hot, warm, t / 0.4) : mix3(warm, deep, (t - 0.4) / 0.6);
+      return [...c, 0.95 * (1 - t) ** 1.4];
+    };
+    const squash = (g: THREE.BufferGeometry) => g.scale(1, BLACK_HOLE.squash, 1);
+    const parts = [
+      // Far half of the disc, above the shadow.
+      flat(squash(annulus(R * 1.5, R * 4.6, 0, Math.PI, 48, disc)), this.farUniforms, THREE.AdditiveBlending, -8.8),
+      // The disc's far side bent around the shadow: a thin bright ring.
+      flat(
+        annulus(R * 1.04, R * 1.42, 0, TAU, 48, (t) => [...mix3(hot, warm, t), 0.9 * (1 - t)]),
+        this.farUniforms,
+        THREE.AdditiveBlending,
+        -8.75,
+      ),
+      // The shadow itself.
+      flat(annulus(0, R * 1.02, 0, TAU, 32, () => [0, 0, 0, 1]), this.farUniforms, THREE.CustomBlending, -8.7),
+      // Near half of the disc, over the shadow.
+      flat(squash(annulus(R * 1.5, R * 4.6, Math.PI, TAU, 48, disc)), this.farUniforms, THREE.AdditiveBlending, -8.65),
+    ];
+    for (const mesh of parts) {
+      mesh.position.copy(at);
+      mesh.quaternion.copy(q);
+      this.group.add(mesh);
+    }
+    // A faint warm halo around it all.
+    const halo = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: glow,
+        color: '#ff8a4a',
+        opacity: 0,
+        transparent: false,
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
+        depthWrite: false,
+        fog: false,
+      }),
+    );
+    halo.position.copy(at);
+    halo.scale.set(R * 14, R * 9, 1);
+    halo.renderOrder = -9.4;
+    this.group.add(halo);
+    this.nebulae.push({ sprite: halo, opacity: 0.22, phase: 0 });
+  }
+}
+
+/** Far behind the big planet (m), but inside the camera's far plane. */
+const FAR_DISTANCE = 600;
+
+/** Small far planets: where (degrees; azimuth 0 = straight out, + to the right), size and look. */
+const FAR_PLANETS: readonly {
+  az: number;
+  el: number;
+  radius: number;
+  bands: readonly string[];
+  stripes: number;
+  ring?: string;
+}[] = [
+  { az: -62, el: 28, radius: 9, bands: ['#ffb36b', '#e97a4c', '#ffd8a0'], stripes: 9, ring: '#ffd9a8' },
+  { az: -30, el: 64, radius: 6, bands: ['#9ff0d0', '#5fc9b0', '#d9fff2'], stripes: 5 },
+  { az: 50, el: 50, radius: 11, bands: ['#c9b6ff', '#8f78f0', '#efe6ff'], stripes: 7 },
+  { az: 74, el: 21, radius: 7, bands: ['#ff8fae', '#d95a86', '#ffd1df'], stripes: 4, ring: '#ffc2e0' },
+  { az: -84, el: 13, radius: 5, bands: ['#d8f4ff', '#a6d6f2'], stripes: 3 },
+  { az: 22, el: 74, radius: 8, bands: ['#ffe7a1', '#e8c26a', '#fff6d6'], stripes: 11 },
+  { az: 104, el: 40, radius: 6, bands: ['#a8f0ff', '#6cc4ff'], stripes: 6 },
+];
+
+/** The black hole: where (degrees), its shadow's radius (m), how flat its disc looks and its roll. */
+const BLACK_HOLE = { az: -40, el: 47, radius: 8.5, squash: 0.24, roll: 0.22 };
+
+/** Direction in the sky (built looking down -Z, +X to the right), from degrees. */
+function skyDir(az: number, el: number): THREE.Vector3 {
+  const a = az * DEG;
+  const e = el * DEG;
+  return new THREE.Vector3(Math.sin(a) * Math.cos(e), Math.sin(e), -Math.cos(a) * Math.cos(e));
+}
+
+/** Rotation that turns a shape drawn in the XY plane to face the viewer at the origin. */
+function facing(at: THREE.Vector3): THREE.Quaternion {
+  const m = new THREE.Matrix4().lookAt(new THREE.Vector3(), at, new THREE.Vector3(0, 1, 0));
+  return new THREE.Quaternion().setFromRotationMatrix(m);
+}
+
+function hexRgb(h: string): [number, number, number] {
+  const c = new THREE.Color(h);
+  return [c.r, c.g, c.b];
+}
+
+function mix3(a: readonly number[], b: readonly number[], t: number): [number, number, number] {
+  return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+}
+
+/** A flat ring (or a disc, from 0) in the XY plane between two angles; colors by radial position 0..1. */
+function annulus(
+  r0: number,
+  r1: number,
+  a0: number,
+  a1: number,
+  segments: number,
+  color: (t: number) => number[],
+): THREE.BufferGeometry {
+  const pos: number[] = [];
+  const col: number[] = [];
+  const steps = 3;
+  for (let s = 0; s < segments; s++) {
+    const b0 = lerp(a0, a1, s / segments);
+    const b1 = lerp(a0, a1, (s + 1) / segments);
+    for (let k = 0; k < steps; k++) {
+      const t0 = k / steps;
+      const t1 = (k + 1) / steps;
+      const q0 = lerp(r0, r1, t0);
+      const q1 = lerp(r0, r1, t1);
+      const quad: [number, number, number][] = [
+        [q0, b0, t0],
+        [q1, b0, t1],
+        [q1, b1, t1],
+        [q0, b0, t0],
+        [q1, b1, t1],
+        [q0, b1, t0],
+      ];
+      for (const [r, a, t] of quad) {
+        pos.push(Math.cos(a) * r, Math.sin(a) * r, 0);
+        col.push(...color(t));
+      }
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('aColor', new THREE.Float32BufferAttribute(col, 4));
+  return geo;
+}
+
+/** A flat shape drawn with the rings' shader: colors with alpha, fading into the haze. */
+function flat(
+  geo: THREE.BufferGeometry,
+  uniforms: { uAlpha: { value: number } },
+  blending: THREE.Blending,
+  order: number,
+): THREE.Mesh {
+  const mesh = new THREE.Mesh(
+    geo,
+    new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: ringVertex,
+      fragmentShader: ringFragment,
+      blending,
+      side: THREE.DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+      fog: false,
+    }),
+  );
+  mesh.renderOrder = order;
+  mesh.frustumCulled = false;
+  return mesh;
 }

@@ -14,7 +14,7 @@ import {
   tint,
   type InstanceEntry,
 } from '../three/helpers';
-import type { Collider } from '../world/collision';
+import type { Clearing, Collider } from '../world/collision';
 import type { PropKit } from '../world/props';
 import { STAR_ANGLE } from '../world/sky';
 import type { TerrainField } from '../world/terrain';
@@ -22,7 +22,7 @@ import type { TintZone } from '../world/palette';
 import { facesAlong, layoutHidden, type HiddenLayout } from './hiddenLayout';
 import { buildPlaces, islandModifier, type Structure } from './hiddenPlaces';
 import { Mirador } from './mirador';
-import { buildMiradorWorld } from './miradorWorld';
+import { buildMiradorWorld, type MiradorWorld } from './miradorWorld';
 
 /** A hidden object placed in the world (ENG-13). */
 export interface HiddenItem extends HiddenDef {
@@ -67,13 +67,15 @@ export class HiddenSet {
   /** Hideout rocks the player bumps into. */
   readonly colliders: Collider[] = [];
   /** Where the chunks must not scatter props. */
-  readonly clearings: Collider[];
+  readonly clearings: Clearing[];
   /** Ground colors of the places around the objects, for the terrain palette. */
   readonly tints: TintZone[];
   /** The colossal structure of each place (the letter has none). */
   readonly structures: Partial<Record<HiddenId, Structure>>;
   /** The mountain the letter sits on (ART-08). */
   readonly mirador: Mirador;
+  /** The crags and the waterfall on the mirador's mountain (ART-08); its foam moves in `update`. */
+  readonly miradorWorld: MiradorWorld;
 
   constructor(field: TerrainField, kit: PropKit, glow: THREE.Texture, seed: number) {
     this.layout = layoutHidden({
@@ -137,7 +139,8 @@ export class HiddenSet {
     this.group.add(places.group);
     this.colliders.push(...places.colliders);
     this.clearings.push(...places.clearings, ...this.mirador.clearings());
-    this.group.add(buildMiradorWorld(field, kit, this.mirador, seed));
+    this.miradorWorld = buildMiradorWorld(field, kit, this.mirador, seed);
+    this.group.add(this.miradorWorld.group);
     this.tints = places.tints;
     this.structures = places.structures;
   }

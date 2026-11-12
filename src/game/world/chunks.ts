@@ -3,7 +3,7 @@ import { CHUNK_SEGMENTS as SEG, CHUNK_SIZE as CH, CHUNK_STEP as STEP, WATER } fr
 import { mulberry32, type Rng } from '../math/random';
 import { TAU } from '../math/util';
 import { buildInstanced, pick, pushInstance, tint } from '../three/helpers';
-import type { Collider } from './collision';
+import type { Clearing, Collider } from './collision';
 import type { TerrainPalette } from './palette';
 import { emptyPropLists, placeMushroom, type PropKind, type PropKit, type PropLists } from './props';
 import type { TerrainField } from './terrain';
@@ -28,7 +28,7 @@ export class ChunkManager {
   private readonly kit: PropKit;
   private readonly seed: number;
   private readonly radius: number;
-  private readonly clearings: readonly Collider[];
+  private readonly clearings: readonly Clearing[];
 
   /**
    * `clearings`: circles kept free of scattered props (the hideouts of the hidden objects, ENG-13).
@@ -40,7 +40,7 @@ export class ChunkManager {
     kit: PropKit,
     seed: number,
     radius: number,
-    clearings: readonly Collider[] = [],
+    clearings: readonly Clearing[] = [],
   ) {
     this.field = field;
     this.palette = palette;
@@ -103,7 +103,10 @@ export class ChunkManager {
     this.chunks.delete(key);
   }
 
-  /** Drop the props (and their colliders) that landed in a clearing. Floating islets stay. */
+  /**
+   * Drop the props (and their colliders) that landed in a clearing. Floating islets stay, except in
+   * clearings marked `floats` (the open sea below the mirador's cliff).
+   */
   private clear(cx: number, cz: number, L: PropLists, colliders: Collider[]): void {
     const near = this.clearings.filter(
       (c) =>
@@ -111,10 +114,13 @@ export class ChunkManager {
     );
     if (!near.length) return;
     const inside = (x: number, z: number) => near.some((c) => Math.hypot(x - c.x, z - c.z) < c.r);
+    const open = near.filter((c) => c.floats);
+    const inOpen = (x: number, z: number) => open.some((c) => Math.hypot(x - c.x, z - c.z) < c.r);
     for (const k of Object.keys(L) as PropKind[]) {
-      if (k === 'float') continue;
       L[k] = L[k].filter(({ m }) => {
         const [x, y, z] = [m.elements[12], m.elements[13], m.elements[14]];
+        if (inOpen(x, z)) return false;
+        if (k === 'float') return true;
         // Islets (and the mushrooms on them) float 16 m or more above the ground.
         return !inside(x, z) || y > this.field.groundAt(x, z) + 9;
       });

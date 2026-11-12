@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { FREE_ROAM_RADIUS } from '../config';
+import { FREE_ROAM_RADIUS, WATER } from '../config';
 import { makeNoise } from '../math/noise';
 import { mulberry32 } from '../math/random';
 import { EDGE_MARGIN, MIRADOR_FADE, miradorWeight } from '../systems/edge';
@@ -8,7 +8,7 @@ import { createPropKit } from '../world/props';
 import { TerrainField } from '../world/terrain';
 import { HiddenSet } from './hidden';
 import { MIRADOR_HALF_WIDTH } from './hiddenLayout';
-import { CLIFF_TOP, MOUNTAIN_END, MOUNTAIN_START, Mirador, PEAK_HEIGHT, RIM_CLEARANCE } from './mirador';
+import { CLIFF_TOE, CLIFF_TOP, MOUNTAIN_END, MOUNTAIN_START, Mirador, PEAK_HEIGHT, RIM_DIP, RIM_STOP } from './mirador';
 
 const seeds = Array.from({ length: 12 }, (_, i) => i * 7919 + 11).concat(12345);
 const STOP = FREE_ROAM_RADIUS - EDGE_MARGIN;
@@ -16,12 +16,12 @@ const STOP = FREE_ROAM_RADIUS - EDGE_MARGIN;
 describe('the mountain as a height modifier', () => {
   const m = new Mirador(0.9, 3, 77);
 
-  it('leaves the terrain untouched near camp, outside its sector and past the cliff', () => {
+  it('leaves the terrain untouched near camp and outside its sector', () => {
     for (const h of [-3, 0, 5, 12]) {
-      for (const r of [0, 150, 300, MOUNTAIN_START, MOUNTAIN_END, 500])
+      for (const r of [0, 150, 300, MOUNTAIN_START])
         for (let a = 0; a < 6.3; a += 0.37) expect(m.modifier(Math.cos(a) * r, Math.sin(a) * r, h)).toBe(h);
       for (const off of [MIRADOR_HALF_WIDTH + MIRADOR_FADE, 1, 2, Math.PI])
-        for (const r of [350, 380, 400, 415])
+        for (const r of [350, 380, 400, 415, MOUNTAIN_END, 500])
           for (const s of [-1, 1])
             expect(m.modifier(Math.cos(0.9 + s * off) * r, Math.sin(0.9 + s * off) * r, h)).toBe(h);
     }
@@ -43,8 +43,16 @@ describe('the mountain as a height modifier', () => {
       expect(again.modifier(x, z, 1)).toBe(m.modifier(x, z, 1));
   });
 
-  it('keeps the plateau flat one terrain cell past the free-roam stop', () => {
-    expect(RIM_CLEARANCE).toBeGreaterThan(0);
+  it('sinks the terrain under the sea past the cliff, all the way out', () => {
+    for (const r of [CLIFF_TOE + 1, MOUNTAIN_END, 500, 700])
+      for (const off of [-MIRADOR_HALF_WIDTH, 0, MIRADOR_HALF_WIDTH])
+        for (const h of [-3, 5, 30])
+          expect(m.modifier(Math.cos(0.9 + off) * r, Math.sin(0.9 + off) * r, h)).toBeLessThan(WATER - 3);
+  });
+
+  it('puts the lip stop past the free-roam stop and before the cliff', () => {
+    expect(RIM_STOP).toBeGreaterThan(STOP);
+    expect(RIM_STOP).toBeLessThan(CLIFF_TOP);
   });
 });
 
@@ -88,9 +96,27 @@ describe.each(seeds)('on real terrain, seed %i', (seed) => {
       }
     const rim = out(STOP);
     expect(field.groundAt(rim.x, rim.z)).toBeCloseTo(m.topY, 0);
-    expect(STOP).toBeLessThan(CLIFF_TOP);
     const below = out(CLIFF_TOP + 11);
     expect(field.groundAt(below.x, below.z)).toBeLessThan(m.topY - PEAK_HEIGHT * 0.6);
+  });
+
+  it('lets the player reach the lip, on the plateau only, without falling off it', () => {
+    for (let r = STOP; r <= RIM_STOP; r += 0.5)
+      for (const side of [-8, 0, 8]) {
+        const p = m.world(r, side);
+        expect(m.onPlateau(p.x, p.z)).toBe(true);
+        expect(field.groundAt(p.x, p.z)).toBeGreaterThan(m.topY - RIM_DIP);
+      }
+    const ridge = m.world(RIM_STOP, 30);
+    expect(m.onPlateau(ridge.x, ridge.z)).toBe(false);
+  });
+
+  it('has only sea below the cliff', () => {
+    for (let r = CLIFF_TOE + 2; r < 560; r += 13)
+      for (const off of [-0.25, -0.1, 0, 0.1, 0.25]) {
+        const p = out(r, off);
+        expect(field.groundAt(p.x, p.z), `r ${r} off ${off}`).toBeLessThan(WATER - 0.5);
+      }
   });
 
   it('puts the letter on the plateau, with room to stand behind it', () => {

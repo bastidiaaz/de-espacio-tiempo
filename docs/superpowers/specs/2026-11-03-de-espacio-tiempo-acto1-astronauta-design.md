@@ -517,6 +517,21 @@ De pie en la cima, mirando hacia fuera:
 - **Modo debug:** un salto "ir al mirador" en el panel, para revisar el
   encuadre.
 
+**Tras la prueba del autor (2026-11-12):** se puede llegar hasta el borde
+(el tope sobre la meseta queda a 1,5 m del precipicio) para mirar arriba y
+abajo; **abajo solo hay mar**: en el sector del mirador, pasado el precipicio,
+el terreno se hunde bajo el agua y ya no hay agujas de cristal ni islas
+flotantes. **Una cascada** nace de un manantial entre piedras en la meseta,
+corre unos 8 m hasta el borde y cae al mar, con espuma y salpicadura. En la
+cima la niebla empieza más lejos (75 m) para que el mar se vea. El cielo del
+mirador suma una **nebulosa más intensa** (más nubes y núcleos más
+brillantes), **estrellas que titilan** a ritmos distintos, con destellos de
+vez en cuando (quietas con *reduced motion*), **siete planetas lejanos**
+pequeños pero distinguibles (dos con anillos) y **un agujero negro** muy al
+fondo: su disco, el anillo de luz curvada y la sombra. Revisables: el lado de
+la cascada, cuánto se despeja la niebla, posición y tamaño de los planetas y
+del agujero negro.
+
 **Al construirlo (ART-08, 2026-11-12), también revisables:**
 
 - **Dónde empieza y termina la montaña.** No toca el terreno a menos de

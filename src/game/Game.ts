@@ -51,6 +51,7 @@ import { TerrainPalette } from './world/palette';
 import { Bursts, Embers, Motes } from './world/particles';
 import { createPropKit } from './world/props';
 import { resolveSeed } from './world/seed';
+import { RIM_STOP } from './story/mirador';
 import { MiradorSky } from './world/miradorSky';
 import { Sky } from './world/sky';
 import { TerrainField } from './world/terrain';
@@ -70,6 +71,8 @@ const RETRO_HEIGHT = 460;
 const CHIME_ROOTS = [440, 554.37, 659.25, 880];
 /** Reduced motion: how long the screen stays black while Isi sits down or gets up (ms). */
 const FADE_MS = 400;
+/** Where the fog starts when standing on the mirador's top (m): the sea below shows clearly. */
+const MIRADOR_FOG_NEAR = 75;
 
 /** What the shell gives Act I's engine (see docs/adr/0001-multi-acto.md). */
 export interface GameOptions {
@@ -597,6 +600,7 @@ export class Game implements GameActions, ActEngine {
 
     this.atmosphere.update(dt, progress.chapter);
     this.hideShipInFog();
+    this.clearFogAtMirador();
     if (this.debugRing) this.updateDebug();
     player.applyToCamera(this.camera, prefersReducedMotion);
     if (this.shot) this.applyShot();
@@ -616,6 +620,7 @@ export class Game implements GameActions, ActEngine {
       prefersReducedMotion,
     );
     this.miradorSky.group.position.copy(this.camera.position);
+    this.hidden.miradorWorld.update(this.time, P, prefersReducedMotion);
 
     this.post.render(this.scene, this.camera, this.time);
     this.raf = requestAnimationFrame(this.frame);
@@ -727,6 +732,17 @@ export class Game implements GameActions, ActEngine {
     const f = revealFog(fogBase, this.shipDistance(), open);
     fog.near = f.near;
     fog.far = f.far;
+  }
+
+  /**
+   * From the mirador's top the fog lets the sea below show: it starts further out as its sky
+   * comes in (ART-08). The far end stays, so the chunks never pop in.
+   */
+  private clearFogAtMirador(): void {
+    const r = this.miradorSky.reveal;
+    if (r <= 0) return;
+    const { fog } = this;
+    fog.near = lerp(fog.near, Math.min(MIRADOR_FOG_NEAR, fog.far - 20), r);
   }
 
   /** Seated (or sitting down / getting up): the seat drives position and eye height. */
@@ -875,7 +891,9 @@ export class Game implements GameActions, ActEngine {
     const step = this.hidden.mirador.resolveStep(fromX, fromZ, P.x, P.z);
     P.x = step.x;
     P.z = step.z;
-    const lim = this.atmosphere.radiusCur - EDGE_MARGIN;
+    // On the mirador's plateau the stop is its lip, to look down at the sea (ART-08).
+    const rim = this.progress.freeRoam && this.hidden.mirador.onPlateau(P.x, P.z);
+    const lim = rim ? RIM_STOP : this.atmosphere.radiusCur - EDGE_MARGIN;
     const dc = Math.hypot(P.x, P.z);
     if (dc > lim) {
       P.x *= lim / dc;

@@ -9,8 +9,9 @@
  *  - The ridge fills the mirador's sector (MIRADOR_HALF_WIDTH, fading out over MIRADOR_FADE, the
  *    same fade the edge uses) between ~345 and ~420 m from the fire. Nothing changes closer than
  *    MOUNTAIN_START, so the story's world keeps its heights.
- *  - The peak is a plateau that ends in a cliff just past the free-roam stop: the edge of the
- *    world is the physical edge.
+ *  - The peak is a plateau that ends in a cliff: on the plateau the player can walk up to
+ *    RIM_STOP, right at its lip, past the free-roam stop elsewhere. Below the cliff there is only
+ *    sea: in the mirador's sector the terrain sinks under the water and stays there.
  *  - One ramp climbs the flank sideways up to the plateau. Everywhere else the ridge is too steep:
  *    `walkable` is false there and `resolveStep` slides the player along it.
  *  - `reveal` goes from 0 at the foot to 1 at the top: the sky that only exists here follows it.
@@ -18,7 +19,7 @@
  * Determinism: the shape depends only on the direction, the base height and a generator of its
  * own derived from the seed. Never the world's `rng()`.
  */
-import { CHUNK_STEP, FREE_ROAM_RADIUS, WATER } from '../config';
+import { FREE_ROAM_RADIUS, WATER } from '../config';
 import { mulberry32 } from '../math/random';
 import { lerp, smoothstep, TAU } from '../math/util';
 import { EDGE_MARGIN, MIRADOR_FADE } from '../systems/edge';
@@ -29,9 +30,13 @@ import { MIRADOR_HALF_WIDTH } from './hiddenLayout';
 export const MOUNTAIN_START = 344;
 /** From here on the mountain's own shape fully replaces the terrain. */
 const MOUNTAIN_FULL = 354;
-/** The plateau holds up to here; then the cliff, down to its toe. */
+/** The plateau holds up to here; then the cliff, down to its toe in the sea. */
 export const CLIFF_TOP = 404;
-const CLIFF_TOE = 413;
+export const CLIFF_TOE = 410;
+/** On the plateau the player can walk this far from the fire: at the lip, to look down. */
+export const RIM_STOP = CLIFF_TOP - 1.5;
+/** World y of the sea floor below the cliff: deep enough that only water shows. */
+export const SEA_FLOOR = WATER - 7;
 /** Past the cliff the terrain comes back to its own heights between these distances. */
 const OUT_START = 408;
 export const MOUNTAIN_END = 420;
@@ -129,12 +134,13 @@ export class Mirador {
 
     this.modifier = (x, z, h) => {
       const r = Math.hypot(x, z);
-      if (r <= MOUNTAIN_START || r >= MOUNTAIN_END) return h;
+      if (r <= MOUNTAIN_START) return h;
       const [u, v] = this.local(x, z);
       const a = Math.atan2(v, u);
-      const w = this.weight(r, a);
-      if (w <= 0) return h;
-      return lerp(h, this.baseY + this.shape(u, v, r, a), w);
+      const w = r < MOUNTAIN_END ? this.weight(r, a) : 0;
+      const mountain = w > 0 ? lerp(h, this.baseY + this.shape(u, v, r, a), w) : h;
+      const s = this.sea(r, a);
+      return s > 0 ? lerp(mountain, SEA_FLOOR, s) : mountain;
     };
   }
 
@@ -190,14 +196,38 @@ export class Mirador {
     return this.world(FREE_ROAM_RADIUS - EDGE_MARGIN - 6, 0);
   }
 
-  /** Circles that cover the mountain, for the chunks to keep free of the planet's common props. */
-  clearings(): { x: number; z: number; r: number }[] {
-    const out: { x: number; z: number; r: number }[] = [];
+  /**
+   * Circles that cover the mountain, for the chunks to keep free of the planet's common props;
+   * over the sea below the cliff, free of floating islets too (`floats`).
+   */
+  clearings(): { x: number; z: number; r: number; floats?: boolean }[] {
+    const out: { x: number; z: number; r: number; floats?: boolean }[] = [];
     const reach = MIRADOR_HALF_WIDTH + MIRADOR_FADE * 0.5;
     for (const r of [370, 398])
       for (let a = -reach; a <= reach + 1e-9; a += reach / 4.5)
         out.push({ ...this.world(Math.cos(a) * r, Math.sin(a) * r), r: 30 });
+    for (let r = 420; r <= 600; r += 30) {
+      const n = Math.ceil((2 * reach * r) / 30);
+      for (let i = 0; i <= n; i++) {
+        const a = -reach + (2 * reach * i) / n;
+        out.push({ ...this.world(Math.cos(a) * r, Math.sin(a) * r), r: 24, floats: true });
+      }
+    }
     return out;
+  }
+
+  /** Whether (x, z) is on the plateau's walkable part, where the stop is RIM_STOP. */
+  onPlateau(x: number, z: number): boolean {
+    const [u, v] = this.local(x, z);
+    return u >= PLATEAU_FROM && Math.abs(v) <= PLATEAU_HALF;
+  }
+
+  /** 0..1: how much of the sea below the cliff replaces the terrain at (r, a). */
+  private sea(r: number, a: number): number {
+    return (
+      smoothstep(CLIFF_TOP + 1, CLIFF_TOE, r) *
+      (1 - smoothstep(MIRADOR_HALF_WIDTH, MIRADOR_HALF_WIDTH + MIRADOR_FADE, Math.abs(a)))
+    );
   }
 
   /** 0..1: how much of the mountain's shape replaces the terrain at (r, a). */
@@ -258,6 +288,7 @@ export class Mirador {
     if (r <= MOUNTAIN_START || r >= MOUNTAIN_END) return true;
     const [u, v] = this.local(x, z);
     const a = Math.atan2(v, u);
+    if (this.sea(r, a) > 0.5) return false; // below the cliff, and nobody gets there anyway
     const w = this.weight(r, a);
     if (w <= 0) return true;
     if (u >= PLATEAU_FROM && Math.abs(v) <= PLATEAU_HALF) return true;
@@ -291,5 +322,8 @@ export class Mirador {
   }
 }
 
-/** The plateau must stay flat under the player's last step: one terrain cell before the cliff. */
-export const RIM_CLEARANCE = CLIFF_TOP - (FREE_ROAM_RADIUS - EDGE_MARGIN) - CHUNK_STEP * Math.SQRT2;
+/**
+ * How far the ground may drop under the player's last step at RIM_STOP: the terrain is a mesh of
+ * CHUNK_STEP cells, so right at the lip it starts to lean out.
+ */
+export const RIM_DIP = 3;
