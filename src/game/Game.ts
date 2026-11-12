@@ -1,9 +1,18 @@
 import * as THREE from 'three';
 import { COPY } from '../content/copy';
-import { CHAPTERS, EDGE_LINES, FREE_EDGE_LINES, HIDDEN_IDS, MEMORIES, STAR_CHAPTER, WAKE_LINES } from '../content/story';
+import {
+  CHAPTERS,
+  EDGE_LINES,
+  FREE_EDGE_LINES,
+  HIDDEN_IDS,
+  MEMORIES,
+  SHIP_CHAPTER,
+  STAR_CHAPTER,
+  WAKE_LINES,
+} from '../content/story';
 import type { GameActions, GameStore, Phase } from '../state/gameStore';
 import { FREE_ROAM_RADIUS, HINT_DELAY, STORAGE_KEYS, WATER, viewRadiusFor } from './config';
-import { facing, parseHash, standInFront } from './debug';
+import { facing, parseHash, revealReplaySpot, standInFront } from './debug';
 import type { ActEngine, ActSettings } from './engine';
 import { makeNoise } from './math/noise';
 import { createHash2 } from './math/random';
@@ -12,6 +21,7 @@ import { isCoarsePointer, prefersReducedMotion, storage } from './platform';
 import { ItemSet, type Item } from './story/items';
 import { Closing, panLook } from './story/closing';
 import { migrateSave } from './story/saveMigration';
+import { SHIP } from './story/ship';
 import { buildStoryWorld, type StoryWorld } from './story/storyWorld';
 import { HiddenSet, type HiddenItem } from './story/hidden';
 import { Attention, type GazeCandidate } from './systems/attention';
@@ -22,6 +32,7 @@ import { Narrative } from './systems/narrative';
 import { Player } from './systems/player';
 import { Progress } from './systems/progress';
 import { panTowards, proximityLevel } from './systems/proximity';
+import { REVEAL, Reveal, RevealShot, revealFog, type RevealCue, type ShotPose } from './systems/reveal';
 import { SEATED_EYE, STAND_EYE, Seat, type Pose } from './systems/seat';
 import { Atmosphere } from './world/atmosphere';
 import { ChunkManager } from './world/chunks';
@@ -101,6 +112,12 @@ export class Game implements GameActions, ActEngine {
   private readonly seat: Seat;
   /** After the last quote: guided camera, then the ending screen (DIS-07). */
   private readonly closing = new Closing();
+  /** The ship's reveal (DIS-08): hidden in the fog, then ~10 s of guided camera. */
+  private readonly reveal: Reveal;
+  /** Camera path of the take in progress, built when it starts. */
+  private shot: RevealShot | null = null;
+  private readonly shotPose: ShotPose = { x: 0, y: 0, z: 0, yaw: 0, pitch: 0 };
+  private readonly fogBase = { near: 0, far: 0 };
   private readonly input: Input;
   private readonly audio: AudioEngine;
   private readonly yawToFire: number;
@@ -210,6 +227,8 @@ export class Game implements GameActions, ActEngine {
     // She sits where she woke up: next to the fire and clear of every collider.
     this.seat = new Seat(this.story.bedroll);
     if (!this.progress.freeRoam && this.progress.chapter === STAR_CHAPTER) this.seat.snapSeated();
+    // Reloading before the ship is remembered plays the reveal again; after it, never (no new storage key).
+    this.reveal = new Reveal(this.progress.remembered.has('ship'));
     this.motes = new Motes(isCoarsePointer ? 140 : 240, glow, this.player.position);
     this.embers = new Embers(this.story.campfire.group.position.y, glow);
     this.bursts = new Bursts(glow);
@@ -267,8 +286,8 @@ export class Game implements GameActions, ActEngine {
       onRemember: (it) => ('hidden' in it ? this.findHidden(it) : this.remember(it)),
     });
     this.input = new Input(this.canvas, {
-      enabled: () => this.phase === 'play' && !this.paused && !this.closing.locksLook,
-      canMove: () => !this.seat.locksMovement,
+      enabled: () => this.phase === 'play' && !this.paused && !this.closing.locksLook && !this.reveal.active,
+      canMove: () => !this.seat.locksMovement && !this.reveal.active,
       onLook: (dx, dy, k) => this.player.look(dx, dy, k * this.lookSensitivity),
       onKey: (code) => {
         if (this.paused) return;
@@ -367,7 +386,9 @@ export class Game implements GameActions, ActEngine {
       return;
     }
     const target = this.items.targetOf(it).clone();
-    const spot = standInFront(target, Math.min(9, Math.max(2.5, it.attention.range * 0.45)));
+    // The ship is a bus: stand back from it. This jump is for the gaze, so the reveal counts as seen.
+    if (it.id === 'ship') this.reveal.reset(true);
+    const spot = standInFront(target, Math.min(it.id === 'ship' ? 20 : 9, Math.max(2.5, it.attention.range * 0.45)));
     this.moveTo(spot.x, spot.z);
     const eye = { x: player.position.x, y: player.position.y + player.eye, z: player.position.z };
     const f = facing(eye, target);
@@ -393,6 +414,20 @@ export class Game implements GameActions, ActEngine {
     const f = facing({ x: player.position.x, y: player.position.y + player.eye, z: player.position.z }, target);
     player.yaw = f.yaw;
     player.pitch = f.pitch;
+  };
+
+  /** The ship's chapter, 30 m from it on the camp side, and the take starts at once (DIS-08). */
+  debugReplayReveal = (): void => {
+    if (!this.debug) return;
+    this.debugJump(SHIP_CHAPTER);
+    const spot = revealReplaySpot({ x: this.field.shipX, z: this.field.shipZ }, REVEAL.triggerRadius);
+    this.moveTo(spot.x, spot.z);
+    // Looking back towards camp, so the take also shows how the view turns to the ship.
+    this.player.yaw = facing({ x: spot.x, y: 0, z: spot.z }, { x: 0, y: 0, z: 0 }).yaw + 0.6;
+    this.player.pitch = 0.02;
+    this.reveal.force();
+    this.onRevealCue('approach');
+    this.onRevealCue('start');
   };
 
   debugResetHidden = (): void => {
@@ -460,8 +495,10 @@ export class Game implements GameActions, ActEngine {
     } else if (this.phase === 'waking') {
       this.updateWaking(dt);
     } else {
+      this.updateReveal(dt);
       const pose = this.seat.update(dt);
       if (pose) this.applyPose(pose, dt);
+      else if (this.reveal.active) player.moveAmount = 0;
       else {
         player.update(dt, this.input, this.field, this.resolvePlayer);
         this.applyBounce(dt);
@@ -477,6 +514,7 @@ export class Game implements GameActions, ActEngine {
         !progress.freeRoam &&
         !narrative.card &&
         this.closing.stage === 'idle' &&
+        !this.reveal.active &&
         progress.chapter < CHAPTERS.length &&
         this.time - this.lastProgress > HINT_DELAY
       ) {
@@ -491,9 +529,11 @@ export class Game implements GameActions, ActEngine {
     if (this.store.getState().seated !== seated) this.store.setState({ seated });
 
     this.atmosphere.update(dt, progress.chapter);
+    this.hideShipInFog();
     if (this.debugRing) this.updateDebug();
     player.applyToCamera(this.camera, prefersReducedMotion);
-    this.attention.update(dt, this.phase === 'play', player.moveAmount);
+    if (this.shot) this.applyShot();
+    this.attention.update(dt, this.phase === 'play' && !this.reveal.active, player.moveAmount);
     narrative.update(dt);
     this.chunks.update(player.position.x, player.position.z, false);
     this.water.update(this.time, player.position.x, player.position.z);
@@ -516,6 +556,99 @@ export class Game implements GameActions, ActEngine {
       this.lastProgress = this.time;
       if (!this.progress.count) WAKE_LINES.forEach((line) => this.narrative.say(line));
     }
+  }
+
+  // ---------------------------------------------------------------- the ship's reveal (DIS-08)
+
+  /** Horizontal distance from Isi to the middle of the ship. */
+  private shipDistance(): number {
+    const P = this.player.position;
+    return Math.hypot(P.x - this.field.shipX, P.z - this.field.shipZ);
+  }
+
+  /** Advances the reveal's timeline and hands its cues on. */
+  private updateReveal(dt: number): void {
+    const { progress, narrative } = this;
+    const cues = this.reveal.step(dt, {
+      distance: this.shipDistance(),
+      armed:
+        !progress.freeRoam &&
+        progress.chapter === SHIP_CHAPTER &&
+        !progress.remembered.has('ship') &&
+        !this.seat.locksMovement,
+      blocked: !!narrative.card || narrative.whisperTime > 0,
+    });
+    for (const cue of cues) this.onRevealCue(cue);
+  }
+
+  /**
+   * Every beat of the reveal, once each, in order (see `RevealCue` in systems/reveal.ts).
+   *
+   * AUDIO HOOK (AUD-03 and the reveal's chord and creak): this is where the sound goes. `approach`
+   * fades the music out and leaves the wind, `retreat` brings it back, `start` drops the wind,
+   * `chord` brings in the low chord, `creak` the hull, `release` starts the chord's fade and `end`
+   * lets it die out. For a mix that is set every frame, read `this.reveal.phase` instead
+   * (idle, hush, reveal or done). Until that lands the take plays in silence.
+   */
+  private onRevealCue(cue: RevealCue): void {
+    if (cue === 'start') this.startShot();
+    else if (cue === 'end') this.endShot();
+  }
+
+  /** The game takes the camera: Isi stops, and the path is built on the line from her to the ship. */
+  private startShot(): void {
+    const { player, field } = this;
+    const P = player.position;
+    for (const k in this.input.keys) this.input.keys[k] = false;
+    player.moveAmount = 0;
+    this.bounce.reset();
+    this.shot = new RevealShot({
+      eye: { x: P.x, y: P.y + player.eye, z: P.z },
+      yaw: player.yaw,
+      pitch: player.pitch,
+      ship: { x: field.shipX, y: this.story.objects.ship.position.y, z: field.shipZ },
+      // The nose points at camp.
+      axis: { x: -field.dirX, z: -field.dirZ },
+      halfLength: SHIP.halfLength,
+      lookHeight: this.items.items.find((it) => it.id === 'ship')!.attention.offsetY,
+      groundAt: (x, z) => Math.max(field.groundAt(x, z), WATER),
+      reducedMotion: prefersReducedMotion,
+    });
+    this.store.setState({ reveal: true });
+  }
+
+  /** Control goes back to the player, who is left looking at the ship: the gaze does the rest. */
+  private endShot(): void {
+    const { player, shot } = this;
+    if (shot) {
+      player.yaw = shot.endYaw;
+      player.pitch = shot.endPitch;
+    }
+    this.shot = null;
+    this.lastProgress = this.time;
+    this.store.setState({ reveal: false });
+  }
+
+  /** During the take the camera follows the shot, not Isi's eyes (she never shows: first person only). */
+  private applyShot(): void {
+    const p = this.shot!.pose(this.reveal.t, this.shotPose);
+    this.camera.position.set(p.x, p.y, p.z);
+    this.camera.rotation.set(p.pitch, p.yaw, 0);
+  }
+
+  /**
+   * Until the reveal, the fog ends short of the ship, so the world closes in as Isi walks up to
+   * it; during the take it opens back to the atmosphere's own values. Same `THREE.Fog` as always.
+   */
+  private hideShipInFog(): void {
+    const open = this.reveal.fogOpen;
+    if (open >= 1 || this.progress.freeRoam) return;
+    const { fog, fogBase } = this;
+    fogBase.near = fog.near;
+    fogBase.far = fog.far;
+    const f = revealFog(fogBase, this.shipDistance(), open);
+    fog.near = f.near;
+    fog.far = f.far;
   }
 
   /** Seated (or sitting down / getting up): the seat drives position and eye height. */
@@ -798,8 +931,11 @@ export class Game implements GameActions, ActEngine {
     this.timers.clear();
     progress.jumpToChapter(chapter);
     this.closing.reset();
+    // Up to the ship's chapter the reveal is still ahead; past it, already seen.
+    this.reveal.reset(progress.chapter > SHIP_CHAPTER);
+    this.shot = null;
     this.narrative.clear();
-    this.store.setState({ remembered: [...progress.remembered], endingVisible: false, fade: false });
+    this.store.setState({ remembered: [...progress.remembered], endingVisible: false, fade: false, reveal: false });
     if (progress.chapter === STAR_CHAPTER) this.seat.snapSeated();
     else this.seat.snapStanding();
     player.eye = this.seat.locksMovement ? SEATED_EYE : STAND_EYE;

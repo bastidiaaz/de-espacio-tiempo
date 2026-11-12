@@ -5,8 +5,9 @@ import './Stick.css';
 export function Stick() {
   const s = useGameState((st) => st.stick);
   const seated = useGameState((st) => st.seated);
+  const reveal = useGameState((st) => st.reveal);
   return (
-    <div id="stick" style={{ display: s.active && !seated ? 'block' : 'none', left: s.x, top: s.y }}>
+    <div id="stick" style={{ display: s.active && !seated && !reveal ? 'block' : 'none', left: s.x, top: s.y }}>
       <div id="knob" style={{ transform: s.dx || s.dy ? `translate(${s.dx}px,${s.dy}px)` : undefined }} />
     </div>
   );

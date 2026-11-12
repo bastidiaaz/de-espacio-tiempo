@@ -57,12 +57,15 @@ const MEMORY_STRUCT: readonly MemoryStruct[] = [
   { id: 'seeds', chapter: 1, attention: { offsetY: 0.15, range: 6.5, cone: 0.24 } },
   { id: 'recorder', chapter: 2, attention: { offsetY: 0.3, range: 7, cone: 0.24 } },
   { id: 'beacon', chapter: 2, attention: { offsetY: 1.0, range: 8, cone: 0.26 } },
-  { id: 'ship', chapter: 3, attention: { offsetY: 2.0, range: 24, cone: 0.42 } },
+  // DIS-08: range up from 24 so the gaze holds from where the reveal leaves Isi (30 m).
+  { id: 'ship', chapter: 3, attention: { offsetY: 2.2, range: 32, cone: 0.42 } },
   // DIS-07: back at the fire she wakes by, a second time. Same object, so same gaze geometry as `fire`.
   { id: 'campfire', chapter: 4, attention: { offsetY: 0.6, range: 8, cone: 0.26 } },
   { id: 'star', chapter: 5, attention: { offsetY: 0, range: Infinity, cone: 0.14 } },
 ];
 
+/** Chapter of the ship and its reveal (DIS-08). */
+export const SHIP_CHAPTER = 3;
 /** Chapter where Isi goes back to the fire and sits down (DIS-07). */
 export const CAMPFIRE_CHAPTER = 4;
 /** Last chapter: she looks for the star, seated by the fire. */

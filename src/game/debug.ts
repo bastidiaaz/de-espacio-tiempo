@@ -42,3 +42,11 @@ export function standInFront(target: { x: number; z: number }, distance: number)
   const [ux, uz] = d > 1 ? [target.x / d, target.z / d] : [0, -1];
   return { x: target.x - ux * distance, z: target.z - uz * distance };
 }
+
+/**
+ * "Repetir revelación" (DIS-08): where Isi stands to live the ship's reveal again, on the camp
+ * side of the ship and just inside the trigger radius, so the take starts at once.
+ */
+export function revealReplaySpot(ship: { x: number; z: number }, triggerRadius: number): { x: number; z: number } {
+  return standInFront(ship, triggerRadius - 0.5);
+}

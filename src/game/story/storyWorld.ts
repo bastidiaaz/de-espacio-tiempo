@@ -6,6 +6,7 @@ import type { Collider } from '../world/collision';
 import type { PropKit } from '../world/props';
 import type { TerrainField } from '../world/terrain';
 import { Campfire } from './campfire';
+import { buildShip } from './ship';
 
 /** Every story object that can be remembered, except the sky "star" (owned by Sky). */
 export type StoryObjects = Record<Exclude<ItemId, 'star'>, THREE.Object3D>;
@@ -70,22 +71,22 @@ export function buildStoryWorld(field: TerrainField, kit: PropKit, glow: THREE.T
   log.add(mesh(new THREE.CylinderGeometry(0.25, 0.27, 1.7, 7), M.wood, 0, 0.22, 0, 0, 0, Math.PI / 2));
   colliders.push({ x: lx, z: lz, r: 0.7 });
 
-  // --- the ship, nose toward camp ---
-  const ship = placed(SX, SZ, Math.atan2(SDz, -SDx), 0.7);
-  ship.rotation.order = 'YXZ';
-  ship.rotation.x = 0.16;
-  ship.rotation.z = 0.08;
-  ship.add(mesh(new THREE.CylinderGeometry(1.5, 1.9, 8, 8), M.cream, 0, 1.2, 0, 0, 0, Math.PI / 2));
-  ship.add(mesh(new THREE.ConeGeometry(1.5, 2.6, 8), M.cream, 5.3, 1.2, 0, 0, 0, -Math.PI / 2));
-  ship.add(mesh(new THREE.CylinderGeometry(1.72, 1.72, 0.6, 8), M.orange, 1.2, 1.2, 0, 0, 0, Math.PI / 2));
-  ship.add(mesh(new THREE.CylinderGeometry(1.1, 1.4, 1.2, 8), M.char, -4.6, 1.2, 0, 0, 0, Math.PI / 2));
-  ship.add(mesh(new THREE.IcosahedronGeometry(1.1, 1), M.visor, 3.2, 2.4, 0, 0, 0, 0, 1.6, 0.7, 0.9));
-  ship.add(mesh(new THREE.BoxGeometry(3, 0.25, 3.6), M.cream, -1, 0.6, 2.6, 0.12));
-  ship.add(mesh(new THREE.BoxGeometry(2.2, 0.25, 1.6), M.cream, -0.8, 0.3, -2.0, -0.5, 0.3));
-  ship.add(mesh(new THREE.BoxGeometry(2, 2.2, 0.25), M.orange, -3.8, 2.9, 0, 0, 0, -0.3));
-  const shipLamp = mesh(new THREE.IcosahedronGeometry(0.14, 0), M.red, -4.3, 4.0, 0);
-  ship.add(shipLamp);
-  for (const s of [-4, 0, 4]) colliders.push({ x: SX - SDx * s, z: SZ - SDz * s, r: 2.6 });
+  // --- the ship, nose toward camp (ART-05: the model and its own colliders live in ship.ts) ---
+  const shipYaw = Math.atan2(SDz, -SDx);
+  const ship = placed(SX, SZ, shipYaw);
+  const shipCos = Math.cos(shipYaw);
+  const shipSin = Math.sin(shipYaw);
+  /** Ship-local XZ to world XZ. */
+  const fromShip = (x: number, z: number): [number, number] => [
+    SX + x * shipCos + z * shipSin,
+    SZ - x * shipSin + z * shipCos,
+  ];
+  const shipModel = buildShip(glow, (x, z) => field.groundAt(...fromShip(x, z)) - ship.position.y);
+  ship.add(shipModel.group);
+  for (const c of shipModel.colliders) {
+    const [x, z] = fromShip(c.x, c.z);
+    colliders.push({ x, z, r: c.r });
+  }
 
   // --- debris along the trail ---
   {
@@ -165,8 +166,6 @@ export function buildStoryWorld(field: TerrainField, kit: PropKit, glow: THREE.T
   const beaconLamp = mesh(new THREE.IcosahedronGeometry(0.08, 0), M.red, -1.0, 1.25, 0);
   beacon.add(beaconLamp);
 
-  const shipLampColor = (shipLamp.material as THREE.MeshBasicMaterial).color;
-
   return {
     group,
     campfire,
@@ -187,7 +186,7 @@ export function buildStoryWorld(field: TerrainField, kit: PropKit, glow: THREE.T
     },
     update(time) {
       const blink = Math.sin(time * 4) > 0.6 ? 1 : 0.2;
-      shipLampColor.setRGB(blink, blink * 0.35, blink * 0.35);
+      shipModel.update(time);
       beaconLamp.scale.setScalar(0.6 + blink * 0.6);
     },
   };

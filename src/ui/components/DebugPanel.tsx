@@ -16,8 +16,15 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugResetHidden } =
-    useGameActions();
+  const reveal = useGameState((s) => s.reveal);
+  const {
+    debugJumpToChapter,
+    debugJumpToItem,
+    debugCompleteAll,
+    debugJumpToHidden,
+    debugResetHidden,
+    debugReplayReveal,
+  } = useGameActions();
   return (
     <details id="debug">
       <summary>
@@ -66,6 +73,17 @@ export function DebugPanel() {
         }}
       >
         Marcar todo → final
+      </button>
+      <h3>Nave (DIS-08)</h3>
+      <button
+        className="all"
+        disabled={reveal}
+        onClick={(e) => {
+          blur(e);
+          debugReplayReveal();
+        }}
+      >
+        {reveal ? 'Revelación en curso…' : 'Repetir revelación'}
       </button>
       <h3>Ocultos (paseo libre)</h3>
       <ul>
