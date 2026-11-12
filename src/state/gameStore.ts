@@ -1,6 +1,7 @@
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { CardKind } from '../game/systems/narrative';
 import type { StickState } from '../game/systems/input';
+import type { MixState } from '../game/systems/mix';
 
 export type Phase = 'intro' | 'waking' | 'play';
 
@@ -93,4 +94,6 @@ export interface GameActions {
   debugJumpToHidden(id: string): void;
   /** Debug only: forget the hidden objects found (in memory; nothing is saved in debug). */
   debugResetHidden(): void;
+  /** Debug only: force these values of the audio mix (silence, chapter layers, wind, edge), replacing earlier ones; `null` clears it. */
+  debugAudio(patch: Partial<MixState> | null): void;
 }

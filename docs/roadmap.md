@@ -271,16 +271,16 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 **AUD-02 · Pasos** · S · P1
 - **Output:** pasos suaves que varían según la superficie (arena, pasto, roca), sincronizados con el cabeceo de la cámara.
 
-**AUD-03 · Viento y silencio** · M · P1
+**AUD-03 · Viento y silencio** · M · P1 · ✅ implementado (2026-11-12), falta la escucha del autor: viento sintetizado (`systems/wind.ts`: ruido suave en bucle, dos filtros y ráfagas por LFO, sin samples) y mezcla pura en `systems/mix.ts` (testeada en `mix.test.ts`). Todo se pide con `audio.setMix({...})`: `silence: 'wind'` calla la música en 3 s y deja el viento, `'hush'` baja también el viento (el aire contenido de la toma de la nave), `windZone` 0..1 es el viento del lugar. Enganches provisionales en `Game.updateAmbience`: el silencio a 60 m de la nave mientras no se recuerda (ART-05 lo toma y agrega `hush`, el acorde y el crujido) y el viento del sector del mirador en los últimos ~110 m (ART-08 lo cambia por `windZone: miradorSky.reveal`). El panel de debug suma "Audio: viento y silencio"
 - **Output:** una capa de viento y atmósfera que es el "silencio" del juego. Se usa antes de la nave (el resto de la música se calla) y crece en el mirador.
 
 **AUD-04 · Sonido de la mirada** · S · P1
 - **Output:** un tono que crece con el progreso de foco de `attention` y resuelve en la campanita actual.
 
-**AUD-05 · Aviso de borde** · S · P1 · depende de DIS-06 y AUD-03
+**AUD-05 · Aviso de borde** · S · P1 · depende de DIS-06 y AUD-03 · API lista desde AUD-03 (2026-11-12): `mixFor` ya resuelve `edge` 0..1 (viento hasta 0,85; pad, cajita, capas y canción hasta el 10 %), con tests. Falta solo agregar `edge: this.atmosphere.edge` al `setMix` de `Game.updateAmbience` y que el autor apruebe la curva; se puede oír ya con el botón "borde" del panel de debug
 - **Output:** en la franja del borde, el viento de AUD-03 sube y el pad, la cajita y la canción bajan, hasta que en el tope solo queda el viento (sección "Borde" del brief).
 
-**AUD-06 · Música por capítulo** · M · P1
+**AUD-06 · Música por capítulo** · M · P1 · ✅ implementado (2026-11-12), falta la escucha del autor: cada capítulo suma una capa sobre el pad y las gotas de siempre, que no cambian (`LAYERS` en `systems/mix.ts`, nodos en `systems/ambience.ts`). Cap. 1: nada nuevo; cap. 2: `air` (el pad una octava arriba); cap. 3: `answer` (dos notas graves de cajita que responden); cap. 4: `deep` (un piso grave); cap. 5: `phrase` (frases lentas de cuatro notas que bajan); cap. 6: `star` (un titilar agudo). Entran en ~9 s. Paseo libre y acto terminado: todas; las dos capas de notas se retiran cuando suena el arpegio de los ocultos, para no confundirse con él. Ninguna usa la melodía de "Astronauta". El panel de debug suma "Audio: capas del capítulo"
 - **Output:** el pad y las notas de cajita ganan capas en cada capítulo, sin reemplazar lo actual.
 
 **AUD-08 · Arpegio de la guitarra oculta** · S · P1 · depende de DIS-04

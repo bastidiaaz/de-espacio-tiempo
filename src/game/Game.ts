@@ -18,6 +18,7 @@ import { Attention, type GazeCandidate } from './systems/attention';
 import { AudioEngine } from './systems/audio';
 import { EDGE_MARGIN, EdgeBounce, bandWidth, edgeLevel, miradorWeight, nominalBand, slowOutward } from './systems/edge';
 import { Input } from './systems/input';
+import { miradorWind, shipSilence, type MixState } from './systems/mix';
 import { Narrative } from './systems/narrative';
 import { Player } from './systems/player';
 import { Progress } from './systems/progress';
@@ -120,6 +121,12 @@ export class Game implements GameActions, ActEngine {
   /** Touching the stop pushes her gently back instead of a rigid wall (pedido del autor). */
   private readonly bounce = new EdgeBounce();
   private lastProgress = 0;
+  /** Level of the proximity arpeggio this frame: the note layers make room for it (AUD-06). */
+  private cueLevel = 0;
+  /** The silence before the ship is on (AUD-03, DIS-08). */
+  private shipQuiet = false;
+  /** Debug: values forced on the audio mix from the panel. */
+  private debugMix: Partial<MixState> = {};
   private retro: boolean;
   private sound: boolean;
   private lookSensitivity: number;
@@ -401,6 +408,15 @@ export class Game implements GameActions, ActEngine {
     this.store.setState({ hiddenFound: [] });
   };
 
+  /**
+   * Forces these values of the audio mix (silence, chapter layers, wind, edge), replacing any
+   * earlier ones; `null` hands it all back to the game.
+   */
+  debugAudio = (patch: Partial<MixState> | null): void => {
+    if (!this.debug) return;
+    this.debugMix = patch ?? {};
+  };
+
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
@@ -595,6 +611,7 @@ export class Game implements GameActions, ActEngine {
     this.items.updateGlints(dt, time, (it) => progress.isAvailable(it) && this.phase === 'play');
     this.hidden.update(dt, time, player.position, progress.freeRoam && this.phase === 'play', this.found);
     this.updateProximity();
+    this.updateAmbience();
     this.bursts.update(dt);
     this.audio.setFireLevel(Math.max(0, 1 - Math.hypot(player.position.x, player.position.z) / 18) * 0.5);
   }
@@ -619,7 +636,33 @@ export class Game implements GameActions, ActEngine {
         }
       }
     }
+    this.cueLevel = level;
     this.audio.setProximity(level, pan);
+  }
+
+  /**
+   * Wind, silence and chapter layers (AUD-03, AUD-06). The silence before the ship (DIS-08) and the
+   * mirador's wind are provisional hooks: ART-05 and ART-08 take them over with their own curves.
+   * The edge (AUD-05) is not wired yet: it only takes `edge: this.atmosphere.edge` here.
+   */
+  private updateAmbience(): void {
+    const { progress } = this;
+    const P = this.player.position;
+    const ship = this.items.items.find((it) => it.id === 'ship');
+    let nearShip = false;
+    if (ship && this.phase === 'play' && progress.isAvailable(ship)) {
+      const t = this.items.targetOf(ship);
+      nearShip = shipSilence(Math.hypot(t.x - P.x, t.z - P.z), this.shipQuiet);
+    }
+    this.shipQuiet = nearShip;
+    this.audio.setMix({
+      chapter: progress.chapter,
+      freeRoam: progress.freeRoam,
+      silence: nearShip ? 'wind' : 'off',
+      windZone: miradorWind(this.mirador(P.x, P.z), Math.hypot(P.x, P.z), FREE_ROAM_RADIUS),
+      cue: this.cueLevel,
+      ...this.debugMix,
+    });
   }
 
   /**

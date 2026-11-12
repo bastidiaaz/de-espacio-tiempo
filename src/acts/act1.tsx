@@ -23,6 +23,7 @@ export const act1: ActModule = {
       debugCompleteAll: game.debugCompleteAll,
       debugJumpToHidden: game.debugJumpToHidden,
       debugResetHidden: game.debugResetHidden,
+      debugAudio: game.debugAudio,
     };
     return {
       engine: game,
