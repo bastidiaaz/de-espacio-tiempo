@@ -1,8 +1,11 @@
 import { useState, type MouseEvent } from 'react';
 import { CHAPTERS, HIDDEN, MEMORIES } from '../../content/story';
 import type { MixState } from '../../game/systems/mix';
+import { POST_QUALITIES, type PostQuality } from '../../game/three/postConfig';
 import { useGameActions, useGameState } from '../GameContext';
 import './DebugPanel.css';
+
+const POST_LABELS: Record<PostQuality, string> = { full: 'completo', lite: 'sin bloom', off: 'apagado' };
 
 /** Give focus back to the game so Enter/WASD don't re-trigger the button. */
 const blur = (e: MouseEvent<HTMLButtonElement>) => e.currentTarget.blur();
@@ -17,7 +20,9 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugJumpToMirador, debugResetHidden, debugAudio, debugPlayChorus } =
+  const post = useGameState((s) => s.debugPost);
+  const fps = useGameState((s) => s.debugFps);
+  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugJumpToMirador, debugResetHidden, debugAudio, debugPlayChorus, debugSetPost } =
     useGameActions();
   // What the panel forces on the audio mix (AUD-03, AUD-06). Local: the engine only needs the result.
   const [mix, setMix] = useState<Partial<MixState>>({});
@@ -42,6 +47,21 @@ export function DebugPanel() {
       <p className="note">
         Borde: tope en naranjo, franja oscura de {band} m desde el anillo azul.
       </p>
+      <h3>Post-procesado · {fps} fps</h3>
+      <div className="row">
+        {POST_QUALITIES.map((q) => (
+          <button
+            key={q}
+            aria-pressed={q === post}
+            onClick={(e) => {
+              blur(e);
+              debugSetPost(q);
+            }}
+          >
+            {POST_LABELS[q]}
+          </button>
+        ))}
+      </div>
       <h3>Capítulo</h3>
       <div className="row">
         {CHAPTERS.map((_, c) => (

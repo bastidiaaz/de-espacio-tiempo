@@ -39,6 +39,8 @@ import { Water } from './world/water';
 import { modelUrl } from './assets/models';
 import { loadModel } from './three/gltf';
 import { createGlowTexture, disposeObject } from './three/helpers';
+import { postQualityFor, type PostQuality } from './three/postConfig';
+import { PostFx } from './three/postFx';
 
 const TOTAL = MEMORIES.length;
 /** Brightest the sky ever gets: the act closes in stillness, never in a full dawn. */
@@ -67,6 +69,11 @@ export class Game implements GameActions, ActEngine {
   private readonly options: GameOptions;
   private readonly canvas: HTMLCanvasElement;
   private readonly renderer: THREE.WebGLRenderer;
+  /** Bloom, vignette and grain (ART-04). Every frame goes to the screen through it. */
+  private readonly post: PostFx;
+  /** Debug: frames drawn and time spent since the last fps reading. */
+  private fpsFrames = 0;
+  private fpsSince = 0;
   private readonly scene = new THREE.Scene();
   private readonly camera: THREE.PerspectiveCamera;
   private readonly fog: THREE.Fog;
@@ -161,6 +168,7 @@ export class Game implements GameActions, ActEngine {
       antialias: false,
       powerPreference: 'high-performance',
     });
+    this.post = new PostFx(this.renderer, postQualityFor(isCoarsePointer), prefersReducedMotion);
     this.camera = new THREE.PerspectiveCamera(66, innerWidth / innerHeight, 0.05, 1400);
     this.camera.rotation.order = 'YXZ';
     this.fog = new THREE.Fog(0x3d3a78, 5, 26);
@@ -298,6 +306,7 @@ export class Game implements GameActions, ActEngine {
       hiddenFound: [...this.found],
       introLede: p.freeRoam ? COPY.intro.complete : p.count ? COPY.intro.resumed : COPY.intro.fresh,
       debug: this.debug,
+      debugPost: this.post.quality,
     });
 
     if (p.isFinished) options.onComplete();
@@ -442,6 +451,13 @@ export class Game implements GameActions, ActEngine {
     this.debugMix = patch ?? {};
   };
 
+  /** Before/after comparison of the post-processing (ART-04). */
+  debugSetPost = (quality: PostQuality): void => {
+    if (!this.debug) return;
+    this.post.quality = quality;
+    this.store.setState({ debugPost: quality });
+  };
+
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
@@ -451,6 +467,7 @@ export class Game implements GameActions, ActEngine {
     this.input.dispose();
     this.audio.dispose();
     this.chunks.dispose();
+    this.post.dispose();
     disposeObject(this.scene);
     this.renderer.dispose();
     this.renderer.forceContextLoss();
@@ -487,10 +504,11 @@ export class Game implements GameActions, ActEngine {
   private frame = (now: number): void => {
     if (this.paused) {
       // Frozen in place behind the options panel: keep drawing, advance nothing.
-      this.renderer.render(this.scene, this.camera);
+      this.post.render(this.scene, this.camera, this.time);
       this.raf = requestAnimationFrame(this.frame);
       return;
     }
+    if (this.debug) this.updateFps(now - this.last);
     const dt = Math.min(0.05, (now - this.last) / 1000);
     this.last = now;
     this.time += dt;
@@ -552,7 +570,7 @@ export class Game implements GameActions, ActEngine {
     );
     this.miradorSky.group.position.copy(this.camera.position);
 
-    this.renderer.render(this.scene, this.camera);
+    this.post.render(this.scene, this.camera, this.time);
     this.raf = requestAnimationFrame(this.frame);
   };
 
@@ -932,6 +950,16 @@ export class Game implements GameActions, ActEngine {
       this.store.setState(next);
   }
 
+  /** Debug: real frames per second, averaged over a second, for the panel (ART-04's fps check). */
+  private updateFps(elapsedMs: number): void {
+    this.fpsFrames++;
+    this.fpsSince += elapsedMs;
+    if (this.fpsSince < 1000) return;
+    this.store.setState({ debugFps: Math.round((this.fpsFrames * 1000) / this.fpsSince) });
+    this.fpsFrames = 0;
+    this.fpsSince = 0;
+  }
+
   // ---------------------------------------------------------------- helpers
 
   private setPhase(phase: Phase): void {
@@ -944,6 +972,7 @@ export class Game implements GameActions, ActEngine {
       this.retro ? Math.min(devicePixelRatio, RETRO_HEIGHT / innerHeight) : Math.min(devicePixelRatio, 1.75),
     );
     this.renderer.setSize(innerWidth, innerHeight, false);
+    this.post.resize();
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
     this.canvas.style.imageRendering = this.retro ? 'pixelated' : 'auto';
