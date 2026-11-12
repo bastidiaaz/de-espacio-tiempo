@@ -249,7 +249,7 @@ Los textos in-game los **escribe el autor**; Claude orienta y revisa.
 - **Inputs:** la tabla "Objetos ocultos" del brief del Acto I. Son cinco modelos: guitarra clásica, lápiz de insulina, foto del campanil de Concepción (imagen pixelada pequeña), arete alargado de hoja en cobre rojizo, y una carta.
 - **Output:** los modelos con las reglas de ENG-10, más el destello de cercanía (visible a unos 30 m).
 
-**ART-08 · Mirador** · M · P1 · depende de DIS-05
+**ART-08 · Mirador** · M · P1 · depende de DIS-05 · ✅ implementado (2026-11-12), falta la prueba del autor: `story/mirador.ts` (lógica pura: forma de la cordillera, rampa, dónde se puede caminar y cuánto cielo se revela; testeada en `mirador.test.ts`), `story/miradorWorld.ts` (riscos en la cresta y agujas de cristal más allá del precipicio) y `world/miradorSky.ts` (planeta anillado gigante y galaxia). La cordillera ocupa el sector del mirador entre 344 y 420 m del fuego, sumada con `TerrainField.addModifier`; una sola rampa sube en diagonal (unos 100 m, ~24°) hasta una meseta que termina en el precipicio, justo después del tope de 398,5 m; el resto de la cresta no se puede caminar. El cielo del mirador sube desde debajo del horizonte a medida que se gana altura y solo existe ahí. El planeta del cielo normal quedó a la mitad de tamaño y más lejos. La carta está en la meseta, a 394 m. El panel de debug tiene "Al pie" y "A la cima". Decisiones revisables en la sección "Mirador" del brief. Las semillas antiguas cambian solo en ese sector, más allá de 344 m (el fixture del terreno no cambia). Falta que AUD-03 enganche el viento a `miradorSky.reveal`
 - **Output:** el lugar, su acceso y el encuadre con el planeta dominante.
 - **Hecho cuando:** existe una captura comparable a las referencias del autor.
 

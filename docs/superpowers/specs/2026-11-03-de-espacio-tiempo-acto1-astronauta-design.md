@@ -517,6 +517,57 @@ De pie en la cima, mirando hacia fuera:
 - **Modo debug:** un salto "ir al mirador" en el panel, para revisar el
   encuadre.
 
+**Al construirlo (ART-08, 2026-11-12), también revisables:**
+
+- **Dónde empieza y termina la montaña.** No toca el terreno a menos de
+  **344 m** del fuego ni después de los 420 m, y se desvanece hacia los lados
+  entre 0,30 y 0,36 rad de la dirección del mirador (el mismo fundido que usa
+  el borde para volver a oscurecerse). Su base se apoya en la altura media del
+  terreno al pie, siempre sobre el agua. El fixture de `terrain.test.ts` no
+  cambia; `mirador.test.ts` verifica que el mundo de la historia queda igual.
+  **Las semillas antiguas cambian** solo en ese sector, más allá de 344 m, donde
+  solo llega el paseo libre.
+- **Forma.** Una cresta dentada de unos 26 m (con riscos de roca encima) y un
+  macizo más alto alrededor del pico, que sube **44 m** sobre su base. El pico
+  es una meseta de unos 20 × 25 m, apenas inclinada hacia el borde, que
+  termina en un precipicio.
+- **El camino de subida** es una sola rampa de unos 100 m que sube en diagonal
+  por la ladera que mira al fuego, con una pendiente pareja de ~24°. Empieza a
+  un costado del sector (el lado cambia con la semilla) y llega a la meseta
+  por detrás. Tiene 11 m de ancho.
+- **El resto de la cordillera no se puede caminar.** El motor no tiene límite
+  de pendiente, así que el bloqueo es una regla: fuera de la rampa y la
+  meseta, Isi no pasa de donde la montaña ya levantó el suelo 2,5 m, y se
+  desliza a lo largo de la ladera. No hay texto ni sonido al chocar.
+- **Acceso, cima y tope.** El tope del paseo libre (398,5 m) cae sobre la
+  meseta, que sigue plana hasta los 404 m; el precipicio empieza ahí. Isi
+  rebota en el tope a unos 5 m del borde físico, sin frase ni oscuridad, como
+  pide "Borde". **La carta quedó a 394 m** (antes 390), más cerca del borde, y
+  ya no se corre a "suelo seco": la montaña siempre está debajo.
+- **La revelación** depende solo de la altura ganada sobre la base (nada hasta
+  el 20 % de la subida, todo al llegar al borde), así que también se deshace
+  sola al bajar. El planeta sube desde debajo del horizonte (de −24° a 21° de
+  elevación su centro) mientras se hace opaco; la galaxia aparece al final.
+  Con esto, lo primero que asoma sobre la cresta son los anillos y la parte
+  alta del planeta.
+- **El cielo del mirador.** Un planeta helado (blancos, celestes y lilas, en
+  bandas, low-poly) que ocupa unos 56° de cielo, iluminado desde la izquierda,
+  con anillos violeta, magenta, celeste y rosa, inclinados. Hacia el horizonte
+  se disuelve en la bruma. Detrás, una banda de ~520 estrellas de colores que
+  titilan lento (entre 5 y 18 s por ciclo; quietas con *reduced motion*) y una
+  docena de nebulosas que respiran, más un resplandor rosado sobre el
+  horizonte. No depende de la niebla ni del amanecer.
+- **Las agujas de cristal** (90) empiezan al pie del precipicio y se pierden
+  en la niebla; algunas alcanzan la altura del horizonte.
+- **El planeta del cielo normal** quedó a la mitad de su tamaño y más lejos
+  (ocupa un 40 % de lo que ocupaba). No se desvanece en la cima: si queda en
+  la misma dirección, el planeta del mirador lo tapa.
+- **Sin objetos comunes del planeta** (hongos, cristales, rocas sueltas) sobre
+  la montaña, igual que en los biomas de los ocultos.
+- **Modo debug:** dos saltos, "Al pie" (donde empieza la rampa) y "A la cima".
+- **Viento (AUD-03):** el motor ya calcula la curva (`miradorSky.reveal`, de 0
+  a 1); falta que el audio la use.
+
 ### Lo que queda para quien lo construya
 
 - La forma exacta de la cordillera, la pendiente y el camino de subida

@@ -70,7 +70,7 @@ varying vec3 vColor; varying vec3 vN; varying vec3 vDir;
 ${HAZE}
 void main(){
   vec3 n = normalize(vN); vec3 d = normalize(vDir);
-  float lit = smoothstep(-0.4, 0.6, dot(n, uLight));
+  float lit = smoothstep(-0.3, 0.7, dot(n, uLight));
   vec3 night = vColor * vec3(0.10, 0.11, 0.30) + vec3(0.025, 0.025, 0.09);
   vec3 col = mix(night, vColor, lit);
   float rim = pow(1.0 - max(dot(n, -d), 0.0), 3.0);
@@ -144,7 +144,7 @@ export class MiradorSky {
     // Built looking down -Z (outwards), +X to the right; then turned to the mirador's direction.
     this.group.rotation.y = Math.atan2(-Math.cos(angle), -Math.sin(angle));
     this.group.visible = false;
-    this.planetUniforms.uLight.value.set(-0.72, 0.42, 0.55).normalize().applyEuler(this.group.rotation);
+    this.planetUniforms.uLight.value.set(-0.85, 0.42, 0.18).normalize().applyEuler(this.group.rotation);
 
     this.buildGalaxy(rng, glow);
     this.buildPlanet(rng);
@@ -258,7 +258,7 @@ export class MiradorSky {
     ring.frustumCulled = false;
 
     // Tilted so the rings cross the disc at a slant, a little open.
-    const tilt = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -74 * DEG);
+    const tilt = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -66 * DEG);
     const roll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), 22 * DEG);
     this.body.quaternion.copy(roll.multiply(tilt));
     this.body.add(planet, ring);
