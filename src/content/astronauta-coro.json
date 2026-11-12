@@ -12,6 +12,7 @@
   "compases": [
     {
       "numero": 17,
+      "acordes": [{ "acorde": "Bb", "pulsos": 4 }],
       "notas": [
         { "nota": null, "pulsos": 2 },
         { "nota": "Eb4", "pulsos": 1, "silaba": "As-" },
@@ -21,6 +22,7 @@
     },
     {
       "numero": 18,
+      "acordes": [{ "acorde": "Eb", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 0.5, "silaba": "-au-" },
         { "nota": "G4", "pulsos": 1, "silaba": "ta" },
@@ -32,6 +34,7 @@
     },
     {
       "numero": 19,
+      "acordes": [{ "acorde": "Cm", "pulsos": 4 }],
       "notas": [
         { "nota": "Bb4", "pulsos": 1, "silaba": "ve-" },
         { "nota": "Ab4", "pulsos": 1, "silaba": "san-" },
@@ -42,6 +45,7 @@
     },
     {
       "numero": 20,
+      "acordes": [{ "acorde": "Ab", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 0.5, "silaba": "-en-" },
         { "nota": "Eb4", "pulsos": 1, "silaba": "cio" },
@@ -51,6 +55,7 @@
     },
     {
       "numero": 21,
+      "acordes": [{ "acorde": "Fm", "pulsos": 4 }],
       "notas": [
         { "nota": "Ab4", "pulsos": 1, "silaba": "cá-" },
         { "nota": "G4", "pulsos": 1, "silaba": "li-" },
@@ -61,6 +66,7 @@
     },
     {
       "numero": 22,
+      "acordes": [{ "acorde": "Bb", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 1, "silaba": "-ol" },
         { "nota": "D4", "pulsos": 0.5, "silaba": "que" },
@@ -72,6 +78,7 @@
     },
     {
       "numero": 23,
+      "acordes": [{ "acorde": "Cm", "pulsos": 4 }],
       "notas": [
         { "nota": "Eb4", "pulsos": 0.5, "silaba": "-a-" },
         { "nota": "D4", "pulsos": 1, "silaba": "ña" },
@@ -83,6 +90,7 @@
     },
     {
       "numero": 24,
+      "acordes": [{ "acorde": "Ab", "pulsos": 4 }],
       "notas": [
         { "nota": "Ab4", "pulsos": 1, "silaba": "frí-" },
         { "nota": "G4", "pulsos": 1, "silaba": "a" },
@@ -93,6 +101,7 @@
     },
     {
       "numero": 25,
+      "acordes": [{ "acorde": "Bb", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 1, "silaba": "-ad" },
         { "nota": null, "pulsos": 1 },
@@ -103,6 +112,7 @@
     },
     {
       "numero": 26,
+      "acordes": [{ "acorde": "Eb", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 0.5, "silaba": "-au-" },
         { "nota": "G4", "pulsos": 1, "silaba": "ta" },
@@ -114,6 +124,7 @@
     },
     {
       "numero": 27,
+      "acordes": [{ "acorde": "Cm", "pulsos": 4 }],
       "notas": [
         { "nota": "Bb4", "pulsos": 1, "silaba": "que-" },
         { "nota": "Ab4", "pulsos": 1, "silaba": "ño y" },
@@ -124,6 +135,7 @@
     },
     {
       "numero": 28,
+      "acordes": [{ "acorde": "Ab", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 0.5, "silaba": "-an-" },
         { "nota": "Eb4", "pulsos": 1, "silaba": "te" },
@@ -133,6 +145,7 @@
     },
     {
       "numero": 29,
+      "acordes": [{ "acorde": "Fm", "pulsos": 4 }],
       "notas": [
         { "nota": "Ab4", "pulsos": 1, "silaba": "sa-" },
         { "nota": "G4", "pulsos": 1, "silaba": "bes" },
@@ -143,6 +156,7 @@
     },
     {
       "numero": 30,
+      "acordes": [{ "acorde": "Bb7", "pulsos": 4 }],
       "notas": [
         { "nota": "Ab4", "pulsos": 1, "silaba": "-a-" },
         { "nota": "G4", "pulsos": 0.5, "silaba": "die" },
@@ -154,6 +168,7 @@
     },
     {
       "numero": 31,
+      "acordes": [{ "acorde": "Eb", "pulsos": 4 }],
       "notas": [
         { "nota": "Eb4", "pulsos": 1, "silaba": "-er" },
         { "nota": null, "pulsos": 1 },
@@ -164,6 +179,7 @@
     },
     {
       "numero": 32,
+      "acordes": [{ "acorde": "Ab", "pulsos": 4 }],
       "notas": [
         { "nota": "Ab4", "pulsos": 1, "silaba": "nau-" },
         { "nota": "G4", "pulsos": 1, "silaba": "ta" },
@@ -173,6 +189,7 @@
     },
     {
       "numero": 33,
+      "acordes": [{ "acorde": "Bb", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 1, "silaba": "pies" },
         { "nota": null, "pulsos": 1 },
@@ -183,6 +200,7 @@
     },
     {
       "numero": 34,
+      "acordes": [{ "acorde": "Eb", "pulsos": 4 }],
       "notas": [
         { "nota": "F4", "pulsos": 1, "silaba": "-e-" },
         { "nota": "Eb4", "pulsos": 2, "silaba": "rra" },

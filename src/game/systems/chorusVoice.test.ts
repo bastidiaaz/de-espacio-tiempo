@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ChorusVoice } from './chorusVoice';
+import { ChorusVoice, type Song } from './chorusVoice';
 import type { Melody } from './melody';
 
 /** Just enough of Web Audio to schedule against: nodes record what was asked of them. */
@@ -12,11 +12,13 @@ function fakeContext() {
     cancelScheduledValues() {},
   });
   const oscillators: { startAt: number; stopAt: number; onended: (() => void) | null }[] = [];
-  const node = () => ({ gain: param(), delayTime: param(), connect() {} });
+  const node = () => ({ gain: param(), delayTime: param(), frequency: param(), Q: param(), type: '', connect() {} });
   const ctx = {
     currentTime: 0,
     createGain: node,
     createDelay: node,
+    createBiquadFilter: node,
+    createPeriodicWave: () => ({}),
     createOscillator() {
       const o = {
         type: 'sine',
@@ -25,6 +27,7 @@ function fakeContext() {
         stopAt: 0,
         onended: null as (() => void) | null,
         connect() {},
+        setPeriodicWave() {},
         start(t: number) {
           o.startAt = t;
         },
@@ -57,11 +60,11 @@ const MELODY: Melody = {
   ],
 };
 
-function setup() {
+function setup(song: Song = MELODY) {
   const audio = fakeContext();
   const ducks: boolean[] = [];
   const seam = { output: {} as AudioNode, duck: (on: boolean) => ducks.push(on) };
-  return { ...audio, ducks, voice: new ChorusVoice(audio.ctx, MELODY, seam) };
+  return { ...audio, ducks, voice: new ChorusVoice(audio.ctx, song, seam) };
 }
 
 describe('ChorusVoice', () => {
@@ -107,6 +110,32 @@ describe('ChorusVoice', () => {
     expect(ducks).toEqual([true, false, true]);
     advance(40);
     expect(ducks).toEqual([true, false, true, false]);
+  });
+
+  it('schedules the piano under the melody, from the same instant, and waits for it to end', () => {
+    const harmony = {
+      bpm: 60,
+      transpose: 0,
+      chords: [
+        { root: 9, intervals: [0, 4, 7], beats: 4 },
+        { root: 4, intervals: [0, 4, 7], beats: 4 },
+      ],
+    };
+    const { voice, oscillators, advance, ducks } = setup({ ...MELODY, harmony });
+    voice.play();
+    // 6 partials of the melody + 8 eighths of the first chord + 4 of the last one.
+    expect(oscillators).toHaveLength(18);
+    expect(oscillators[6].startAt).toBeCloseTo(0.06, 5);
+    expect(oscillators[14].startAt).toBeCloseTo(4.06, 5);
+    advance(8); // the melody is long over, the last chord is still ringing
+    expect(ducks).toEqual([true]);
+    expect(voice.playing).toBe(true);
+    advance(20);
+    expect(ducks).toEqual([true, false]);
+    voice.play();
+    advance(21);
+    voice.stop();
+    expect(oscillators.slice(18).every((o) => o.stopAt <= 21.2 + 1e-9)).toBe(true);
   });
 
   it('does nothing when stopped without playing', () => {

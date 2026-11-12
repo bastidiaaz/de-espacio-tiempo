@@ -69,10 +69,73 @@ decisiones de interpretación o cosas que la partitura no dice.
 6. **Tonalidad real.** Se asume que la partitura está en el tono de la grabación (Mi♭ mayor).
    Ver la decisión de transposición más abajo.
 
-## Decisiones de arreglo (revisables, en el JSON, `chorusVoice.ts` o `audio.ts`)
+## Armonía para el piano (propuesta, a validar)
+
+Pedido del autor tras la primera prueba: "Agrega un piano de fondo arpegiando los acordes."
+
+**De dónde salen los acordes:** la partitura trae solo la voz principal: no tiene cifrado, ni parte
+de piano o guitarra, ni bajo. **Todos los acordes de abajo son una propuesta de Claude**, deducida
+de la melodía (qué notas caen en los tiempos fuertes de cada compás) con un criterio simple: un
+acorde por compás, todos diatónicos de Mi♭ mayor, progresiones de pop. Ninguno está confirmado:
+el autor tiene que reemplazarlos por los acordes reales de la canción.
+
+Están en el tono escrito (Mi♭ mayor), en `"acordes"` de cada compás del JSON.
+
+| Compás | Letra | Acorde | Por qué (propuesta, a validar) |
+|---|---|---|---|
+| 17 | (…-al) As-tro-na- | **Bb** | La estrofa termina en Fa (5ª de Si♭); dominante que prepara la entrada del coro. |
+| 18 | -au-ta, a-tra- | **Eb** | "ta" cae en Sol (3ª) y el compás cierra en Mi♭: tónica. |
+| 19 | ve-san-do el si-le- | **Cm** | Si♭ y Sol en los tiempos 1 y 3 (7ª y 5ª de Do menor). Alternativa: Eb. |
+| 20 | -en-cio | **Ab** | Fa → Mi♭ (6ª → 5ª). Alternativa: Bb. |
+| 21 | cá-li-do es el so- | **Fm** | La♭ y Fa en los tiempos 1 y 3. Alternativa: Ab. |
+| 22 | -ol que te a-com-pa- | **Bb** | Fa y Re son notas del acorde; el Mi♭ funciona como retardo. |
+| 23 | -a-ña e-en tu | **Cm** | Mi♭ y Do; baja a Si♭. Alternativas: Bb (seguir en la dominante) o Gm. |
+| 24 | frí-a so-le-da- | **Ab** | Parte en La♭. |
+| 25 | -ad, As-tro-na- | **Bb** | Igual que el 17: Fa largo, dominante que vuelve a "Astronauta". |
+| 26 | -au-ta, tan pe- | **Eb** | Igual que el 18. |
+| 27 | que-ño y tan dis-ta- | **Cm** | Igual que el 19. |
+| 28 | -an-te | **Ab** | Igual que el 20. |
+| 29 | sa-bes bien que na- | **Fm** | La♭ y Fa en los tiempos fuertes. Alternativa: Ab. |
+| 30 | -a-die pue-e-de se- | **Bb7** | La♭ largo (la 7ª) que baja a Sol y Fa. Alternativa: Fm. |
+| 31 | -er, As-tro- | **Eb** | "ser" cae en Mi♭: reposo. Alternativa: Cm (cadencia rota). |
+| 32 | nau-ta con los | **Ab** | La♭ en el primer tiempo. |
+| 33 | pies en la tie- | **Bb** | Fa (5ª): dominante antes del final. |
+| 34 | -e-rra | **Eb** | Fa → Mi♭: cierre en la tónica. |
+
+En resumen: `Bb | Eb | Cm | Ab | Fm | Bb | Cm | Ab | Bb | Eb | Cm | Ab | Fm | Bb7 | Eb | Ab | Bb | Eb`.
+
+**Cómo corregir un acorde:** en el JSON, `"acordes": [{ "acorde": "Bb", "pulsos": 4 }]`. Se aceptan
+mayores (`Eb`), menores (`Cm`), séptimas (`Bb7`, `Fm7`, `Abmaj7`). Para dos acordes en un compás:
+`[{ "acorde": "Eb", "pulsos": 2 }, { "acorde": "Bb", "pulsos": 2 }]`; tienen que sumar 4 pulsos.
+Todavía no se pueden escribir inversiones ni bajos (`Eb/G`) ni suspendidos.
+
+**Cómo toca el piano (decisiones revisables):**
+
+- **Figura:** corcheas, una por medio pulso: fundamental, 5ª, octava, 3ª, 5ª, 3ª, octava, 5ª
+  (sube y vuelve). Si el acorde tiene 7ª, reemplaza a la octava de vuelta. La figura parte de
+  nuevo en la fundamental en cada cambio de acorde (`src/game/systems/arpeggio.ts`).
+- **Con pedal:** cada nota queda sonando hasta el cambio de acorde.
+- **Último compás:** solo sube (fundamental, 5ª, octava, 3ª) y se deja resonar.
+- **Empieza con el coro:** en el compás 17 el piano suena solo dos pulsos (Si♭) antes de que entre
+  "As-". Si se prefiere que entren juntos, hay que quitar el silencio inicial (duda 3).
+- **Registro:** el bajo de cada acorde cae entre Fa2 y Mi3 (escrito) y la figura llega hasta una
+  12ª más arriba; nunca pasa por encima de la melodía. El piano sigue `arreglo.transponer` (el
+  mismo tono que la melodía) pero **no** `arreglo.octava`: esa octava es solo de la cajita.
+- **Timbre:** piano suave sintetizado, sin samples (un oscilador por nota con seis armónicos,
+  golpe de martillo corto y filtro que le quita brillo; `src/game/systems/pianoVoice.ts`). Va sin
+  eco, para que las corcheas no se empasten.
+- **Volumen:** menos de la mitad de la melodía (`PEAK` 0,045 contra 0,1), para que la cajita quede
+  claramente delante. Sale por el mismo bus de la canción: respeta el sonido, el silencio y el
+  borde igual que la melodía.
+
+**Qué escuchar al validar:** (1) si algún compás "suena a otra canción", ese acorde está mal: los
+más dudosos son 19–21, 23 y 29–31; (2) si el piano tapa o no a la cajita; (3) si la figura en
+corcheas va con el carácter de la canción o conviene algo más lento (negras) o más abierto.
+
+## Decisiones de arreglo (revisables, en el JSON o en `chorusVoice.ts`)
 
 - **Timbre: cajita musical** (seno con dos parciales agudos, ataque seco y cola larga con un eco
-  corto), coherente con las campanitas que ya existen. Una sola voz, sin acompañamiento.
+  corto), coherente con las campanitas que ya existen. Una sola voz; debajo va el piano (ver arriba).
 - **Sube una octava** (`arreglo.octava: 1`): escrita va de Si♭3 a Si♭4; en la cajita suena entre
   ~490 y ~990 Hz, que es donde suenan las campanitas y se oye bien en parlantes de teléfono.
 - **Sube un semitono** (`arreglo.transponer: 1`, de Mi♭ a Mi mayor). El pad del ambiente es un

@@ -1,4 +1,11 @@
+import { arpeggiate, type Accompaniment } from './arpeggio';
 import { voiceMelody, type Melody, type VoicedNote } from './melody';
+import { schedulePiano } from './pianoVoice';
+
+/** The melody and, optionally, the chords a piano arpeggiates under it. */
+export interface Song extends Melody {
+  harmony?: Accompaniment;
+}
 
 /**
  * Where the chorus goes out and how the rest of the soundscape makes room for it. This is the
@@ -29,7 +36,8 @@ interface Take {
 }
 
 /**
- * The chorus of "Astronauta" as a music-box voice (AUD-01).
+ * The chorus of "Astronauta" (AUD-01): a music-box voice in front and a soft piano behind it,
+ * arpeggiating the chords in time with the melody.
  *
  * Every note is scheduled up front on the audio clock and the end is signalled by the last
  * oscillator's `ended` event: no timers, and a suspended context (hidden tab) pauses the melody
@@ -37,16 +45,18 @@ interface Take {
  */
 export class ChorusVoice {
   private readonly notes: VoicedNote[];
+  private readonly piano: VoicedNote[];
   /** Audio-clock time at which the current take is over (tails included). */
   private endsAt = -1;
   private take: Take | null = null;
 
   constructor(
     private readonly ctx: AudioContext,
-    melody: Melody,
+    song: Song,
     private readonly seam: ChorusSeam,
   ) {
-    this.notes = voiceMelody(melody);
+    this.notes = voiceMelody(song);
+    this.piano = song.harmony ? arpeggiate(song.harmony) : [];
   }
 
   get playing(): boolean {
@@ -59,8 +69,10 @@ export class ChorusVoice {
     const { ctx, seam } = this;
     const t0 = ctx.currentTime + LEAD;
 
-    // Its own short echo, like the chimes have, so the voice sits in the same space.
+    // `bus` carries the whole take. The melody gets its own short echo, like the chimes have,
+    // so it sits in the same space; the piano goes in dry, or the echo would blur its eighths.
     const bus = ctx.createGain();
+    const lead = ctx.createGain();
     const echo = ctx.createDelay();
     const feedback = ctx.createGain();
     const wet = ctx.createGain();
@@ -68,11 +80,12 @@ export class ChorusVoice {
     feedback.gain.value = 0.3;
     wet.gain.value = 0.22;
     bus.connect(seam.output);
-    bus.connect(echo);
+    lead.connect(bus);
+    lead.connect(echo);
     echo.connect(feedback);
     feedback.connect(echo);
     echo.connect(wet);
-    wet.connect(seam.output);
+    wet.connect(bus);
 
     const take: Take = { bus, sources: [] };
     let end = t0;
@@ -90,7 +103,7 @@ export class ChorusVoice {
         g.gain.linearRampToValueAtTime(PEAK * n.accent * level, t + 0.008);
         g.gain.exponentialRampToValueAtTime(0.0001, t + tail * share);
         o.connect(g);
-        g.connect(bus);
+        g.connect(lead);
         o.start(t);
         o.stop(stop);
         take.sources.push(o);
@@ -99,6 +112,12 @@ export class ChorusVoice {
           last = o;
         }
       }
+    }
+    const piano = schedulePiano(ctx, this.piano, t0, bus);
+    take.sources.push(...piano.sources);
+    if (piano.end > end) {
+      end = piano.end;
+      last = piano.last;
     }
     // The ambience comes back when the last note has rung out, unless this take was cut first.
     if (last) {
