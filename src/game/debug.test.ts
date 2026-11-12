@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { facing, parseHash, standInFront } from './debug';
+import { facing, parseHash, revealReplaySpot, standInFront } from './debug';
 
 describe('parseHash', () => {
   it('reads a seed, the debug flag, or both', () => {
@@ -42,5 +42,14 @@ describe('standInFront', () => {
   it('falls back to a fixed side when the target is at camp', () => {
     const p = standInFront({ x: 0, z: 0 }, 3);
     expect(Math.hypot(p.x, p.z)).toBeCloseTo(3);
+  });
+});
+
+describe('revealReplaySpot', () => {
+  it('stands on the camp side of the ship, just inside the trigger radius', () => {
+    const p = revealReplaySpot({ x: 0, z: 110 }, 30);
+    expect(p.x).toBeCloseTo(0);
+    expect(p.z).toBeCloseTo(80.5);
+    expect(Math.hypot(p.x - 0, p.z - 110)).toBeLessThan(30);
   });
 });

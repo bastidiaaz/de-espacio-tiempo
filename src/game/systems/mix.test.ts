@@ -5,18 +5,14 @@ import {
   DUCK_FLOOR,
   EDGE_MUSIC_FLOOR,
   LAYERS,
-  SHIP_SILENCE_IN,
-  SHIP_SILENCE_OUT,
   SILENCE_FADE_S,
   WIND_BASE,
   WIND_EDGE,
   WIND_HUSH,
   WIND_SILENCE,
   fadeSeconds,
-  miradorWind,
   mixChapter,
   mixFor,
-  shipSilence,
   type MixState,
 } from './mix';
 import { CHAPTERS } from '../../content/story';
@@ -133,24 +129,5 @@ describe('fadeSeconds', () => {
     expect(fadeSeconds(a, at({ chapter: 2, freeRoam: true }))).toBe(CHAPTER_FADE_S);
     expect(fadeSeconds(a, at({ chapter: 2, edge: 0.4 }))).toBeLessThan(1);
     expect(fadeSeconds(a, at({ chapter: 2, windZone: 0.4 }))).toBeLessThan(1);
-  });
-});
-
-describe('shipSilence', () => {
-  it('turns on at 60 m and only off again a bit farther', () => {
-    expect(shipSilence(SHIP_SILENCE_IN + 1, false)).toBe(false);
-    expect(shipSilence(SHIP_SILENCE_IN - 1, false)).toBe(true);
-    expect(shipSilence(SHIP_SILENCE_IN + 1, true)).toBe(true);
-    expect(shipSilence(SHIP_SILENCE_OUT + 1, true)).toBe(false);
-  });
-});
-
-describe('miradorWind', () => {
-  it('only blows inside the sector, growing towards the edge', () => {
-    expect(miradorWind(0, 395, 400)).toBe(0);
-    expect(miradorWind(1, 200, 400)).toBe(0);
-    expect(miradorWind(1, 395, 400)).toBe(1);
-    expect(miradorWind(1, 350, 400)).toBeGreaterThan(miradorWind(1, 320, 400));
-    expect(miradorWind(0.5, 395, 400)).toBeCloseTo(0.5);
   });
 });

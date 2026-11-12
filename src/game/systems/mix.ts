@@ -129,22 +129,3 @@ export function fadeSeconds(prev: MixState, next: MixState): number {
   if (prev.duck !== next.duck) return 2;
   return 0.6;
 }
-
-/** The music goes quiet this close (m) to the ship's centre (brief, "Revelación de la nave"). */
-export const SHIP_SILENCE_IN = 60;
-/** ...and only comes back past this distance, so walking along the line doesn't make it flicker. */
-export const SHIP_SILENCE_OUT = 72;
-
-/** Whether the silence before the ship is on, given the distance to it and whether it was on already. */
-export function shipSilence(distance: number, active: boolean): boolean {
-  return distance < (active ? SHIP_SILENCE_OUT : SHIP_SILENCE_IN);
-}
-
-/**
- * Provisional wind of the mirador until ART-08 builds the mountain (which should drive it with
- * the same curve as the sky's reveal): grows over the last stretch towards the edge, inside the
- * mirador's sector only. `sector` is `miradorWeight` (0..1), `radius` the distance to the fire.
- */
-export function miradorWind(sector: number, radius: number, edgeRadius: number): number {
-  return clamp01(sector) * smoothstep(edgeRadius - 110, edgeRadius - 8, radius);
-}

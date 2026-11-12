@@ -20,9 +20,10 @@ export function DebugPanel() {
   const radiusTarget = useGameState((s) => s.debugRadiusTarget);
   const band = useGameState((s) => s.debugBand);
   const found = useGameState((s) => s.hiddenFound);
+  const reveal = useGameState((s) => s.reveal);
   const post = useGameState((s) => s.debugPost);
   const fps = useGameState((s) => s.debugFps);
-  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugJumpToMirador, debugResetHidden, debugAudio, debugPlayChorus, debugSetPost } =
+  const { debugJumpToChapter, debugJumpToItem, debugCompleteAll, debugJumpToHidden, debugJumpToMirador, debugResetHidden, debugAudio, debugPlayChorus, debugSetPost, debugReplayReveal } =
     useGameActions();
   // What the panel forces on the audio mix (AUD-03, AUD-06). Local: the engine only needs the result.
   const [mix, setMix] = useState<Partial<MixState>>({});
@@ -161,6 +162,17 @@ export function DebugPanel() {
           );
         })}
       </div>
+      <h3>Nave (DIS-08)</h3>
+      <button
+        className="all"
+        disabled={reveal}
+        onClick={(e) => {
+          blur(e);
+          debugReplayReveal();
+        }}
+      >
+        {reveal ? 'Revelación en curso…' : 'Repetir revelación'}
+      </button>
       <h3>Ocultos (paseo libre)</h3>
       <ul>
         {HIDDEN.map((h) => (

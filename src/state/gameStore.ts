@@ -37,6 +37,8 @@ export interface GameUiState {
   endingVisible: boolean;
   /** Isi is sitting by the fire, or sitting down / getting up (DIS-07): no walking. */
   seated: boolean;
+  /** The game holds the camera for the ship's reveal (DIS-08): no walking, no looking. */
+  reveal: boolean;
   /** Short black fade, used instead of camera motion with reduced motion. */
   fade: boolean;
   /** 0..1 how deep into the dark band before the edge (ENG-14), in steps of 0.05: drives the vignette. */
@@ -73,6 +75,7 @@ export const createGameStore = (): GameStore =>
     focus: 0,
     endingVisible: false,
     seated: false,
+    reveal: false,
     fade: false,
     edge: 0,
     stick: { active: false, x: 0, y: 0, dx: 0, dy: 0 },
@@ -101,6 +104,8 @@ export interface GameActions {
   debugJumpToHidden(id: string): void;
   /** Debug only: straight into the free roam, at the foot of the mirador's ramp or on its summit (ART-08). */
   debugJumpToMirador(where: 'foot' | 'summit'): void;
+  /** Debug only: stand 30 m from the ship in its chapter and play the reveal again (DIS-08). */
+  debugReplayReveal(): void;
   /** Debug only: forget the hidden objects found (in memory; nothing is saved in debug). */
   debugResetHidden(): void;
   /** Debug only: force these values of the audio mix (silence, chapter layers, wind, edge), replacing earlier ones; `null` clears it. */
