@@ -801,16 +801,35 @@ Los tiempos son de la toma, desde que el juego toma el control.
   (rango 32 m, altura 2,2 m): si quien juega no se mueve, el anillo se llena
   solo en 1,7 s y aparece la tarjeta. Es la mecánica normal, pero no exige
   ningún gesto.
+- **La nave no responde a la mirada antes de la toma** (pedido del autor tras
+  probarla, 2026-11-12): ni anillo ni destello hasta que la revelación terminó.
+  Si la nave ya estaba recordada en una partida guardada, o se llega con los
+  saltos de debug, queda como siempre.
 - **Reduced motion:** la cámara no se desplaza; solo gira en ~1,3 s hasta
   mirar la nave, igual que en el cierre.
 - **Debug:** "Repetir revelación" deja a Isi a 29,5 m de la nave, de espaldas
   a medias, y dispara la toma de inmediato. "Ítem → Mi nave" la deja a 20 m con
   la revelación ya vista, para probar solo la mirada.
-- **Sonido:** no se tocó `audio.ts`. La toma avisa cada momento una vez
-  (`approach`, `retreat`, `start`, `chord`, `creak`, `release`, `end`) en
-  `Game.onRevealCue`, y `Reveal.phase` (`idle`, `hush`, `reveal`, `done`) sirve
-  para una mezcla que se fija en cada frame. Mientras nadie los use, la toma
-  pasa en silencio y la música **no** se apaga a los 60 m.
+- **Sonido de la toma** (pedido del autor, 2026-11-12;
+  `game/systems/revealSound.ts`, sintetizado). La toma avisa cada momento una
+  vez en `Game.onRevealCue` y la mezcla sigue `Reveal.phase` en cada frame:
+  - *Al acercarse (60 m):* la música se apaga en 3 s y queda el viento.
+  - *0 s:* el viento baja casi a nada.
+  - *1,5 s:* entra el **acorde**. Es Mi♭ (la tónica de "Astronauta") muy
+    grave, solo tónicas y quintas, sin tercera: no es mayor ni menor, para que
+    se sienta tamaño y no un ánimo. Parte oscuro y se abre hacia arriba
+    mientras crece, hasta los 8 s.
+  - *5 s:* el **crujido** del casco: un quejido metálico lejano, a tirones,
+    distinto cada vez.
+  - *8 s:* el acorde empieza a bajar; *10 s:* se apaga en unos 4 s.
+  - *Después, hasta recordar la nave:* sigue solo el viento, con algún crujido
+    suelto y más débil cada 11–20 s. La música vuelve cuando aparece la
+    tarjeta de `ship` (antes volvía apenas terminaba la toma).
+  - El acorde y los crujidos van directo al volumen general: respetan el
+    interruptor de sonido, pero no el silencio de la mezcla, que es justamente
+    lo que deja oírlos. No se usa la melodía de "Astronauta".
+  - La voz más grave (39 Hz) casi no suena en el parlante de un teléfono; ahí
+    el acorde lo llevan las voces de arriba. Con audífonos se siente completo.
 
 **Problemas vistos al implementar, para que decida el autor:**
 
