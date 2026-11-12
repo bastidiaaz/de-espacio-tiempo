@@ -1,4 +1,5 @@
 import { lerp, lerpAngle, smoothstep } from '../math/util';
+import type { Silence } from './mix';
 
 /**
  * The ship's reveal (DIS-08, ART-05): the fog hides the ship while Isi walks up to it; 30 m away
@@ -98,6 +99,14 @@ export class Reveal {
     return this.near ? 'hush' : 'idle';
   }
 
+  /**
+   * The ship answers the gaze only once its reveal has played (or it was remembered in a saved
+   * game): before that it is hidden in the fog, and remembering it must not come before meeting it.
+   */
+  get shipGazeable(): boolean {
+    return this.state === 'done';
+  }
+
   /** 0 while the fog hides the ship, 1 once it is back to normal. */
   get fogOpen(): number {
     if (this.state === 'hidden') return 0;
@@ -146,6 +155,18 @@ export class Reveal {
     }
     return cues;
   }
+}
+
+/**
+ * The silence of the mix (AUD-03) for each beat of the reveal: the music plays far from the
+ * ship; on the approach only the wind is left; during the take the wind drops too, under the
+ * chord; and afterwards the wind stays, with the odd creak, until the ship is remembered.
+ */
+export function revealSilence(phase: RevealPhase, shipRemembered: boolean): Silence {
+  if (phase === 'hush') return 'wind';
+  if (phase === 'reveal') return 'hush';
+  if (phase === 'done' && !shipRemembered) return 'wind';
+  return 'off';
 }
 
 /**

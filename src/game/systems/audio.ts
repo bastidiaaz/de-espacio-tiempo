@@ -3,6 +3,8 @@ import { DEFAULT_MIX_STATE, fadeSeconds, mixFor, type MixState } from './mix';
 import { ASTRONAUTA_CHORUS } from '../../content/astronautaCoro';
 import { ChorusVoice, type ChorusSeam } from './chorusVoice';
 import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
+import type { RevealCue } from './reveal';
+import { RevealSound } from './revealSound';
 
 type AudioContextCtor = typeof AudioContext;
 
@@ -22,6 +24,8 @@ export class AudioEngine {
   private mixState: MixState = DEFAULT_MIX_STATE;
   /** Chorus of "Astronauta" (AUD-01); it plays through the song bus of the mix. */
   private chorus: ChorusVoice | null = null;
+  /** Chord and creaks of the ship's reveal (DIS-08): straight to the master, outside the mix. */
+  private revealSound: RevealSound | null = null;
   private enabled: boolean;
   private disposed = false;
   private readonly timers = new Set<number>();
@@ -160,6 +164,7 @@ export class AudioEngine {
       this.ambience = new Ambience(actx, { master, echo, pad: padBus, box: boxBus }, (fn, ms) => this.later(fn, ms));
       this.ambience.apply(mixFor(this.mixState), 0);
       this.chorus = new ChorusVoice(actx, ASTRONAUTA_CHORUS, this.chorusSeam(this.ambience.song));
+      this.revealSound = new RevealSound(actx, master, echo, (fn, ms) => this.later(fn, ms));
     } catch {
       this.ctx = null;
     }
@@ -258,6 +263,24 @@ export class AudioEngine {
   }
 
   /**
+   * One beat of the ship's reveal (DIS-08): the low chord enters, the hull creaks, the chord
+   * fades. It follows the sound toggle but not the mix's silence, which is what lets it be heard.
+   */
+  revealCue(cue: RevealCue): void {
+    this.revealSound?.cue(cue);
+  }
+
+  /** Cuts the reveal's sound short (debug jumps away from the take). */
+  stopReveal(): void {
+    this.revealSound?.stop();
+  }
+
+  /** After the take, until the ship is remembered: the odd faint creak of the wreck. Safe every frame. */
+  setWreckCreaks(on: boolean): void {
+    this.revealSound?.setLoose(on);
+  }
+
+  /**
    * How close the nearest hidden object not found yet is (0 silent .. 1 right there, see
    * `proximity.ts`), and on which side (-1 left .. 1 right).
    */
@@ -282,6 +305,7 @@ export class AudioEngine {
     this.ctx?.close();
     this.ctx = null;
     this.chorus = null;
+    this.revealSound = null;
   }
 
   /**

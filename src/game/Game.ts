@@ -28,7 +28,7 @@ import { Attention, type GazeCandidate } from './systems/attention';
 import { AudioEngine } from './systems/audio';
 import { EDGE_MARGIN, EdgeBounce, bandWidth, edgeLevel, miradorWeight, nominalBand, slowOutward } from './systems/edge';
 import { Input } from './systems/input';
-import type { MixState, Silence } from './systems/mix';
+import type { MixState } from './systems/mix';
 import { Narrative } from './systems/narrative';
 import { Player } from './systems/player';
 import { Progress } from './systems/progress';
@@ -38,8 +38,8 @@ import {
   Reveal,
   RevealShot,
   revealFog,
+  revealSilence,
   type RevealCue,
-  type RevealPhase,
   type ShotPose,
 } from './systems/reveal';
 import { SEATED_EYE, STAND_EYE, Seat, type Pose } from './systems/seat';
@@ -61,8 +61,6 @@ import { createGlowTexture, disposeObject } from './three/helpers';
 import { postQualityFor, type PostQuality } from './three/postConfig';
 import { PostFx } from './three/postFx';
 
-/** The silence before the ship (AUD-03) for each beat of its reveal (DIS-08). */
-const SILENCE_BY_REVEAL: Record<RevealPhase, Silence> = { idle: 'off', hush: 'wind', reveal: 'hush', done: 'off' };
 
 const TOTAL = MEMORIES.length;
 /** Brightest the sky ever gets: the act closes in stillness, never in a full dawn. */
@@ -663,13 +661,13 @@ export class Game implements GameActions, ActEngine {
   /**
    * Every beat of the reveal, once each, in order (see `RevealCue` in systems/reveal.ts).
    *
-   * AUDIO HOOK (AUD-03 and the reveal's chord and creak): this is where the sound goes. `approach`
-   * fades the music out and leaves the wind, `retreat` brings it back, `start` drops the wind,
-   * `chord` brings in the low chord, `creak` the hull, `release` starts the chord's fade and `end`
-   * lets it die out. For a mix that is set every frame, read `this.reveal.phase` instead
-   * (idle, hush, reveal or done). Until that lands the take plays in silence.
+   * The sound of the take hangs from here (`systems/revealSound.ts`): `chord` brings in the low
+   * chord, `creak` the hull, `release` starts the chord's fade and `end` lets it die out. The
+   * music going quiet on the approach and the wind dropping at `start` are the mix's, which
+   * follows `this.reveal.phase` every frame (`updateAmbience`).
    */
   private onRevealCue(cue: RevealCue): void {
+    this.audio.revealCue(cue);
     if (cue === 'start') this.startShot();
     else if (cue === 'end') this.endShot();
   }
@@ -805,7 +803,7 @@ export class Game implements GameActions, ActEngine {
     this.embers.update(dt, time);
     this.motes.update(dt, time, player.position);
     this.story.update(time);
-    this.items.updateGlints(dt, time, (it) => progress.isAvailable(it) && this.phase === 'play');
+    this.items.updateGlints(dt, time, (it) => this.canRecall(it) && this.phase === 'play');
     this.hidden.update(dt, time, player.position, progress.freeRoam && this.phase === 'play', this.found);
     this.updateProximity();
     this.updateAmbience();
@@ -839,16 +837,19 @@ export class Game implements GameActions, ActEngine {
 
   /**
    * Wind, silence and chapter layers (AUD-03, AUD-06). The silence before the ship follows the
-   * reveal (DIS-08): only the wind on the approach, nothing during the take (its chord and creak
-   * are still to come), music back once it is over. The mirador's wind follows its sky (ART-08).
+   * reveal (DIS-08): only the wind on the approach, not even that during the take (the chord and
+   * the creak sound outside the mix), and wind with the odd creak afterwards, until the ship is
+   * remembered and the music comes back. The mirador's wind follows its sky (ART-08).
    * The edge (AUD-05) is not wired yet: it only takes `edge: this.atmosphere.edge` here.
    */
   private updateAmbience(): void {
     const { progress } = this;
+    const shipRemembered = progress.remembered.has('ship');
+    this.audio.setWreckCreaks(this.reveal.phase === 'done' && !shipRemembered && !progress.freeRoam);
     this.audio.setMix({
       chapter: progress.chapter,
       freeRoam: progress.freeRoam,
-      silence: SILENCE_BY_REVEAL[this.reveal.phase],
+      silence: revealSilence(this.reveal.phase, shipRemembered),
       windZone: this.miradorSky.reveal, // the wind grows with the climb, like the mirador's sky (ART-08)
       cue: this.cueLevel,
       ...this.debugMix,
@@ -980,7 +981,7 @@ export class Game implements GameActions, ActEngine {
   private *gazeCandidates(): Generator<GazeCandidate<Item | HiddenItem>> {
     const c = this.candidate;
     for (const it of this.items.items) {
-      if (!this.progress.isAvailable(it)) continue;
+      if (!this.canRecall(it)) continue;
       c.item = it;
       c.target.copy(this.items.targetOf(it));
       c.tuning = it.attention;
@@ -995,6 +996,14 @@ export class Game implements GameActions, ActEngine {
       c.tuning = h.attention;
       yield c;
     }
+  }
+
+  /**
+   * A memory of the current chapter that can be looked at now. The ship only after its reveal
+   * (DIS-08): no ring and no glint on it while the fog still hides it.
+   */
+  private canRecall(it: Item): boolean {
+    return this.progress.isAvailable(it) && (it.id !== 'ship' || this.reveal.shipGazeable);
   }
 
   /** A hidden object (ENG-13): a card and a sound, like a memory, but outside the counter. */
@@ -1038,6 +1047,7 @@ export class Game implements GameActions, ActEngine {
     this.audio.stopChorus();
     // Up to the ship's chapter the reveal is still ahead; past it, already seen.
     this.reveal.reset(progress.chapter > SHIP_CHAPTER);
+    this.audio.stopReveal();
     this.shot = null;
     this.narrative.clear();
     this.store.setState({ remembered: [...progress.remembered], endingVisible: false, fade: false, reveal: false });

@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { REVEAL, Reveal, RevealShot, revealFog, type RevealCue, type ShotPose, type ShotSetup } from './reveal';
+import {
+  REVEAL,
+  Reveal,
+  RevealShot,
+  revealFog,
+  revealSilence,
+  type RevealCue,
+  type ShotPose,
+  type ShotSetup,
+} from './reveal';
 
 const far = { distance: 100, armed: true, blocked: false };
 
@@ -98,6 +107,43 @@ describe('Reveal: the take', () => {
     r.reset(true);
     expect(r.active).toBe(false);
     expect(r.fogOpen).toBe(1);
+  });
+});
+
+describe('the ship and the gaze', () => {
+  it('cannot be looked at until the reveal has played to its end', () => {
+    const r = new Reveal();
+    expect(r.shipGazeable).toBe(false);
+    r.step(0.016, { distance: 45, armed: true, blocked: false });
+    expect(r.shipGazeable).toBe(false);
+    r.step(0.016, { distance: 29, armed: true, blocked: false });
+    r.step(5, far);
+    expect(r.active).toBe(true);
+    expect(r.shipGazeable).toBe(false);
+    play(r);
+    expect(r.shipGazeable).toBe(true);
+  });
+
+  it('can be looked at straight away when the reveal was already seen (saves, debug jumps)', () => {
+    expect(new Reveal(true).shipGazeable).toBe(true);
+    const r = new Reveal();
+    r.reset(true);
+    expect(r.shipGazeable).toBe(true);
+    r.reset(false);
+    expect(r.shipGazeable).toBe(false);
+  });
+});
+
+describe('revealSilence', () => {
+  it('music far away, wind on the approach, held breath during the take', () => {
+    expect(revealSilence('idle', false)).toBe('off');
+    expect(revealSilence('hush', false)).toBe('wind');
+    expect(revealSilence('reveal', false)).toBe('hush');
+  });
+
+  it('keeps the wind after the take until the ship is remembered', () => {
+    expect(revealSilence('done', false)).toBe('wind');
+    expect(revealSilence('done', true)).toBe('off');
   });
 });
 
