@@ -4,8 +4,12 @@
  * turns it into Web Audio gains.
  *
  * The original soundscape (pad, music-box drips, fire, chimes, proximity arpeggio) is never
- * replaced: at chapter 0, with no wind zone, no silence and no edge, `mixFor` leaves it exactly
- * as it was, plus a faint wind bed.
+ * replaced during the story: at chapter 0, with no wind zone, no silence and no edge, `mixFor`
+ * leaves it exactly as it was, plus a faint wind bed.
+ *
+ * The free roam is in the key of "Astronauta" (pedido del autor, 2026-11-13): the original pad and
+ * the drone layers, all in A major, give way to the `roam` pad, which follows the song's chords
+ * (`roamHarmony.ts`); the note layers stay, picking their notes from those chords.
  */
 import { smoothstep } from '../math/util';
 
@@ -63,6 +67,8 @@ export const DEFAULT_MIX_STATE: MixState = {
 export interface Mix {
   /** Multiplier on the original pad. */
   pad: number;
+  /** Gain of the free roam's pad, on the chords of "Astronauta". */
+  roam: number;
   /** Multiplier on the original music-box drips. */
   box: number;
   /** Gain of each added layer (already includes silence, edge and duck). */
@@ -102,7 +108,10 @@ export function mixFor(state: MixState): Mix {
 
   const chapter = mixChapter(state.chapter, state.freeRoam);
   const layers = {} as Record<LayerId, number>;
-  for (const l of LAYERS) layers[l.id] = chapter >= l.from ? music * (l.kind === 'notes' ? room : 1) : 0;
+  for (const l of LAYERS) {
+    const on = chapter >= l.from && !(state.freeRoam && l.kind === 'drone');
+    layers[l.id] = on ? music * (l.kind === 'notes' ? room : 1) : 0;
+  }
 
   let wind: number;
   if (state.silence === 'hush') wind = WIND_HUSH;
@@ -111,7 +120,8 @@ export function mixFor(state: MixState): Mix {
     const atEdge = WIND_BASE + (WIND_EDGE - WIND_BASE) * edge;
     wind = Math.max(zone, atEdge, state.silence === 'wind' ? WIND_SILENCE : 0);
   }
-  return { pad: music, box: music, layers, song, wind };
+  const roam = state.freeRoam ? music : 0;
+  return { pad: state.freeRoam ? 0 : music, roam, box: music, layers, song, wind };
 }
 
 /** Seconds the music takes to go quiet or come back (brief, "Revelación de la nave": 3 s). */
@@ -125,6 +135,7 @@ export const CHAPTER_FADE_S = 9;
  */
 export function fadeSeconds(prev: MixState, next: MixState): number {
   if (prev.silence !== next.silence) return SILENCE_FADE_S;
+  if (prev.freeRoam !== next.freeRoam) return CHAPTER_FADE_S;
   if (mixChapter(prev.chapter, prev.freeRoam) !== mixChapter(next.chapter, next.freeRoam)) return CHAPTER_FADE_S;
   if (prev.duck !== next.duck) return 2;
   return 0.6;

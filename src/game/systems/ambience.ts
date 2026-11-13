@@ -4,10 +4,21 @@
  * gains (pure); this file only owns the Web Audio nodes and follows them.
  *
  * Nothing here replaces the original pad or drips: they keep playing through `pad` and `box`,
- * which this class only turns down for the silence, the edge and the song.
+ * which this class only turns down for the silence, the edge, the song and the free roam. In the
+ * free roam the `RoamPad` holds the chords of "Astronauta" instead (`roamHarmony.ts`), and the
+ * note layers and the drips (`roamNotes`) pick their notes from the chord it is on.
  */
+import type { WrittenChord } from './arpeggio';
+import { midiToFreq } from './melody';
 import { LAYERS, type LayerId, type Mix } from './mix';
+import { chordNotesIn, padVoicing, roamSeconds } from './roamHarmony';
 import { Wind } from './wind';
+
+/** The chords the free roam follows, in the written key, and how far they are moved to sound. */
+export interface RoamChords {
+  chords: readonly WrittenChord[];
+  transpose: number;
+}
 
 export interface AmbienceOutputs {
   master: AudioNode;
@@ -62,6 +73,70 @@ const PHRASE_STEP_S = 0.95;
 
 const pick = <T>(list: readonly T[]): T => list[(Math.random() * list.length) | 0];
 
+/** Seconds the pad's voices take to glide into the next chord. */
+const ROAM_GLIDE_S = 0.5;
+/** Gains of the roam pad's voices, as the original pad's: the bass louder than the rest. */
+const ROAM_BASS_GAIN = 0.06;
+const ROAM_UPPER_GAIN = 0.035;
+
+/**
+ * The free roam's pad: the original pad's sound (detuned triangles through a slowly breathing
+ * low-pass) on the chords of "Astronauta", one after the other, in a loop.
+ */
+class RoamPad {
+  /** Chord sounding now. */
+  chord: WrittenChord;
+  private index = 0;
+  private readonly voices: OscillatorNode[][] = [];
+
+  constructor(
+    private readonly ctx: AudioContext,
+    out: AudioNode,
+    private readonly harmony: RoamChords,
+    private readonly later: Scheduler,
+  ) {
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 700;
+    lp.connect(out);
+    const lfo = ctx.createOscillator();
+    const lg = ctx.createGain();
+    lfo.frequency.value = 0.05;
+    lg.gain.value = 300;
+    lfo.connect(lg);
+    lg.connect(lp.frequency);
+    lfo.start();
+    this.chord = harmony.chords[0];
+    padVoicing(this.chord, harmony.transpose).forEach((m, i) => {
+      const pair = [-7, 7].map((dt) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'triangle';
+        o.frequency.value = midiToFreq(m);
+        o.detune.value = dt;
+        g.gain.value = i === 0 ? ROAM_BASS_GAIN : ROAM_UPPER_GAIN;
+        o.connect(g);
+        g.connect(lp);
+        o.start();
+        return o;
+      });
+      this.voices.push(pair);
+    });
+    this.later(() => this.next(), roamSeconds(this.chord) * 1000);
+  }
+
+  private next(): void {
+    const { chords, transpose } = this.harmony;
+    this.index = (this.index + 1) % chords.length;
+    this.chord = chords[this.index];
+    const t = this.ctx.currentTime;
+    padVoicing(this.chord, transpose).forEach((m, i) => {
+      for (const o of this.voices[i]) o.frequency.setTargetAtTime(midiToFreq(m), t, ROAM_GLIDE_S / 3);
+    });
+    this.later(() => this.next(), roamSeconds(this.chord) * 1000);
+  }
+}
+
 export class Ambience {
   /** The song (AUD-01) connects here: it follows the silence and the edge like the rest of the music. */
   readonly song: GainNode;
@@ -75,11 +150,20 @@ export class Ambience {
   /** Last value each gain was sent to, and the wind's. */
   private readonly heading = new Map<AudioParam, number>();
   private windLevel = -1;
+  /** The free roam's pad and the gain it plays through; the pad is only built the first time it is heard. */
+  private readonly roam: GainNode;
+  private roamPad: RoamPad | null = null;
+  private roamTarget = 0;
+  private readonly harmony: RoamChords;
 
-  constructor(ctx: AudioContext, out: AmbienceOutputs, later: Scheduler) {
+  constructor(ctx: AudioContext, out: AmbienceOutputs, later: Scheduler, harmony: RoamChords) {
     this.ctx = ctx;
     this.out = out;
     this.later = later;
+    this.harmony = harmony;
+    this.roam = ctx.createGain();
+    this.roam.gain.value = 0;
+    this.roam.connect(out.master);
     this.wind = new Wind(ctx, out.master);
     const song = (this.song = ctx.createGain());
     song.connect(out.master);
@@ -95,18 +179,25 @@ export class Ambience {
 
     const answer = () => {
       if (this.targets.answer > 0.01) {
-        const i = (Math.random() * ANSWER_NOTES.length) | 0;
-        const j = Math.max(0, Math.min(ANSWER_NOTES.length - 1, i + pick([-2, -1, 1, 2])));
-        this.note(ANSWER_NOTES[i], 0.03, 0, this.layers.answer);
-        this.note(ANSWER_NOTES[j], 0.024, 0.7, this.layers.answer);
+        // In the free roam, from the chord the pad is on (A3..A4, the original notes' range).
+        const notes = this.roamNotes(57, 69)?.map(midiToFreq) ?? ANSWER_NOTES;
+        const i = (Math.random() * notes.length) | 0;
+        const j = Math.max(0, Math.min(notes.length - 1, i + pick([-2, -1, 1, 2])));
+        this.note(notes[i], 0.03, 0, this.layers.answer);
+        this.note(notes[j], 0.024, 0.7, this.layers.answer);
       }
       this.later(answer, 7000 + Math.random() * 6000);
     };
     this.later(answer, 5000);
 
     const phrase = () => {
-      if (this.targets.phrase > 0.01)
-        pick(PHRASES).forEach((f, k) => this.note(f, 0.024, k * PHRASE_STEP_S, this.layers.phrase));
+      if (this.targets.phrase > 0.01) {
+        // In the free roam, four notes falling through the chord the pad is on.
+        const notes = this.roamNotes(57, 76)?.map(midiToFreq);
+        const from = notes ? (Math.random() * (notes.length - 3)) | 0 : 0;
+        const fall = notes && notes.length >= 4 ? notes.slice(from, from + 4).reverse() : pick(PHRASES);
+        fall.forEach((f, k) => this.note(f, 0.024, k * PHRASE_STEP_S, this.layers.phrase));
+      }
       this.later(phrase, 16000 + Math.random() * 10000);
     };
     this.later(phrase, 9000);
@@ -118,6 +209,9 @@ export class Ambience {
    */
   apply(mix: Mix, seconds: number): void {
     this.move(this.out.pad.gain, mix.pad, seconds);
+    this.roamTarget = mix.roam;
+    if (mix.roam > 0 && !this.roamPad) this.roamPad = new RoamPad(this.ctx, this.roam, this.harmony, this.later);
+    this.move(this.roam.gain, mix.roam, seconds);
     this.move(this.out.box.gain, mix.box, seconds);
     this.move(this.song.gain, mix.song, seconds);
     for (const l of LAYERS) {
@@ -128,6 +222,15 @@ export class Ambience {
       this.windLevel = mix.wind;
       this.wind.setLevel(mix.wind, seconds);
     }
+  }
+
+  /**
+   * While the free roam's pad is heard: the notes (MIDI) of the chord it is on between `low` and
+   * `high`, for whatever plays over it. Null otherwise, and the caller keeps its own notes.
+   */
+  roamNotes(low: number, high: number): number[] | null {
+    if (!this.roamPad || this.roamTarget <= 0.01) return null;
+    return chordNotesIn(this.roamPad.chord, this.harmony.transpose, low, high);
   }
 
   private move(param: AudioParam, value: number, seconds: number): void {

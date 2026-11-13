@@ -970,10 +970,7 @@ export class Game implements GameActions, ActEngine {
     this.store.setState({ remembered: [...progress.remembered] });
     this.lastProgress = this.time;
 
-    const base = CHIME_ROOTS[progress.count % 4];
-    audio.chime(base, 0.08);
-    audio.chime(base * 1.25, 0.06, 0.15);
-    audio.chime(base * 1.5, 0.05, 0.3);
+    audio.memoryChime(CHIME_ROOTS[progress.count % 4]);
     if (it.id !== 'star') this.bursts.spawn(this.items.targetOf(it));
     narrative.say(it.text, it.title, 'memory');
     if (it.id === 'campfire') this.sitDown();
@@ -1030,10 +1027,7 @@ export class Game implements GameActions, ActEngine {
     if (!this.debug) storage.set(this.hiddenKey, JSON.stringify([...this.found]));
     this.store.setState({ hiddenFound: [...this.found] });
     // AUD-08: the guitar gets its own arpeggio; until then, the usual memory chime.
-    const base = CHIME_ROOTS[this.found.size % 4];
-    this.audio.chime(base, 0.08);
-    this.audio.chime(base * 1.25, 0.06, 0.15);
-    this.audio.chime(base * 1.5, 0.05, 0.3);
+    this.audio.memoryChime(CHIME_ROOTS[this.found.size % 4]);
     this.bursts.spawn(this.hidden.targetOf(h));
     this.narrative.say(h.text, h.title, 'memory');
   }

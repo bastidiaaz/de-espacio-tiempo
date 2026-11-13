@@ -39,21 +39,37 @@ describe('mixFor: music per chapter (AUD-06)', () => {
     }
   });
 
-  it('plays the full mix in the free roam and once the act is finished', () => {
+  it('plays the full mix once the act is finished', () => {
     const all = LAYERS.map((l) => l.id);
-    expect(sounding(at({ chapter: 0, freeRoam: true }))).toEqual(all);
     expect(sounding(at({ chapter: CHAPTERS.length }))).toEqual(all);
     expect(mixChapter(99, false)).toBe(LAYERS[LAYERS.length - 1].from);
     expect(mixChapter(-1, false)).toBe(0);
   });
 
   it('makes room for the proximity arpeggio: note layers leave, drones and the original stay', () => {
-    const m = mixFor(at({ freeRoam: true, cue: 0.5 }));
+    const m = mixFor(at({ chapter: CHAPTERS.length, cue: 0.5 }));
     expect(m.layers.answer).toBe(0);
     expect(m.layers.phrase).toBe(0);
     expect(m.layers.air).toBe(1);
     expect(m.layers.star).toBe(1);
     expect(m.box).toBe(1);
+  });
+
+  it('plays the free roam in the key of "Astronauta": its pad instead of the A-major one and the drones', () => {
+    const story = mixFor(at({ chapter: CHAPTERS.length }));
+    expect(story.roam).toBe(0);
+    expect(story.pad).toBe(1);
+    const roam = at({ chapter: 0, freeRoam: true });
+    const m = mixFor(roam);
+    expect(m.pad).toBe(0);
+    expect(m.roam).toBe(1);
+    expect(m.box).toBe(1);
+    expect(sounding(roam)).toEqual(LAYERS.filter((l) => l.kind === 'notes').map((l) => l.id));
+    // It follows the silence and the edge like the rest of the music.
+    expect(mixFor(at({ freeRoam: true, silence: 'wind' })).roam).toBe(0);
+    expect(mixFor(at({ freeRoam: true, edge: 1 })).roam).toBeCloseTo(EDGE_MUSIC_FLOOR);
+    // And comes in slowly, like a new chapter.
+    expect(fadeSeconds(at({ chapter: CHAPTERS.length }), roam)).toBe(CHAPTER_FADE_S);
   });
 });
 
@@ -79,7 +95,7 @@ describe('mixFor: wind and silence (AUD-03)', () => {
     for (let z = 0.1; z <= 1.0001; z += 0.1) {
       const m = mixFor(at({ freeRoam: true, windZone: z }));
       expect(m.wind).toBeGreaterThan(prev);
-      expect(m.pad).toBe(1);
+      expect(m.roam).toBe(1);
       prev = m.wind;
     }
     expect(prev).toBeCloseTo(1);

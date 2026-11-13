@@ -2,6 +2,7 @@ import { Ambience } from './ambience';
 import { DEFAULT_MIX_STATE, fadeSeconds, mixFor, type MixState } from './mix';
 import { ASTRONAUTA_CHORUS } from '../../content/astronautaCoro';
 import { ChorusVoice, type ChorusSeam } from './chorusVoice';
+import { midiToFreq } from './melody';
 import { ARP_NOTES, ARP_STEP_S, cueGain } from './proximity';
 import type { RevealCue } from './reveal';
 import { RevealSound } from './revealSound';
@@ -133,7 +134,9 @@ export class AudioEngine {
       boxBus.connect(master);
       boxBus.connect(echo);
       const drip = () => {
-        this.chime(pent[(Math.random() * pent.length) | 0], 0.025, 0, 2.2, boxBus);
+        // In the free roam, from the chord of "Astronauta" the pad is on (A4..A5, as the original).
+        const notes = this.ambience?.roamNotes(69, 81)?.map(midiToFreq) ?? pent;
+        this.chime(notes[(Math.random() * notes.length) | 0], 0.025, 0, 2.2, boxBus);
         this.later(drip, 4000 + Math.random() * 6000);
       };
       drip();
@@ -161,7 +164,12 @@ export class AudioEngine {
       };
       arp();
 
-      this.ambience = new Ambience(actx, { master, echo, pad: padBus, box: boxBus }, (fn, ms) => this.later(fn, ms));
+      this.ambience = new Ambience(
+        actx,
+        { master, echo, pad: padBus, box: boxBus },
+        (fn, ms) => this.later(fn, ms),
+        ASTRONAUTA_CHORUS.harmony,
+      );
       this.ambience.apply(mixFor(this.mixState), 0);
       this.chorus = new ChorusVoice(actx, ASTRONAUTA_CHORUS, this.chorusSeam(this.ambience.song));
       this.revealSound = new RevealSound(actx, master, echo, (fn, ms) => this.later(fn, ms));
@@ -216,6 +224,24 @@ export class AudioEngine {
   /** Where the song (AUD-01) connects: it follows the silence and the edge. Null until `start()`. */
   get songBus(): GainNode | null {
     return this.ambience?.song ?? null;
+  }
+
+  /**
+   * The three rising notes of a memory found: a major triad on `base`, or, in the free roam, three
+   * notes of the chord of "Astronauta" the pad is on, starting near `base`, so it stays in key.
+   */
+  memoryChime(base: number): void {
+    const notes = this.ambience?.roamNotes(69, 88);
+    let freqs = [base, base * 1.25, base * 1.5];
+    if (notes && notes.length >= 3) {
+      const near = 69 + 12 * Math.log2(base / 440);
+      let i = notes.findIndex((m) => m >= near - 0.5);
+      i = Math.max(0, Math.min(notes.length - 3, i < 0 ? notes.length - 3 : i));
+      freqs = notes.slice(i, i + 3).map(midiToFreq);
+    }
+    this.chime(freqs[0], 0.08);
+    this.chime(freqs[1], 0.06, 0.15);
+    this.chime(freqs[2], 0.05, 0.3);
   }
 
   /** Warm chord when a chapter completes. */
