@@ -74,21 +74,24 @@ describe('astronauta-coro.json (AUD-01)', () => {
     expect(parseChord('Cm')).toEqual({ root: 0, intervals: [0, 3, 7] });
     expect(parseChord('Bb7')).toEqual({ root: 10, intervals: [0, 4, 7, 10] });
     expect(parseChord('F#m7')).toEqual({ root: 6, intervals: [0, 3, 7, 10] });
+    expect(parseChord('Dm7b5')).toEqual({ root: 2, intervals: [0, 3, 6, 10] });
+    expect(parseChord('Bbsus4')).toEqual({ root: 10, intervals: [0, 5, 7] });
+    expect(parseChord('Ebadd9')).toEqual({ root: 3, intervals: [0, 4, 7, 14] });
+    expect(parseChord('Bdim')).toEqual({ root: 11, intervals: [0, 3, 6] });
     expect(parseChord('Abmaj7')).toEqual({ root: 8, intervals: [0, 4, 7, 11] });
     expect(parseChord('Cb')).toEqual({ root: 11, intervals: [0, 4, 7] });
     expect(parseChord('Ebsus')).toBeNull();
     expect(parseChord('Mib')).toBeNull();
   });
 
-  it('has chords filling every bar, in the written key, ending on the tonic', () => {
+  it('has chords filling every bar, ending on the tonic', () => {
     const { chords, bpm, transpose } = ASTRONAUTA_CHORUS.harmony;
     for (const bar of raw.compases) {
       expect(bar.acordes.reduce((s, c) => s + c.pulsos, 0), `bar ${bar.numero}`).toBe(raw.compas[0]);
     }
     expect(chords.reduce((s, c) => s + c.beats, 0)).toBe(18 * ASTRONAUTA_CHORUS.beatsPerBar);
-    const scale = [3, 5, 7, 8, 10, 0, 2]; // Eb major
-    for (const c of chords) for (const i of c.intervals) expect(scale, `${c.name}, bar ${c.bar}`).toContain((c.root + i) % 12);
-    expect(chords[chords.length - 1].name).toBe('Eb');
+    // The harmony is the author's: borrowed chords (Fm7b5) are welcome, so no key check here.
+    expect(chords[chords.length - 1].root).toBe(3); // Eb
     expect(bpm).toBe(raw.tempo);
     // The piano follows the key of the arrangement but not the melody's octave shift.
     expect(transpose).toBe(raw.arreglo.transponer);

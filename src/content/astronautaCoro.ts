@@ -56,12 +56,29 @@ export function noteToMidi(name: string): number | null {
   return 12 * (parseInt(m[3], 10) + 1) + STEP[m[1]] + accidental;
 }
 
+/**
+ * Root, third, fifth and an optional fourth tone, in that order: the piano's figure
+ * (`arpeggio.ts`) reads them by position, so a sus chord's 2nd or 4th takes the third's place and
+ * a 6th or added 9th takes the seventh's.
+ */
 const QUALITIES: Record<string, readonly number[]> = {
   '': [0, 4, 7],
   m: [0, 3, 7],
   '7': [0, 4, 7, 10],
   m7: [0, 3, 7, 10],
   maj7: [0, 4, 7, 11],
+  m7b5: [0, 3, 6, 10],
+  dim: [0, 3, 6],
+  dim7: [0, 3, 6, 9],
+  aug: [0, 4, 8],
+  sus2: [0, 2, 7],
+  sus4: [0, 5, 7],
+  '6': [0, 4, 7, 9],
+  m6: [0, 3, 7, 9],
+  add9: [0, 4, 7, 14],
+  madd9: [0, 3, 7, 14],
+  mmaj7: [0, 3, 7, 11],
+  '7sus4': [0, 5, 7, 10],
 };
 
 /** "Bb" → root 10, major; "Cm7" → root 0, minor seventh. Returns null if it is not a chord we know. */
@@ -130,7 +147,7 @@ export function parseChorus(json: unknown): Chorus {
       const name = typeof o.acorde === 'string' ? o.acorde : '';
       const chord = parseChord(name);
       if (!chord)
-        errors.push(`${at}: "acorde" debe ser algo como "Eb", "Cm", "Bb7", "Fm7" o "Abmaj7".`);
+        errors.push(`${at}: "acorde" debe ser algo como "Eb", "Cm", "Bb7", "Fm7", "Abmaj7", "Dm7b5", "Bbsus4" o "Ebadd9".`);
       else chords.push({ name, ...chord, beats, bar });
     });
     if (beatsPerBar && chordList.length && Math.abs(chordSum - beatsPerBar) > 1e-6)

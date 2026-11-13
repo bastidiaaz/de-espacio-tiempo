@@ -101,9 +101,14 @@ describe('the piano under the chorus of "Astronauta"', () => {
 
   it('is in the same key as the melody, which alone goes up an octave', () => {
     expect((ASTRONAUTA_CHORUS.transpose - ASTRONAUTA_CHORUS.harmony.transpose) % 12).toBe(0);
-    // The melody uses the seven notes of its scale; the proposed chords are all diatonic.
-    const scale = new Set(lead.map((n) => midi(n.freq) % 12));
-    expect(scale.size).toBe(7);
-    for (const p of piano) expect(scale.has(midi(p.freq) % 12)).toBe(true);
+    // Every piano note is a tone of the chord written for that moment, moved to the melody's key.
+    const { chords, transpose, bpm } = ASTRONAUTA_CHORUS.harmony;
+    const beat = 60 / bpm;
+    for (const p of piano) {
+      let at = 0;
+      const c = chords.find((ch) => (at += ch.beats) * beat > p.start + 1e-9)!;
+      const tones = c.intervals.map((i) => (c.root + i + transpose) % 12);
+      expect(tones, `${c.name}, bar ${c.bar}`).toContain(midi(p.freq) % 12);
+    }
   });
 });
